@@ -6,14 +6,14 @@
     <meta name="theme-color" content="#ffffff" />
     <meta
       name="description"
-      content="回收类型规则中心交互原型：业务类型参数、回收类型参数、成交分类规则、物权转移规则、试算与订单追溯。"
+      content="回收类型规则中心交互原型：分类地图、16 个回收类型位、成交分类规则、物权转移规则、试算与订单追溯。"
     />
     <title>回收类型规则中心｜配置交互原型</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230f766e'/%3E%3Cpath d='M17 20h30v7H17zm0 11h16v7H17zm19 0h11v7H36zM17 42h30v7H17z' fill='%23ffffff'/%3E%3C/svg%3E"
     />
-    <link rel="stylesheet" href="./assets/app.css?v=20261114-2" />
+    <link rel="stylesheet" href="./assets/app.css?v=20261114-5" />
     <link rel="stylesheet" href="./assets/admin-shell.css?v=20261114-1" />
   </head>
   <body class="admin-body">
@@ -62,6 +62,12 @@
               </span>
               <span class="admin-menu-label">回收类型</span>
             </a>
+            <a class="admin-menu-item" href="#map" data-nav="map" title="分类地图">
+              <span class="admin-menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h5v5H5zM14 15h5v5h-5zM7.5 9v3h9v3M10 4h5a2 2 0 0 1 2 2v9" /></svg>
+              </span>
+              <span class="admin-menu-label">分类地图</span>
+            </a>
           </div>
 
           <div class="admin-menu-group" aria-labelledby="menu-group-rules">
@@ -98,8 +104,8 @@
         </nav>
 
         <div class="admin-sider-footer">
-          <div class="admin-sider-status"><span>规则版本</span><strong>v1.4</strong></div>
-          <div class="admin-sider-status"><span>配置状态</span><strong><i aria-hidden="true"></i>正常</strong></div>
+          <div class="admin-sider-status"><span>规则版本</span><strong>v2.0</strong></div>
+          <div class="admin-sider-status"><span>配置状态</span><strong><i aria-hidden="true"></i>3 个待完善</strong></div>
         </div>
       </aside>
 
@@ -131,7 +137,7 @@
             <div class="breadcrumb" id="breadcrumb" aria-label="面包屑"></div>
             <div class="context-meta">
               <span class="context-chip"><i class="chip-dot"></i>规则引擎在线</span>
-              <span class="context-chip mono" id="context-rule-count">8 RULES</span>
+              <span class="context-chip mono" id="context-rule-count">13 RULES</span>
             </div>
           </div>
           <div id="view-root"></div>
@@ -151,7 +157,8 @@
 
     <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
 
-    <script src="./assets/admin-shell.js?v=20261114-2"></script>
-    <script src="./assets/app.js?v=20261114-2"></script>
+    <script src="./assets/admin-shell.js?v=20261114-3"></script>
+    <script src="./assets/state-v2.js?v=20261114-4"></script>
+    <script src="./assets/app.js?v=20261114-5"></script>
   </body>
 </html>

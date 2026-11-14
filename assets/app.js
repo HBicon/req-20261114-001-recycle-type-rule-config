@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'recycle-type-rule-center-v1';
+  const STORAGE_KEY = 'recycle-type-rule-center-v3';
 
   const DIMENSIONS = {
     winner: { name: '中标方', en: 'WINNER', color: '#526df6', description: '按最终成交主体归类' },
@@ -12,20 +12,23 @@
   };
 
   const CHANNELS = [
-    { id: 'retail', name: '零售通' },
-    { id: 'enterprise', name: '企业购渠道' },
-    { id: 'store', name: '门店渠道' },
-    { id: 'douyin', name: '抖音渠道' }
+    { id: 'ch_xiaomi_service', name: '小米售后渠道', code: 'CHANNEL-A', note: '指定渠道成交，编号已脱敏' },
+    { id: 'ch_eco', name: '生态合作渠道', code: 'CHANNEL-B', note: '闲鱼兜底成交，编号已脱敏' },
+    { id: 'retail', name: '零售通', code: 'CHANNEL-R', note: '通用渠道演示' },
+    { id: 'enterprise', name: '企业购渠道', code: 'CHANNEL-E', note: '企业购业务演示' },
+    { id: 'none', name: '非指定渠道', code: 'CHANNEL-NONE', note: '不命中渠道条件' }
   ];
 
   const ROBOTS = [
-    { id: 'r5', name: '5号机器人', code: 'RB-005' },
-    { id: 'precision', name: '精准机器人', code: 'RB-P01' },
-    { id: 'fallback', name: '兜底机器人', code: 'RB-F01' }
+    { id: 'self_5', name: '自营 5 号机器人', code: 'RB-SELF-05', source: 'self_robot' },
+    { id: 'eco_no_quote', name: '生态无人报价机器人', code: 'RB-ECO-NQ', source: 'eco_no_quote' },
+    { id: 'eco_platform', name: '生态平台兜底机器人', code: 'RB-ECO-PF', source: 'eco_platform' },
+    { id: 'buyer_package', name: '买家包销机器人', code: 'RB-BUYER-PKG', source: 'buyer_package' }
   ];
 
   const PHONE_LISTS = [
-    { id: 'phone-a', name: '重点客户名单 A', version: 'v3', masked: '共 128 个脱敏号码' }
+    { id: 'phone-a', name: '命中：重点客户名单 A', version: 'v3', masked: '共 128 个脱敏号码' },
+    { id: 'phone_miss', name: '未命中指定手机号', version: '—', masked: '普通手机号' }
   ];
 
   const WINNERS = [
@@ -33,6 +36,48 @@
     { id: 'recycler', name: '回收商' },
     { id: 'robot', name: '机器人' }
   ];
+
+  const DEAL_SIDES = [
+    { id: 'flashback', name: '闪回成交' },
+    { id: 'buyer', name: '买家成交' }
+  ];
+
+  const DEAL_METHODS = [
+    { id: 'manual', name: '人工成交' },
+    { id: 'robot', name: '机器人成交' },
+    { id: 'xianyu_fallback', name: '闲鱼兜底成交' },
+    { id: 'value_trade', name: '保值换新成交' },
+    { id: 'ownership_change', name: '物权变更' }
+  ];
+
+  const ROBOT_SOURCES = [
+    { id: 'self_robot', name: '自营机器人' },
+    { id: 'eco_no_quote', name: '生态－无人报价' },
+    { id: 'eco_platform', name: '生态－平台兜底报价' },
+    { id: 'buyer_package', name: '买家包销机器人' }
+  ];
+
+  const BUYER_TYPES = [
+    { id: 'normal', name: '普通买家' },
+    { id: 'enterprise', name: '企业版买家' }
+  ];
+
+  const BUYER_GROUPS = [
+    { id: 'self_bu', name: '自营BU' },
+    { id: 'eco_bu', name: '生态BU' }
+  ];
+
+  const CURRENT_SIDES = [
+    { id: 'buyer', name: '买家成交类型' },
+    { id: 'flashback', name: '闪回成交类型' },
+    { id: 'eco', name: '生态成交类型' }
+  ];
+
+  const SEGMENTS = {
+    flashback: { name: '闪回成交', en: 'FLASHBACK', color: '#c8ff4d' },
+    buyer: { name: '买家成交', en: 'BUYER', color: '#526df6' },
+    eco: { name: '生态成交', en: 'ECO', color: '#16836d' }
+  };
 
   const TRANSFER_SCENES = [
     { id: 'pre_sale', name: '成交后、未起售' },
@@ -51,36 +96,49 @@
   ];
 
   const DIMENSION_OPTIONS = {
+    deal_side: DEAL_SIDES,
+    deal_method: DEAL_METHODS,
+    robot_source: ROBOT_SOURCES,
+    buyer_group: BUYER_GROUPS,
+    buyer_type: BUYER_TYPES,
     winner: WINNERS,
     phone: PHONE_LISTS,
     channel: CHANNELS,
     robot: ROBOTS,
     business_type: [],
     transfer_scene: TRANSFER_SCENES,
+    current_side: CURRENT_SIDES,
     current_type: [],
     transfer_direction: TRANSFER_DIRECTIONS,
     after_sale_status: AFTER_SALE_STATUSES
   };
 
   const CONDITION_LABELS = {
+    deal_side: '成交归属',
+    deal_method: '成交方式',
+    robot_source: '机器人来源',
+    buyer_group: '指定手机号群组',
+    buyer_type: '买家类型',
     winner: '中标方',
     phone: '指定手机号',
     channel: '渠道',
     robot: '机器人名称',
     business_type: '特殊业务类型',
     transfer_scene: '物权转移场景',
+    current_side: '当前类型归属',
     current_type: '当前回收类型',
     transfer_direction: '物权转移方向',
     after_sale_status: '售后状态'
   };
 
-  const DEAL_DIMENSIONS = ['business_type', 'phone', 'channel', 'robot', 'winner'];
-  const TRANSFER_DIMENSIONS = ['transfer_scene', 'current_type', 'transfer_direction', 'after_sale_status'];
+  const DEAL_DIMENSIONS = ['deal_side', 'deal_method', 'business_type', 'buyer_type', 'channel', 'robot_source', 'robot', 'phone', 'buyer_group', 'winner'];
+  const TRANSFER_DIMENSIONS = ['transfer_scene', 'current_side', 'after_sale_status', 'current_type', 'transfer_direction'];
 
   const VIEW_META = {
     overview: { label: '总览', group: '工作台', crumb: 'WORKBENCH' },
     business: { label: '业务类型', group: '配置', crumb: 'BUSINESS PARAMS' },
     recycle: { label: '回收类型', group: '配置', crumb: 'RECYCLE TYPES' },
+    map: { label: '分类地图', group: '配置', crumb: 'CLASSIFICATION MAP' },
     rules: { label: '分类规则', group: '规则与事件', crumb: 'CLASSIFICATION RULES' },
     transfer: { label: '物权转移', group: '规则与事件', crumb: 'OWNERSHIP EVENTS' },
     simulator: { label: '规则试算', group: '验证与追溯', crumb: 'RULE SIMULATOR' },
@@ -97,7 +155,7 @@
 
   const clone = (value) => JSON.parse(JSON.stringify(value));
 
-  function createDefaultState() {
+  function createLegacyState() {
     return {
       version: 1,
       transferPolicy: 'effective',
@@ -524,12 +582,18 @@
     };
   }
 
+  function createDefaultState() {
+    const source = window.RECYCLE_RULE_DEFAULT_STATE;
+    if (!source) throw new Error('默认回收类型配置未加载');
+    return clone(source);
+  }
+
   function loadState() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) return createDefaultState();
       const parsed = JSON.parse(saved);
-      if (!parsed || parsed.version !== 1 || !Array.isArray(parsed.recycleTypes)) return createDefaultState();
+      if (!parsed || parsed.version !== 3 || !Array.isArray(parsed.recycleTypes)) return createDefaultState();
       return parsed;
     } catch (error) {
       return createDefaultState();
@@ -606,6 +670,18 @@
     return DIMENSIONS[id] || DIMENSIONS.business;
   }
 
+  function segmentMeta(id) {
+    return SEGMENTS[id] || { name: '待归类', en: 'UNSET', color: '#8c9187' };
+  }
+
+  function isTypeConfigured(type) {
+    return Boolean(type && type.status !== 'unconfigured' && type.name && type.code);
+  }
+
+  function configuredRecycleTypes() {
+    return state.recycleTypes.filter(isTypeConfigured);
+  }
+
   function getRuleCountForType(typeId) {
     return state.rules.filter((rule) => rule.targetTypeId === typeId).length;
   }
@@ -624,7 +700,7 @@
       return state.businessTypes.map((item) => ({ id: item.id, name: item.name }));
     }
     if (dimension === 'current_type') {
-      return state.recycleTypes.map((item) => ({ id: item.id, name: item.name }));
+      return configuredRecycleTypes().map((item) => ({ id: item.id, name: item.name }));
     }
     return DIMENSION_OPTIONS[dimension] || [];
   }
@@ -639,12 +715,18 @@
   }
 
   function conditionTag(condition) {
+    if (condition.dimension === 'deal_side') return conditionValueName('deal_side', condition.value);
+    if (condition.dimension === 'deal_method') return conditionValueName('deal_method', condition.value);
+    if (condition.dimension === 'robot_source') return `机器人来源：${conditionValueName('robot_source', condition.value)}`;
+    if (condition.dimension === 'buyer_group') return conditionValueName('buyer_group', condition.value);
+    if (condition.dimension === 'buyer_type') return `买家类型：${conditionValueName('buyer_type', condition.value)}`;
     if (condition.dimension === 'business_type') return conditionValueName('business_type', condition.value);
-    if (condition.dimension === 'phone') return '指定手机号';
+    if (condition.dimension === 'phone') return condition.value === 'phone_miss' ? '非指定手机号' : '指定手机号命中';
     if (condition.dimension === 'channel') return conditionValueName('channel', condition.value);
     if (condition.dimension === 'robot') return `机器人：${conditionValueName('robot', condition.value)}`;
     if (condition.dimension === 'winner') return `中标方：${conditionValueName('winner', condition.value)}`;
     if (condition.dimension === 'transfer_scene') return conditionValueName('transfer_scene', condition.value);
+    if (condition.dimension === 'current_side') return conditionValueName('current_side', condition.value);
     if (condition.dimension === 'current_type') return `原类型：${conditionValueName('current_type', condition.value)}`;
     if (condition.dimension === 'transfer_direction') return conditionValueName('transfer_direction', condition.value);
     if (condition.dimension === 'after_sale_status') return conditionValueName('after_sale_status', condition.value);
@@ -690,6 +772,7 @@
       enabled: ['status-enabled', '启用'],
       draft: ['status-draft', '草稿'],
       disabled: ['status-disabled', '停用'],
+      unconfigured: ['status-unconfigured', '待完善'],
       pending: ['status-pending', '待生效'],
       applied: ['status-enabled', '已生效'],
       done: ['status-enabled', '已完成']
@@ -739,6 +822,7 @@
       overview: renderOverview,
       business: renderBusiness,
       recycle: renderRecycle,
+      map: renderMap,
       rules: renderRules,
       transfer: renderTransfer,
       simulator: renderSimulator,
@@ -763,12 +847,15 @@
     const pendingTransfers = state.transferEvents.filter((event) => event.status === 'pending').length;
     const conflicts = getAllConflictPairs().length;
     const linkedBusiness = state.businessTypes.filter((item) => getBusinessRules(item.id).length > 0).length;
-    const unboundTypes = state.recycleTypes.filter((type) => getRuleCountForType(type.id) === 0).length;
+    const configuredCount = state.recycleTypes.filter(isTypeConfigured).length;
+    const pendingTypeCount = state.recycleTypes.length - configuredCount;
+    const unboundTypes = state.recycleTypes.filter((type) => isTypeConfigured(type) && getRuleCountForType(type.id) === 0).length;
+    const completeness = Math.round((configuredCount / Math.max(1, state.recycleTypes.length)) * 100);
 
     const recent = [
       { time: '10:42', title: '物权事件 EVT-20261114-018 已受理', meta: 'TC202611140083 · 等待实际转移', tag: '待生效' },
-      { time: '10:18', title: 'R-DEAL-004 规则增加机器人身份条件', meta: '运营管理员 · 优先级 80', tag: '规则更新' },
-      { time: '09:36', title: '售后转移规则 R-OWN-002 生效', meta: '买家售后 · 物权生效时触发', tag: '已发布' }
+      { time: '10:18', title: 'R-DEAL-002 买家类型企业版规则启用', meta: '运营管理员 · 优先级 290', tag: '规则更新' },
+      { time: '09:54', title: 'TC202611140052 按指定渠道成交归类', meta: '闪回-小米售后 · 成交阶段完成', tag: '已归类' }
     ];
 
     return `
@@ -780,7 +867,7 @@
             <p>业务类型与回收类型先参数化，再由成交分类规则和物权转移规则消费。一次命中只产生一个主类型，多个条件进入归类标签，所有变化可试算、可追溯。</p>
             <div class="hero-actions">
               <button class="button button-primary" type="button" data-action="open-rule">＋ 新建分类规则</button>
-              <button class="button button-secondary" type="button" data-action="go-view" data-view="simulator">运行一次试算 →</button>
+              <button class="button button-secondary" type="button" data-action="go-view" data-view="map">打开分类地图 →</button>
             </div>
           </div>
           <aside class="hero-side" aria-label="配置链路摘要">
@@ -801,9 +888,9 @@
             <div class="metric-meta">${linkedBusiness} 个已关联规则</div>
           </article>
           <article class="metric">
-            <div class="metric-label"><span>回收类型参数</span><span>02 / TYPES</span></div>
+            <div class="metric-label"><span>回收类型位</span><span>02 / TYPES</span></div>
             <strong>${state.recycleTypes.length}</strong>
-            <div class="metric-meta">${unboundTypes} 个待绑定规则</div>
+            <div class="metric-meta">${configuredCount} 已配置 · ${pendingTypeCount} 待完善 · ${unboundTypes} 待绑定</div>
           </article>
           <article class="metric">
             <div class="metric-label"><span>生效规则</span><span>03 / RULES</span></div>
@@ -869,11 +956,11 @@
               <span class="status ${conflicts ? 'status-pending' : 'status-enabled'}"><i></i>${conflicts ? '需处理' : '通过'}</span>
             </div>
             <div class="health-row"><span>规则冲突</span><strong class="${conflicts ? 'health-warn' : 'health-ok'}">${conflicts} 组</strong></div>
-            <div class="health-row"><span>未绑定类型的规则</span><strong class="health-ok">0 条</strong></div>
-            <div class="health-row"><span>缺少下游映射的类型</span><strong class="health-ok">0 个</strong></div>
+            <div class="health-row"><span>未绑定类型的规则</span><strong class="health-ok">${unboundTypes} 条</strong></div>
+            <div class="health-row"><span>待命名类型位</span><strong class="${pendingTypeCount ? 'health-warn' : 'health-ok'}">${pendingTypeCount} 个</strong></div>
             <div class="health-row"><span>已成交订单快照</span><strong>${Object.keys(state.traces).length} 份</strong></div>
-            <div class="health-bar"><i style="width:${conflicts ? '64%' : '92%'}"></i></div>
-            <div class="health-caption"><span>配置完整度</span><span>${conflicts ? '64%' : '92%'}</span></div>
+            <div class="health-bar"><i style="width:${conflicts ? Math.min(completeness, 64) : completeness}%"></i></div>
+            <div class="health-caption"><span>类型参数完整度</span><span>${completeness}%</span></div>
           </aside>
         </div>
 
@@ -882,10 +969,10 @@
           <span class="section-note">QUICK ACTIONS</span>
         </div>
         <section class="shortcuts" aria-label="快捷操作">
-          <button class="shortcut" type="button" data-action="add-type">
-            <span class="shortcut-no">A / TYPE</span>
-            <span><strong>新增回收类型参数</strong><span>先定义名称、归类维度与下游映射。</span></span>
-            <span class="shortcut-arrow"><b>↗</b><span>参数层</span></span>
+          <button class="shortcut" type="button" data-action="go-view" data-view="map">
+            <span class="shortcut-no">A / MAP</span>
+            <span><strong>查看完整分类地图</strong><span>对齐闪回、买家和物权转移的 16 个类型位。</span></span>
+            <span class="shortcut-arrow"><b>↗</b><span>业务层</span></span>
           </button>
           <button class="shortcut" type="button" data-action="open-rule">
             <span class="shortcut-no">B / RULE</span>
@@ -912,7 +999,7 @@
                 <div class="recent-item">
                   <span class="recent-time">${item.time}</span>
                   <span><strong>${item.title}</strong><span>${item.meta}</span></span>
-                  <span class="tag ${item.tag === '待生效' ? 'tag-orange' : item.tag === '已发布' ? 'tag-accent' : 'tag-muted'}">${item.tag}</span>
+                  <span class="tag ${item.tag === '待生效' ? 'tag-orange' : (item.tag === '已归类' || item.tag === '规则更新') ? 'tag-accent' : 'tag-muted'}">${item.tag}</span>
                 </div>
               `).join('')}
             </div>
@@ -926,6 +1013,10 @@
             <div class="notice" style="margin-top: 8px;">
               <span class="notice-mark">↺</span>
               <div><b>物权申请不等于物权生效。</b>售后申请只记录事件；类型变更在审核通过且实际转移生效后发生。</div>
+            </div>
+            <div class="notice" style="margin-top: 8px;">
+              <span class="notice-mark">3</span>
+              <div><b>空白类型位是待确认项。</b>允许自由命名，但在完成参数前不可被规则引用，也不会自动命中订单。</div>
             </div>
           </aside>
         </div>
@@ -1021,15 +1112,157 @@
     `;
   }
 
+  function firstRuleForType(typeId, stage = 'deal') {
+    return state.rules.find((rule) => rule.stage === stage && rule.targetTypeId === typeId);
+  }
+
+  function mapLeaf(conditionLabel, typeId, stage = 'deal') {
+    const type = findRecycleType(typeId);
+    const rule = firstRuleForType(typeId, stage);
+    const configured = isTypeConfigured(type);
+    return `
+      <div class="map-leaf ${configured ? '' : 'is-unconfigured'}">
+        <span class="map-leaf-condition">${escapeHtml(conditionLabel)}</span>
+        <span class="map-leaf-arrow">→</span>
+        <button class="map-result ${configured ? '' : 'is-unconfigured'}" type="button" data-action="edit-type" data-id="${escapeHtml(typeId)}" aria-label="${configured ? `编辑 ${escapeHtml(type?.name)}` : '完善未配置类型'}">
+          <span class="map-result-top"><i></i>${configured ? escapeHtml(type.code) : 'TYPE SLOT'}</span>
+          <strong>${configured ? escapeHtml(type.name) : '未配置类型'}</strong>
+          <small>${configured ? `${escapeHtml(rule?.id || '待绑定规则')} · ${stage === 'transfer' ? '物权生效' : '成交确认'}` : '点击命名并补齐参数'}</small>
+        </button>
+      </div>
+    `;
+  }
+
+  function renderMap() {
+    const configured = state.recycleTypes.filter(isTypeConfigured).length;
+    const pending = state.recycleTypes.length - configured;
+    const dealRules = state.rules.filter((rule) => rule.stage === 'deal').length;
+    const transferRules = state.rules.filter((rule) => rule.stage === 'transfer').length;
+    const flashbackSlots = state.recycleTypes.filter((type) => String(type.branch || '').startsWith('闪回成交')).length;
+    const buyerSlots = state.recycleTypes.filter((type) => String(type.branch || '').startsWith('买家成交')).length;
+    return `
+      <div class="view map-view">
+        <header class="page-head">
+          <div class="page-head-copy">
+            <div class="eyebrow">03 / BUSINESS CLASSIFICATION MAP</div>
+            <h1>分类<em>地图</em></h1>
+            <p>这张图只还原业务归属，不改变执行顺序。订单建立不分类；成交确认执行第一段规则；买家物权变更在实际生效后执行第二段规则。</p>
+          </div>
+          <div class="head-actions">
+            <button class="button button-secondary" type="button" data-action="go-view" data-view="recycle">管理类型参数</button>
+            <button class="button button-primary" type="button" data-action="go-view" data-view="rules">查看执行规则</button>
+          </div>
+        </header>
+
+        <section class="map-summary">
+          <div><span>类型位</span><strong>${state.recycleTypes.length}</strong><small>业务定义总数</small></div>
+          <div><span>已配置</span><strong>${configured}</strong><small>可被规则引用</small></div>
+          <div class="${pending ? 'is-warning' : ''}"><span>待完善</span><strong>${pending}</strong><small>保留空白名称</small></div>
+          <div><span>执行规则</span><strong>${state.rules.length}</strong><small>成交 ${dealRules} · 物权 ${transferRules}</small></div>
+        </section>
+
+        <div class="notice notice-accent" style="margin-top:12px;">
+          <span class="notice-mark">i</span>
+          <div><b>3 个空白类型位不是错误。</b>它们允许后续自由命名；在名称、编码和下游映射补齐前，不自动生成名称，也不能被规则引用。</div>
+        </div>
+
+        <section class="map-board" aria-label="回收类型业务分类地图">
+          <div class="map-root">
+            <span class="map-root-index">ROOT / 00</span>
+            <strong>订单成交</strong>
+            <small>下单不执行；成交确认时进入规则引擎</small>
+          </div>
+
+          <div class="map-twins">
+            <article class="map-trunk map-trunk-flashback">
+              <header class="map-trunk-head">
+                <span class="map-trunk-index">TRUNK / 01</span>
+                <div><h2>闪回成交</h2><p>闪回侧发起、中标或指定渠道成交</p></div>
+                <span class="tag tag-accent">${flashbackSlots} 个类型位</span>
+              </header>
+              <div class="map-branch-list">
+                <section class="map-branch">
+                  <div class="map-branch-title"><span>机器人成交</span><small>按机器人来源</small></div>
+                  ${mapLeaf('自营机器人', 'rt_slot_self_robot')}
+                  ${mapLeaf('生态－无人报价', 'rt_eco_no_quote')}
+                  ${mapLeaf('生态－平台兜底报价', 'rt_eco_platform_fallback')}
+                </section>
+                <section class="map-branch">
+                  <div class="map-branch-title"><span>保值换新成交</span><small>审单通过后分类</small></div>
+                  ${mapLeaf('审单报保值订单中标', 'rt_flashback_value')}
+                </section>
+                <section class="map-branch">
+                  <div class="map-branch-title"><span>闲鱼兜底成交</span><small>按指定渠道</small></div>
+                  ${mapLeaf('生态合作渠道（编号脱敏）', 'rt_eco_channel')}
+                </section>
+                <section class="map-branch">
+                  <div class="map-branch-title"><span>指定渠道成交</span><small>成交即归类，不等售后</small></div>
+                  ${mapLeaf('小米售后渠道（编号脱敏）', 'rt_flashback_xiaomi_service')}
+                </section>
+                <section class="map-branch">
+                  <div class="map-branch-title"><span>人工成交</span><small>人工审单或手机号命中</small></div>
+                  ${mapLeaf('审单人工成交', 'rt_flashback_deal')}
+                  <div class="map-subgroup">
+                    <div class="map-subgroup-title">指定手机号</div>
+                    ${mapLeaf('自营BU', 'rt_slot_phone_self_bu')}
+                    ${mapLeaf('生态BU', 'rt_slot_phone_eco_bu')}
+                  </div>
+                </section>
+              </div>
+            </article>
+
+            <article class="map-trunk map-trunk-buyer">
+              <header class="map-trunk-head">
+                <span class="map-trunk-index">TRUNK / 02</span>
+                <div><h2>买家成交</h2><p>买家中标、AI 报价或后续物权变更</p></div>
+                <span class="tag tag-blue">${buyerSlots} 个类型位</span>
+              </header>
+              <div class="map-branch-list">
+                <section class="map-branch">
+                  <div class="map-branch-title"><span>人工成交</span><small>优先判断业务标记，再判断买家类型</small></div>
+                  ${mapLeaf('企业购中标', 'rt_buyer_enterprise_purchase')}
+                  ${mapLeaf('买家类型＝企业版', 'rt_buyer_enterprise_account')}
+                  ${mapLeaf('普通买家中标', 'rt_buyer_normal')}
+                </section>
+                <section class="map-branch">
+                  <div class="map-branch-title"><span>机器人成交</span><small>买家包销机器人</small></div>
+                  ${mapLeaf('买家包销机器人报价中标', 'rt_buyer_ai_quote')}
+                </section>
+                <section class="map-branch map-branch-transfer">
+                  <div class="map-branch-title"><span>物权变更</span><small>成交后第二次变更</small></div>
+                  <div class="map-stage-flag">仅物权实际生效后执行</div>
+                  ${mapLeaf('未发起售后，转闪回成交', 'rt_buyer_to_self', 'transfer')}
+                  ${mapLeaf('发起售后，转闪回成交', 'rt_eco_aftersale_return', 'transfer')}
+                </section>
+                <section class="map-branch">
+                  <div class="map-branch-title"><span>保值换新成交</span><small>买家申报保值订单</small></div>
+                  ${mapLeaf('买家报保值订单中标', 'rt_buyer_value')}
+                </section>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="map-rules-note">
+          <div><span>01</span><strong>条件之间为 AND</strong><p>同一笔订单可同时命中多条规则，按优先级取一个主类型，其余写入标签。</p></div>
+          <div><span>02</span><strong>类型位先定义，再关联规则</strong><p>3 个空白类型位只有完成命名和下游映射后，才会出现在规则输出候选中。</p></div>
+          <div><span>03</span><strong>物权申请不等于生效</strong><p>售后申请不改变类型；审核通过与实际物权转移都满足后，才追加新版本。</p></div>
+        </section>
+      </div>
+    `;
+  }
+
   function renderRecycle() {
     const filtered = state.recycleTypes.filter((type) => ui.typeDimension === 'all' || type.dimension === ui.typeDimension);
+    const configuredCount = state.recycleTypes.filter(isTypeConfigured).length;
+    const pendingCount = state.recycleTypes.length - configuredCount;
     return `
       <div class="view">
         <header class="page-head">
           <div class="page-head-copy">
             <div class="eyebrow">02 / TYPE DEFINITIONS</div>
             <h1>回收类型<em>参数</em></h1>
-            <p>类型是可被规则引用的稳定参数，包含归类维度、结算模式、核算主体与旧系统映射。新增类型后，再绑定具体规则。</p>
+            <p>类型先作为稳定参数定义，再被成交或物权规则引用。名称、编码、结算模式和核算主体齐全后，类型才可参与匹配。</p>
           </div>
           <div class="head-actions">
             <button class="button button-primary" type="button" data-action="add-type">＋ 新增回收类型</button>
@@ -1038,7 +1271,14 @@
 
         <div class="notice" style="margin-bottom: 17px;">
           <span class="notice-mark">i</span>
-          <div><b>类型数量不是策略数量。</b>优先复用已有类型；只有下游字段映射或归类口径确实不同，才新增回收类型。</div>
+          <div><b>${configuredCount} 个已配置，${pendingCount} 个待完善。</b>空白类型位可以自由命名，但不会自动生成名称，也不会出现在规则输出候选中。</div>
+        </div>
+
+        <div class="type-summary-strip">
+          <div><span>类型位</span><strong>${state.recycleTypes.length}</strong></div>
+          <div><span>已配置</span><strong>${configuredCount}</strong></div>
+          <div class="${pendingCount ? 'is-warning' : ''}"><span>待完善</span><strong>${pendingCount}</strong></div>
+          <div><span>已关联规则</span><strong>${state.recycleTypes.filter((type) => getRuleCountForType(type.id) > 0).length}</strong></div>
         </div>
 
         <div class="filter-line">
@@ -1054,32 +1294,35 @@
         <div class="type-grid">
           ${filtered.length ? filtered.map((type) => {
             const meta = dimensionMeta(type.dimension);
+            const segment = segmentMeta(type.segment);
             const ruleCount = getRuleCountForType(type.id);
+            const configured = isTypeConfigured(type);
             return `
-              <article class="type-card ${type.status === 'disabled' ? 'is-off' : ''}" style="--type-accent:${meta.color}">
+              <article class="type-card ${type.status === 'disabled' ? 'is-off' : ''} ${configured ? '' : 'is-unconfigured'}" style="--type-accent:${configured ? meta.color : '#9b9f94'}">
                 <div class="type-card-top">
-                  <span class="type-dimension"><i class="dimension-mark"></i>${meta.name} / ${meta.en}</span>
+                  <span class="type-dimension"><i class="dimension-mark"></i>${segment.name} · ${meta.name} / ${meta.en}</span>
                   <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;">
                     ${type.usage === 'transfer' ? '<span class="tag tag-orange">物权结果</span>' : ''}
                     ${statusMarkup(type.status)}
                   </div>
                 </div>
-                <h3>${escapeHtml(type.name)}</h3>
-                <div class="type-code">${escapeHtml(type.code)} · ${escapeHtml(type.version)}</div>
+                <h3>${configured ? escapeHtml(type.name) : '未配置类型'}</h3>
+                <div class="type-code">${configured ? `${escapeHtml(type.code)} · ${escapeHtml(type.version)}` : '空白类型位 · 名称与编码待配置'}</div>
+                <div class="type-branch-hint">${escapeHtml(type.branch || '待定义业务归属')}</div>
                 <div class="type-tags">
-                  <span class="tag tag-muted">${type.allowTransfer ? '允许成交后转移' : '禁止继续转移'}</span>
-                  ${ruleCount ? `<span class="tag tag-accent">${ruleCount} 条规则</span>` : '<span class="tag tag-danger">待绑定规则</span>'}
+                  ${configured ? `<span class="tag tag-muted">${type.allowTransfer ? '允许成交后转移' : '禁止继续转移'}</span>` : '<span class="tag tag-danger">不可被规则引用</span>'}
+                  ${configured ? (ruleCount ? `<span class="tag tag-accent">${ruleCount} 条规则</span>` : '<span class="tag tag-muted">待绑定规则</span>') : '<span class="tag tag-muted">自由命名</span>'}
                 </div>
                 <div class="type-mapping">
-                  <div class="mapping-cell"><span>结算模式</span><strong>${escapeHtml(type.settlement)}</strong></div>
-                  <div class="mapping-cell"><span>核算主体</span><strong>${escapeHtml(type.entity)}</strong></div>
-                  <div class="mapping-cell"><span>旧系统编码</span><strong class="mono">${escapeHtml(type.legacyCode)}</strong></div>
+                  <div class="mapping-cell"><span>结算模式</span><strong>${escapeHtml(type.settlement || '待配置')}</strong></div>
+                  <div class="mapping-cell"><span>核算主体</span><strong>${escapeHtml(type.entity || '待配置')}</strong></div>
+                  <div class="mapping-cell"><span>旧系统编码</span><strong class="mono">${escapeHtml(type.legacyCode || '—')}</strong></div>
                 </div>
                 <div class="type-card-bottom">
-                  <span class="type-stat"><b>${ruleCount}</b> 条规则引用 · 更新 ${escapeHtml(type.updatedAt)}</span>
+                  <span class="type-stat">${configured ? `<b>${ruleCount}</b> 条规则引用 · 更新 ${escapeHtml(type.updatedAt)}` : '完成参数后，才可创建归类规则'}</span>
                   <div class="card-actions">
-                    <button class="card-action" type="button" data-action="edit-type" data-id="${type.id}">编辑</button>
-                    <button class="card-action" type="button" data-action="open-type-rule" data-id="${type.id}">配规则</button>
+                    <button class="card-action" type="button" data-action="edit-type" data-id="${type.id}">${configured ? '编辑' : '完善类型'}</button>
+                    ${configured ? `<button class="card-action" type="button" data-action="open-type-rule" data-id="${type.id}">配规则</button>` : ''}
                   </div>
                 </div>
               </article>
@@ -1097,7 +1340,7 @@
       <div class="view">
         <header class="page-head">
           <div class="page-head-copy">
-            <div class="eyebrow">03 / RULE ENGINE</div>
+            <div class="eyebrow">04 / RULE ENGINE</div>
             <h1>分类规则<em>编排</em></h1>
             <p>成交分类和物权转移分阶段执行。条件之间为 AND；同一阶段命中多条时，按优先级选一个主类型，其余命中保留为标签。</p>
           </div>
@@ -1171,9 +1414,9 @@
       <div class="view">
         <header class="page-head">
           <div class="page-head-copy">
-            <div class="eyebrow">04 / OWNERSHIP EVENTS</div>
+            <div class="eyebrow">05 / OWNERSHIP EVENTS</div>
             <h1>物权转移<em>二次变更</em></h1>
-            <p>成交后、未起售的物权回平台，以及买家发起售后后的回寄转移，都必须以“物权实际生效”作为类型变更触发点。申请、审核、发货节点不提前改写类型。</p>
+            <p>仅处理买家成交后的第二次类型变更：未起售转自营，或买家发起售后后转生态退货。两种情况都必须以“物权实际生效”作为触发点。</p>
           </div>
           <div class="head-actions">
             <button class="button button-secondary" type="button" data-action="go-view" data-view="rules" data-stage="transfer">查看转移规则</button>
@@ -1189,7 +1432,7 @@
               <span class="flow-node">成交确认</span><span class="flow-arrow">→</span>
               <span class="flow-node">物权事件受理</span><span class="flow-arrow">→</span>
               <span class="flow-node accent">实际转移生效</span><span class="flow-arrow">→</span>
-              <span class="flow-node dark">购销回收</span>
+              <span class="flow-node dark">买家-转自营</span>
             </div>
             <div class="scenario-foot"><span>TRIGGER / OWNERSHIP_EFFECTIVE</span><span>${pendingCount} 笔待生效</span></div>
           </article>
@@ -1202,7 +1445,7 @@
               <span class="flow-node">买家发起售后</span><span class="flow-arrow">→</span>
               <span class="flow-node">审核通过</span><span class="flow-arrow">→</span>
               <span class="flow-node accent">物权转移生效</span><span class="flow-arrow">→</span>
-              <span class="flow-node dark">售后回收</span>
+              <span class="flow-node dark">生态-售后退货</span>
             </div>
             <div class="scenario-foot"><span>APPLY ≠ EFFECTIVE</span><span>${appliedCount} 笔已生效</span></div>
           </article>
@@ -1237,17 +1480,17 @@
             </thead>
             <tbody>
               <tr>
-                <td><span class="matrix-type">允许成交后转移的类型</span></td>
+                <td><span class="matrix-type">买家成交且未发起售后的类型</span></td>
                 <td>成交后、未起售</td>
                 <td>物权实际转移生效</td>
-                <td><span class="matrix-type result">购销回收</span></td>
+                <td><span class="matrix-type result">买家-转自营</span></td>
                 <td>${statusMarkup('enabled')}</td>
               </tr>
               <tr>
-                <td><span class="matrix-type">允许售后转移的类型</span></td>
+                <td><span class="matrix-type">买家成交且已发起售后的类型</span></td>
                 <td>买家售后转移</td>
                 <td>审核通过 + 物权回寄生效</td>
-                <td><span class="matrix-type result">售后回收</span></td>
+                <td><span class="matrix-type result">生态-售后退货</span></td>
                 <td>${statusMarkup('enabled')}</td>
               </tr>
               <tr>
@@ -1296,7 +1539,7 @@
   function renderSimulator() {
     const simulator = state.simulator;
     const businessOptions = state.businessTypes.map((item) => ({ id: item.id, name: item.name }));
-    const typeOptions = state.recycleTypes.map((item) => ({ id: item.id, name: item.name }));
+    const typeOptions = configuredRecycleTypes().map((item) => ({ id: item.id, name: item.name }));
     const eventOptions = [
       { id: 'only', name: '仅成交分类' },
       { id: 'pre_sale', name: '成交 + 未起售物权转移' },
@@ -1307,7 +1550,7 @@
       <div class="view">
         <header class="page-head">
           <div class="page-head-copy">
-            <div class="eyebrow">05 / RULE LAB</div>
+            <div class="eyebrow">06 / RULE LAB</div>
             <h1>规则<em>试算器</em></h1>
             <p>用脱敏订单样本验证规则命中、优先级覆盖和物权二次变更。试算不写真实订单，但会生成一份可追溯的演示快照。</p>
           </div>
@@ -1324,12 +1567,25 @@
             </div>
 
             <div class="preset-row" aria-label="试算预设">
-              <button class="preset-button" type="button" data-action="apply-preset" data-preset="phone-robot">保值换新 × 手机号 × 机器人</button>
-              <button class="preset-button" type="button" data-action="apply-preset" data-preset="enterprise">企业购 × 指定渠道</button>
-              <button class="preset-button" type="button" data-action="apply-preset" data-preset="after-sale">买家售后重分类</button>
+              <button class="preset-button" type="button" data-action="apply-preset" data-preset="enterprise-account">买家类型＝企业版</button>
+              <button class="preset-button" type="button" data-action="apply-preset" data-preset="enterprise-purchase">企业购中标</button>
+              <button class="preset-button" type="button" data-action="apply-preset" data-preset="xiaomi-channel">闪回 × 小米售后渠道</button>
+              <button class="preset-button" type="button" data-action="apply-preset" data-preset="phone-unconfigured">指定手机号 × 自营BU</button>
+              <button class="preset-button" type="button" data-action="apply-preset" data-preset="phone-eco-unconfigured">指定手机号 × 生态BU</button>
+              <button class="preset-button" type="button" data-action="apply-preset" data-preset="after-sale">买家售后 × 物权生效</button>
             </div>
 
             <div class="form-grid">
+              <div class="field field-full">
+                <span class="field-label">成交归属</span>
+                <div class="winner-segment" role="group" aria-label="成交归属">
+                  ${DEAL_SIDES.map((side) => `<button class="${simulator.dealSide === side.id ? 'is-active' : ''}" type="button" data-action="set-sim-deal-side" data-side="${side.id}">${side.name}</button>`).join('')}
+                </div>
+              </div>
+              <label class="field">
+                <span>成交方式</span>
+                <select class="select" data-sim-field="dealMethod">${selectOptions(DEAL_METHODS, simulator.dealMethod)}</select>
+              </label>
               <label class="field">
                 <span>业务类型</span>
                 <select class="select" data-sim-field="businessTypeId">${selectOptions(businessOptions, simulator.businessTypeId)}</select>
@@ -1339,11 +1595,19 @@
                 <select class="select" data-sim-field="currentTypeId">${selectOptions(typeOptions, simulator.currentTypeId)}</select>
               </label>
               <label class="field">
-                <span>指定手机号名单</span>
+                <span>买家类型</span>
+                <select class="select" data-sim-field="buyerType">${selectOptions(BUYER_TYPES, simulator.buyerType)}</select>
+              </label>
+              <label class="field">
+                <span>指定手机号</span>
                 <select class="select" data-sim-field="phoneHit">
                   <option value="hit" ${simulator.phoneHit === 'hit' ? 'selected' : ''}>命中：重点客户名单 A</option>
                   <option value="miss" ${simulator.phoneHit === 'miss' ? 'selected' : ''}>未命中名单</option>
                 </select>
+              </label>
+              <label class="field ${simulator.phoneHit === 'hit' ? '' : 'is-hidden'}">
+                <span>指定手机号群组</span>
+                <select class="select" data-sim-field="buyerGroup">${selectOptions(BUYER_GROUPS, simulator.buyerGroup)}</select>
               </label>
               <label class="field">
                 <span>来源渠道</span>
@@ -1355,7 +1619,11 @@
                   ${WINNERS.map((winner) => `<button class="${simulator.winnerType === winner.id ? 'is-active' : ''}" type="button" data-action="set-sim-winner" data-winner="${winner.id}">${winner.name}</button>`).join('')}
                 </div>
               </div>
-              <label class="field robot-field ${simulator.winnerType === 'robot' ? '' : 'is-hidden'}" id="robot-field">
+              <label class="field robot-field ${simulator.dealMethod === 'robot' ? '' : 'is-hidden'}" id="robot-field">
+                <span>机器人来源</span>
+                <select class="select" data-sim-field="robotSource">${selectOptions(ROBOT_SOURCES, simulator.robotSource)}</select>
+              </label>
+              <label class="field robot-field ${simulator.dealMethod === 'robot' ? '' : 'is-hidden'}" id="robot-name-field">
                 <span>中标机器人</span>
                 <select class="select" data-sim-field="robotId">${selectOptions(ROBOTS, simulator.robotId)}</select>
               </label>
@@ -1367,7 +1635,7 @@
 
             <div class="sim-dirty">订单字段已变化，右侧仍是上一次试算结果。请重新运行。</div>
             <div class="sim-run-bar">
-              <span>样本手机号、订单号和渠道<br />均为脱敏演示数据。</span>
+              <span>订单建立不执行分类<br />仅成交确认与物权实际生效会产生类型版本。</span>
               <button class="button button-primary" type="button" data-action="run-sim">运行试算 ↗</button>
             </div>
           </section>
@@ -1399,16 +1667,18 @@
 
   function renderSimResult(result) {
     const finalType = findRecycleType(result.finalTypeId);
+    const pendingGap = result.pendingGap;
     const inputBusiness = findBusinessType(result.input.businessTypeId);
     const allMatches = result.matches || [];
     const appliedCount = allMatches.filter((item) => item.applied).length;
     return `
       <div class="result-filled">
         <div class="result-topline"><span>SIMULATION / ${escapeHtml(result.orderNo)}</span><span class="mono">${escapeHtml(result.runAt)}</span></div>
-        <div class="result-kicker">FINAL RECYCLE TYPE</div>
-        <h2 class="result-type">${escapeHtml(finalType?.name || '未归类')}</h2>
-        <div class="result-code">${escapeHtml(finalType?.code || '—')} · ${escapeHtml(finalType?.version || '—')} · ${inputBusiness ? escapeHtml(inputBusiness.name) : '业务类型未设置'}</div>
+        <div class="result-kicker">${pendingGap ? 'BRANCH TYPE NOT CONFIGURED' : 'FINAL RECYCLE TYPE'}</div>
+        <h2 class="result-type">${pendingGap ? '待定义类型' : escapeHtml(finalType?.name || '未归类')}</h2>
+        <div class="result-code">${pendingGap ? escapeHtml(pendingGap.branch) : `${escapeHtml(finalType?.code || '—')} · ${escapeHtml(finalType?.version || '—')}`} · ${inputBusiness ? escapeHtml(inputBusiness.name) : '业务类型未设置'}</div>
         <div class="result-tags">${result.tags.map((tag) => `<span class="result-tag">${escapeHtml(tag)}</span>`).join('')}</div>
+        ${pendingGap ? `<div class="notice notice-warning" style="margin-top:14px;"><span class="notice-mark">!</span><div><b>该业务分支命中了一个空白类型位。</b>类型位尚未命名且缺少编码、结算模式和核算主体，系统不会写入订单；补齐参数后再创建规则。</div></div>` : ''}
 
         <div class="result-section">
           <div class="result-section-head"><span>规则命中链</span><b>${allMatches.length} HIT / ${appliedCount} APPLIED</b></div>
@@ -1419,17 +1689,17 @@
                 <span class="match-name">${escapeHtml(item.name)}<small>${item.stage === 'transfer' ? '物权转移' : '成交分类'} · ${escapeHtml(item.ruleId)}</small></span>
                 <span class="match-result ${item.applied ? 'applied' : ''}">${item.applied ? '已采用' : '被覆盖'}</span>
               </div>
-            `).join('') : '<div class="match-row"><span class="match-priority">—</span><span class="match-name">没有规则命中，保持当前类型<small>建议配置显式兜底规则</small></span><span class="match-result">未命中</span></div>'}
+            `).join('') : `<div class="match-row"><span class="match-priority">—</span><span class="match-name">${pendingGap ? '分支已识别，但目标类型位不可被规则引用' : '没有规则命中，保持当前类型'}<small>${pendingGap ? escapeHtml(pendingGap.branch) : '建议配置显式兜底规则'}</small></span><span class="match-result">${pendingGap ? '待完善' : '未命中'}</span></div>`}
           </div>
         </div>
 
         <div class="result-section">
           <div class="result-section-head"><span>下游字段输出</span><b>ATOMIC ACTION SET</b></div>
           <div class="output-grid">
-            <div class="output-cell"><span>回收类型编码</span><strong>${escapeHtml(finalType?.code || '—')}</strong></div>
-            <div class="output-cell"><span>结算模式</span><strong>${escapeHtml(finalType?.settlement || '—')}</strong></div>
-            <div class="output-cell"><span>核算主体</span><strong>${escapeHtml(finalType?.entity || '—')}</strong></div>
-            <div class="output-cell"><span>旧系统编码</span><strong>${escapeHtml(finalType?.legacyCode || '—')}</strong></div>
+            <div class="output-cell"><span>回收类型编码</span><strong>${pendingGap ? '不写入' : escapeHtml(finalType?.code || '—')}</strong></div>
+            <div class="output-cell"><span>结算模式</span><strong>${pendingGap ? '待配置' : escapeHtml(finalType?.settlement || '—')}</strong></div>
+            <div class="output-cell"><span>核算主体</span><strong>${pendingGap ? '待配置' : escapeHtml(finalType?.entity || '—')}</strong></div>
+            <div class="output-cell"><span>旧系统编码</span><strong>${pendingGap ? '待映射' : escapeHtml(finalType?.legacyCode || '—')}</strong></div>
           </div>
         </div>
 
@@ -1456,7 +1726,7 @@
   function renderTrace() {
     const traces = Object.values(state.traces).sort((first, second) => String(second.updatedAt).localeCompare(String(first.updatedAt)));
     if (!traces.length) {
-      return `<div class="view"><header class="page-head"><div class="page-head-copy"><div class="eyebrow">06 / TRACE</div><h1>类型<em>追溯</em></h1><p>运行一次试算或处理物权事件后，这里会出现订单级类型时间线。</p></div></header><div class="panel-pad"><div class="rule-empty"><strong>暂无追溯快照</strong>可在规则试算器中生成一份演示订单。</div></div></div>`;
+      return `<div class="view"><header class="page-head"><div class="page-head-copy"><div class="eyebrow">07 / TRACE</div><h1>类型<em>追溯</em></h1><p>运行一次试算或处理物权事件后，这里会出现订单级类型时间线。</p></div></header><div class="panel-pad"><div class="rule-empty"><strong>暂无追溯快照</strong>可在规则试算器中生成一份演示订单。</div></div></div>`;
     }
     if (!state.traces[ui.activeTrace]) ui.activeTrace = traces[0].orderNo;
     const active = state.traces[ui.activeTrace] || traces[0];
@@ -1468,7 +1738,7 @@
       <div class="view">
         <header class="page-head">
           <div class="page-head-copy">
-            <div class="eyebrow">06 / ORDER SNAPSHOT</div>
+            <div class="eyebrow">07 / ORDER SNAPSHOT</div>
             <h1>类型<em>追溯</em></h1>
             <p>每次类型变化追加一个版本，保留命中规则、参数快照和物权事件。历史成交订单不会因当前规则修改而被重新计算。</p>
           </div>
@@ -1549,18 +1819,31 @@
   function ruleConditionMatches(condition, input, context = {}) {
     const value = condition.value;
     switch (condition.dimension) {
+      case 'deal_side':
+        return input.dealSide === value;
+      case 'deal_method':
+        return input.dealMethod === value;
+      case 'robot_source':
+        return input.robotSource === value;
+      case 'buyer_group':
+        return input.buyerGroup === value;
+      case 'buyer_type':
+        return input.buyerType === value;
       case 'business_type':
         return input.businessTypeId === value;
       case 'phone':
+        if (value === 'phone_miss') return input.phoneHit !== 'hit';
         return input.phoneHit === 'hit' && value === 'phone-a';
       case 'channel':
         return input.channelId === value;
       case 'robot':
-        return input.winnerType === 'robot' && input.robotId === value;
+        return input.robotId === value;
       case 'winner':
         return input.winnerType === value;
       case 'transfer_scene':
         return context.scene === value;
+      case 'current_side':
+        return context.currentSide === value;
       case 'current_type':
         return context.currentTypeId === value;
       case 'transfer_direction':
@@ -1572,6 +1855,16 @@
     }
   }
 
+  function detectPendingDealGap(input) {
+    if (input.dealSide === 'flashback' && input.dealMethod === 'robot' && input.robotSource === 'self_robot') {
+      return findRecycleType('rt_slot_self_robot');
+    }
+    if (input.dealSide === 'flashback' && input.dealMethod === 'manual' && input.phoneHit === 'hit') {
+      return findRecycleType(input.buyerGroup === 'eco_bu' ? 'rt_slot_phone_eco_bu' : 'rt_slot_phone_self_bu');
+    }
+    return null;
+  }
+
   function runSimulation(input) {
     const dealRules = state.rules
       .filter((rule) => rule.stage === 'deal' && rule.status === 'enabled')
@@ -1580,21 +1873,25 @@
     const currentType = findRecycleType(input.currentTypeId);
     const dealMatched = dealRules.filter((rule) => rule.conditions.every((condition) => ruleConditionMatches(condition, input)));
     const dealApplied = dealMatched[0] || null;
+    const pendingGapType = dealApplied ? null : detectPendingDealGap(input);
     const afterDealTypeId = dealApplied ? dealApplied.targetTypeId : input.currentTypeId;
     const afterDealType = findRecycleType(afterDealTypeId);
     const business = findBusinessType(input.businessTypeId);
     let tags = unique([
       business?.id === 'bt_standard' ? '' : business?.name,
       afterDealType?.name,
-      ...dealMatched.flatMap((rule) => rule.conditions.map(conditionTag))
+      ...dealMatched.flatMap((rule) => rule.conditions.map(conditionTag)),
+      pendingGapType ? '分支类型位待完善' : ''
     ]);
 
     const events = [{
       time: nowLabel(),
       title: '成交确认',
       fromName: currentType?.name || '当前值',
-      toName: afterDealType?.name || '未归类',
-      ruleName: dealApplied ? `${dealApplied.id} · ${dealApplied.name}` : '无规则命中，保持当前类型'
+      toName: pendingGapType ? '待配置类型' : (afterDealType?.name || '未归类'),
+      ruleName: dealApplied
+        ? `${dealApplied.id} · ${dealApplied.name}`
+        : (pendingGapType ? `分支已识别：${pendingGapType.branch}` : '无规则命中，保持当前类型')
     }];
 
     const matches = dealMatched.map((rule, index) => ({
@@ -1608,11 +1905,12 @@
 
     let finalTypeId = afterDealTypeId;
     let transferApplied = null;
-    if (input.eventType === 'pre_sale' || input.eventType === 'after_sale') {
+    if (!pendingGapType && (input.eventType === 'pre_sale' || input.eventType === 'after_sale')) {
       const scene = input.eventType;
       const context = {
         scene,
         currentTypeId: afterDealTypeId,
+        currentSide: afterDealType?.segment || '',
         direction: 'to_platform',
         afterSaleStatus: 'effective'
       };
@@ -1653,7 +1951,9 @@
     const snapshot = [
       `规则 ${applyRules.map((rule) => rule.version).join(' / ') || '未命中'}`,
       `名单 ${PHONE_LISTS[0].version}`,
-      input.eventType === 'only' ? '无物权事件' : `物权 ${input.eventType === 'after_sale' ? '售后生效' : '未起售生效'}`
+      pendingGapType
+        ? '分支类型位待完善，不执行物权转移'
+        : (input.eventType === 'only' || !transferApplied ? '无物权事件' : `物权 ${input.eventType === 'after_sale' ? '售后生效' : '未起售生效'}`)
     ].join(' · ');
 
     return {
@@ -1662,6 +1962,7 @@
       input: clone(input),
       finalTypeId,
       afterDealTypeId,
+      pendingGap: pendingGapType ? { id: pendingGapType.id, branch: pendingGapType.branch } : null,
       tags,
       matches: sortedMatches,
       events,
@@ -1690,7 +1991,9 @@
       title: dealEvent.ruleName,
       typeName: dealEvent.toName,
       source: '规则引擎',
-      description: '按优先级选择主类型，其余命中规则写入可追溯标签。',
+      description: result.pendingGap
+        ? `业务分支已识别，但“${result.pendingGap.branch}”对应的类型位尚未配置，因此不改写订单类型。`
+        : '按优先级选择主类型，其余命中规则写入可追溯标签。',
       status: 'done',
       matched: result.matches.filter((match) => match.stage === 'deal').map((match) => ({ name: match.ruleId, priority: match.priority, status: match.applied ? 'applied' : 'masked' })),
       snapshot: [result.snapshot]
@@ -1857,8 +2160,9 @@
         openRuleDialog({
           preset: {
             conditions: [{ dimension: 'business_type', value: next.id }],
-            targetTypeId: linkedType?.id || 'rt_value',
-            name: `${next.name}业务归类`
+            targetTypeId: linkedType?.id || targetOptionsForStage('deal')[0]?.id || '',
+            name: `${next.name}业务归类`,
+            stage: 'deal'
           }
         });
       } else {
@@ -1871,45 +2175,52 @@
     const editing = Boolean(item);
     const current = item || {
       name: '',
-      code: `RT-CUSTOM-${String(state.recycleTypes.length + 1).padStart(2, '0')}`,
+      code: '',
       dimension: 'business',
+      segment: 'buyer',
       usage: 'deal',
-      settlement: '购销',
-      entity: '深圳闪回',
+      settlement: '',
+      entity: '',
       legacyCode: '',
       allowTransfer: true,
       status: 'enabled'
     };
+    const isUnconfigured = current.status === 'unconfigured';
     const body = `
       <div class="dialog-layout">
         <form id="recycle-form" data-id="${editing ? current.id : ''}">
           <div class="form-section">
             <div class="form-section-title"><h3>类型基础信息</h3><span>01 / TYPE PARAM</span></div>
+            ${isUnconfigured ? `<div class="notice notice-warning"><span class="notice-mark">!</span><div><b>这是保留的空白类型位。</b>名称和编码由业务自行定义；补齐前不能关联规则。当前归属：${escapeHtml(current.branch || '待定义')}</div></div>` : ''}
             <div class="form-grid-2">
-              <label class="field"><span>回收类型名称 <b class="required">*</b></span><input class="input" name="name" required maxlength="30" value="${escapeHtml(current.name)}" placeholder="例如：企业购回收" /></label>
-              <label class="field"><span>类型编码 <b class="required">*</b></span><input class="input mono" name="code" required maxlength="40" value="${escapeHtml(current.code)}" placeholder="RT-ENTERPRISE" /></label>
+              <label class="field"><span>回收类型名称 <b class="required">*</b></span><input class="input" name="name" required maxlength="30" value="${escapeHtml(current.name)}" placeholder="请输入业务确认后的类型名称" /></label>
+              <label class="field"><span>类型编码 <b class="required">*</b></span><input class="input mono" name="code" required maxlength="40" value="${escapeHtml(current.code)}" placeholder="例如 BUYER_TYPE_X" /></label>
             </div>
             <div class="form-grid-2">
               <label class="field"><span>主归类维度</span><select class="select" name="dimension">${Object.entries(DIMENSIONS).map(([key, meta]) => `<option value="${key}" ${current.dimension === key ? 'selected' : ''}>${meta.name}</option>`).join('')}</select></label>
+              <label class="field"><span>业务归属</span><select class="select" name="segment">${Object.entries(SEGMENTS).map(([key, meta]) => `<option value="${key}" ${current.segment === key ? 'selected' : ''}>${meta.name}</option>`).join('')}</select></label>
+            </div>
+            <div class="form-grid-2">
               <label class="field"><span>类型用途</span><select class="select" name="usage"><option value="deal" ${current.usage === 'deal' ? 'selected' : ''}>成交分类结果</option><option value="transfer" ${current.usage === 'transfer' ? 'selected' : ''}>物权转移结果</option></select></label>
+              <label class="field"><span>类型状态</span><select class="select" name="status"><option value="enabled" ${current.status === 'enabled' ? 'selected' : ''}>启用</option><option value="draft" ${current.status === 'draft' ? 'selected' : ''}>草稿</option><option value="disabled" ${current.status === 'disabled' ? 'selected' : ''}>停用</option></select></label>
             </div>
           </div>
           <div class="form-section">
             <div class="form-section-title"><h3>下游字段映射</h3><span>02 / ATOMIC ACTION SET</span></div>
             <div class="form-grid-2">
-              <label class="field"><span>结算模式 <b class="required">*</b></span><select class="select" name="settlement"><option ${current.settlement === '购销' ? 'selected' : ''}>购销</option><option ${current.settlement === '代付' ? 'selected' : ''}>代付</option><option ${current.settlement === '寄售' ? 'selected' : ''}>寄售</option></select></label>
-              <label class="field"><span>核算主体 <b class="required">*</b></span><input class="input" name="entity" required value="${escapeHtml(current.entity)}" placeholder="例如：深圳闪回" /></label>
+              <label class="field"><span>结算模式 <b class="required">*</b></span><select class="select" name="settlement" required><option value="" ${!current.settlement ? 'selected' : ''} disabled>请选择</option><option value="购销" ${current.settlement === '购销' ? 'selected' : ''}>购销</option><option value="代付" ${current.settlement === '代付' ? 'selected' : ''}>代付</option><option value="寄售" ${current.settlement === '寄售' ? 'selected' : ''}>寄售</option></select></label>
+              <label class="field"><span>核算主体 <b class="required">*</b></span><input class="input" name="entity" required value="${escapeHtml(current.entity)}" placeholder="请输入财务确认的核算主体" /></label>
             </div>
             <div class="form-grid-2">
               <label class="field"><span>旧系统编码</span><input class="input mono" name="legacyCode" maxlength="20" value="${escapeHtml(current.legacyCode)}" placeholder="例如：52" /></label>
-              <label class="field"><span>类型状态</span><select class="select" name="status"><option value="enabled" ${current.status === 'enabled' ? 'selected' : ''}>启用</option><option value="draft" ${current.status === 'draft' ? 'selected' : ''}>草稿</option><option value="disabled" ${current.status === 'disabled' ? 'selected' : ''}>停用</option></select></label>
+              <div class="field type-anchor-field"><span>配置定位</span><div class="type-anchor">${escapeHtml(current.branch || (editing ? '已配置类型' : '新建类型参数'))}</div></div>
             </div>
             <label class="checkbox-line"><input type="checkbox" name="allowTransfer" ${current.allowTransfer ? 'checked' : ''} /><span>允许成交后因物权转移再次变更类型<small>关闭后，该类型只能作为最终结果，不会继续进入转移规则。</small></span></label>
           </div>
         </form>
         <aside class="preview-card" id="type-preview">${typePreviewMarkup(current)}</aside>
       </div>
-      <div class="notice dialog-note"><span class="notice-mark">↗</span><div><b>先定义参数，再绑定规则。</b>新类型保存后可继续创建规则；没有规则引用的类型只会显示为待绑定，不会自动命中订单。</div></div>
+        <div class="notice dialog-note"><span class="notice-mark">↗</span><div><b>先定义参数，再绑定规则。</b>保存后类型进入规则输出候选；空白类型位被补齐后，原有业务分支才可以创建规则。</div></div>
     `;
     const footer = `
       <span class="dialog-foot-note">类型编码与下游字段必须稳定，不允许用同名类型绕过历史映射。</span>
@@ -1934,8 +2245,9 @@
         name: String(data.get('name') || '').trim() || '未命名类型',
         code: String(data.get('code') || '').trim() || 'CODE',
         dimension: String(data.get('dimension') || 'business'),
+        segment: String(data.get('segment') || 'buyer'),
         usage: String(data.get('usage') || 'deal'),
-        settlement: String(data.get('settlement') || '购销'),
+        settlement: String(data.get('settlement') || ''),
         entity: String(data.get('entity') || '').trim() || '待配置',
         legacyCode: String(data.get('legacyCode') || '').trim() || '—',
         allowTransfer: data.get('allowTransfer') === 'on'
@@ -1960,8 +2272,9 @@
         name: '',
         code: '',
         dimension: 'business',
+        segment: 'buyer',
         usage: 'deal',
-        settlement: '购销',
+        settlement: '',
         entity: '',
         legacyCode: '',
         allowTransfer: true,
@@ -1972,6 +2285,7 @@
       next.name = name;
       next.code = code;
       next.dimension = String(data.get('dimension') || 'business');
+      next.segment = String(data.get('segment') || 'buyer');
       next.usage = String(data.get('usage') || 'deal');
       next.settlement = String(data.get('settlement') || '购销');
       next.entity = String(data.get('entity') || '').trim();
@@ -1985,7 +2299,7 @@
       const shouldCreateRule = event.submitter?.dataset.next === 'rule';
       showToast(editing ? '回收类型已更新' : '回收类型已创建', `${next.name} · ${getRuleCountForType(next.id)} 条关联规则`);
       if (shouldCreateRule) {
-        openRuleDialog({ preset: { targetTypeId: next.id, name: `${next.name}归类` } });
+        openRuleDialog({ preset: { targetTypeId: next.id, name: `${next.name}归类`, stage: next.usage } });
       } else {
         render();
       }
@@ -1994,10 +2308,11 @@
 
   function typePreviewMarkup(item) {
     const meta = dimensionMeta(item.dimension);
+    const segment = segmentMeta(item.segment);
     return `
-      <div class="preview-top"><span>TYPE PREVIEW</span><span>${meta.en}</span></div>
+      <div class="preview-top"><span>TYPE PREVIEW</span><span>${segment.en} / ${meta.en}</span></div>
       <div class="preview-main">
-        <div class="preview-label">${meta.name}</div>
+        <div class="preview-label">${segment.name} · ${meta.name}</div>
         <div class="preview-name">${escapeHtml(item.name || '未命名类型')}</div>
         <div class="preview-code">${escapeHtml(item.code || 'CODE')} · ${item.usage === 'transfer' ? '物权结果' : '成交结果'}</div>
         <div class="preview-tagline">
@@ -2045,16 +2360,23 @@
     return `${prefix}-${String(index).padStart(3, '0')}`;
   }
 
+  function targetOptionsForStage(stage) {
+    return configuredRecycleTypes()
+      .filter((type) => type.usage === stage)
+      .map((type) => ({ id: type.id, name: `${type.name} · ${type.code}` }));
+  }
+
   function openRuleDialog({ rule = null, preset = {} } = {}) {
     const editing = Boolean(rule);
     const defaultStage = preset.stage || rule?.stage || ui.ruleStage || 'deal';
     const initialConditions = preset.conditions || rule?.conditions || [defaultCondition(defaultStage)];
+    const defaultTargetId = targetOptionsForStage(defaultStage)[0]?.id || '';
     const current = rule || {
       id: nextRuleId(defaultStage),
       name: preset.name || (defaultStage === 'transfer' ? '新物权转移规则' : '新成交分类规则'),
       stage: defaultStage,
       priority: defaultStage === 'transfer' ? 220 : 110,
-      targetTypeId: preset.targetTypeId || (defaultStage === 'transfer' ? 'rt_purchase' : 'rt_phone'),
+      targetTypeId: preset.targetTypeId || defaultTargetId,
       conditions: initialConditions,
       tags: [],
       stopOnMatch: true,
@@ -2072,7 +2394,7 @@
             </div>
             <div class="form-grid-2">
               <label class="field"><span>优先级 <b class="required">*</b></span><input class="input mono" name="priority" type="number" min="0" max="999" required value="${current.priority}" /><small class="field-note">数值越大越先执行；同阶段同优先级且输出不同会触发冲突。</small></label>
-              <label class="field"><span>输出回收类型 <b class="required">*</b></span><select class="select" name="targetTypeId">${selectOptions(state.recycleTypes.map((type) => ({ id: type.id, name: `${type.name} · ${type.code}` })), current.targetTypeId)}</select><small class="field-note">规则只输出一个主类型，其他命中写入标签。</small></label>
+              <label class="field"><span>输出回收类型 <b class="required">*</b></span><select class="select" name="targetTypeId">${selectOptions(targetOptionsForStage(current.stage), current.targetTypeId)}</select><small class="field-note">只列出当前阶段可用的已配置类型；空白类型位不会出现。</small></label>
             </div>
           </div>
 
@@ -2131,6 +2453,10 @@
       if (event.target.name === 'stage') {
         const nextStage = event.target.value;
         conditionList.innerHTML = conditionsMarkup([defaultCondition(nextStage)], nextStage);
+        const targetSelect = form.elements.targetTypeId;
+        const nextTargets = targetOptionsForStage(nextStage);
+        targetSelect.innerHTML = nextTargets.map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join('');
+        if (nextTargets[0]) targetSelect.value = nextTargets[0].id;
       }
       if (event.target.classList.contains('cond-dimension')) {
         const row = event.target.closest('.condition-row');
@@ -2445,17 +2771,22 @@
   function openPublishDialog() {
     const conflicts = getAllConflictPairs();
     const drafts = state.rules.filter((rule) => rule.status === 'draft');
+    const invalidRules = state.rules.filter((rule) => !isTypeConfigured(findRecycleType(rule.targetTypeId)));
+    const pendingTypes = state.recycleTypes.filter((type) => !isTypeConfigured(type));
+    const blocked = conflicts.length > 0 || invalidRules.length > 0;
     const body = `
       <div class="metric-strip" style="grid-template-columns:repeat(3,1fr);margin-top:0;">
-        <article class="metric"><div class="metric-label"><span>待发布规则</span><span>DRAFT</span></div><strong>${drafts.length}</strong><div class="metric-meta">当前规则版本 v1.4</div></article>
+        <article class="metric"><div class="metric-label"><span>待发布规则</span><span>DRAFT</span></div><strong>${drafts.length}</strong><div class="metric-meta">当前规则版本 v2.0</div></article>
         <article class="metric"><div class="metric-label"><span>冲突阻断</span><span>CONFLICT</span></div><strong style="color:${conflicts.length ? 'var(--danger)' : 'var(--success)'}">${conflicts.length}</strong><div class="metric-meta">${conflicts.length ? '需调整优先级' : '可以发布'}</div></article>
-        <article class="metric"><div class="metric-label"><span>已启用</span><span>ACTIVE</span></div><strong>${state.rules.filter((rule) => rule.status === 'enabled').length}</strong><div class="metric-meta">发布只影响后续事件</div></article>
+        <article class="metric"><div class="metric-label"><span>待完善类型位</span><span>TYPE SLOT</span></div><strong style="color:${pendingTypes.length ? 'var(--warning)' : 'var(--success)'}">${pendingTypes.length}</strong><div class="metric-meta">${pendingTypes.length ? '不会进入本次发布' : '类型参数已齐备'}</div></article>
       </div>
       ${conflicts.length ? `<div class="notice notice-warning dialog-note"><span class="notice-mark">!</span><div><b>发布已被阻断。</b>先处理同优先级输出冲突，再重新发布。</div></div>` : ''}
+      ${invalidRules.length ? `<div class="notice notice-warning dialog-note"><span class="notice-mark">!</span><div><b>${invalidRules.length} 条规则引用了未配置类型。</b>请先补齐类型参数，或将规则指向有效类型。</div></div>` : ''}
+      ${pendingTypes.length ? `<div class="notice notice-accent dialog-note"><span class="notice-mark">i</span><div><b>${pendingTypes.length} 个空白类型位保持草稿状态。</b>本次只发布已配置规则，不自动生成类型名称。</div></div>` : ''}
       ${drafts.length ? `<div class="table-shell" style="margin-top:16px;"><div class="data-head" style="grid-template-columns:1.4fr .6fr .7fr;"><span>规则</span><span>事件</span><span>输出类型</span></div>${drafts.map((rule) => `<div class="business-row" style="grid-template-columns:1.4fr .6fr .7fr;min-height:58px;"><div><strong style="font-size:10px;">${escapeHtml(rule.name)}</strong><div class="mono" style="color:var(--muted-2);font-size:8px;">${escapeHtml(rule.id)} · 优先级 ${rule.priority}</div></div><span style="font-size:9px;">${eventName(rule.stage)}</span><span class="tag tag-accent">${escapeHtml(findRecycleType(rule.targetTypeId)?.name || '—')}</span></div>`).join('')}</div></div>` : `<div class="notice notice-accent dialog-note"><span class="notice-mark">✓</span><div><b>当前没有草稿规则。</b>参数和已启用规则仍可在各自页面继续编辑。</div></div>`}
       <div class="notice dialog-note"><span class="notice-mark">i</span><div>发布采用“规则快照”方式：已成交订单不会回刷；新订单在成交或物权生效时读取最新启用版本。</div></div>
     `;
-    const footer = `<span class="dialog-foot-note">演示环境不会写入真实配置。</span><div class="dialog-foot-actions"><button class="button button-secondary" type="button" data-dialog-close>取消</button><button class="button button-primary" type="button" data-action="execute-publish" ${!drafts.length || conflicts.length ? 'disabled' : ''}>发布 ${drafts.length || ''} 条变更</button></div>`;
+    const footer = `<span class="dialog-foot-note">演示环境不会写入真实配置。</span><div class="dialog-foot-actions"><button class="button button-secondary" type="button" data-dialog-close>取消</button><button class="button button-primary" type="button" data-action="execute-publish" ${!drafts.length || blocked ? 'disabled' : ''}>发布 ${drafts.length || ''} 条变更</button></div>`;
     openDialog({
       title: '发布规则变更',
       kicker: 'RELEASE / CONFIGURATION SNAPSHOT',
@@ -2468,8 +2799,9 @@
 
   function executePublish() {
     const conflicts = getAllConflictPairs();
-    if (conflicts.length) {
-      showToast('发布被阻断', '请先处理同优先级冲突。', true);
+    const invalidRules = state.rules.filter((rule) => !isTypeConfigured(findRecycleType(rule.targetTypeId)));
+    if (conflicts.length || invalidRules.length) {
+      showToast('发布被阻断', conflicts.length ? '请先处理同优先级冲突。' : '规则引用了未配置类型，请补齐类型参数。', true);
       return;
     }
     const drafts = state.rules.filter((rule) => rule.status === 'draft');
@@ -2516,35 +2848,92 @@
 
   function handlePreset(preset) {
     const presets = {
-      'phone-robot': {
-        businessTypeId: 'bt_value',
-        currentTypeId: 'rt_bidder',
-        phoneHit: 'hit',
-        channelId: 'retail',
-        winnerType: 'robot',
-        robotId: 'r5',
-        eventType: 'pre_sale'
+      'enterprise-account': {
+        businessTypeId: 'bt_standard',
+        currentTypeId: 'rt_buyer_normal',
+        phoneHit: 'miss',
+        channelId: 'none',
+        dealSide: 'buyer',
+        dealMethod: 'manual',
+        robotSource: 'buyer_package',
+        buyerGroup: 'self_bu',
+        buyerType: 'enterprise',
+        winnerType: 'buyer',
+        robotId: 'buyer_package',
+        eventType: 'only'
       },
-      enterprise: {
+      'enterprise-purchase': {
         businessTypeId: 'bt_enterprise',
-        currentTypeId: 'rt_bidder',
+        currentTypeId: 'rt_buyer_normal',
         phoneHit: 'miss',
         channelId: 'enterprise',
+        dealSide: 'buyer',
+        dealMethod: 'manual',
+        robotSource: 'buyer_package',
+        buyerGroup: 'self_bu',
+        buyerType: 'enterprise',
         winnerType: 'buyer',
-        robotId: 'r5',
+        robotId: 'buyer_package',
+        eventType: 'only'
+      },
+      'xiaomi-channel': {
+        businessTypeId: 'bt_standard',
+        currentTypeId: 'rt_flashback_deal',
+        phoneHit: 'miss',
+        channelId: 'ch_xiaomi_service',
+        dealSide: 'flashback',
+        dealMethod: 'manual',
+        robotSource: 'buyer_package',
+        buyerGroup: 'self_bu',
+        buyerType: 'normal',
+        winnerType: 'robot',
+        robotId: 'buyer_package',
+        eventType: 'only'
+      },
+      'phone-unconfigured': {
+        businessTypeId: 'bt_standard',
+        currentTypeId: 'rt_flashback_deal',
+        phoneHit: 'hit',
+        channelId: 'none',
+        dealSide: 'flashback',
+        dealMethod: 'manual',
+        robotSource: 'buyer_package',
+        buyerGroup: 'self_bu',
+        buyerType: 'normal',
+        winnerType: 'buyer',
+        robotId: 'buyer_package',
+        eventType: 'only'
+      },
+      'phone-eco-unconfigured': {
+        businessTypeId: 'bt_standard',
+        currentTypeId: 'rt_flashback_deal',
+        phoneHit: 'hit',
+        channelId: 'none',
+        dealSide: 'flashback',
+        dealMethod: 'manual',
+        robotSource: 'buyer_package',
+        buyerGroup: 'eco_bu',
+        buyerType: 'normal',
+        winnerType: 'buyer',
+        robotId: 'buyer_package',
         eventType: 'only'
       },
       'after-sale': {
         businessTypeId: 'bt_enterprise',
-        currentTypeId: 'rt_robot',
+        currentTypeId: 'rt_buyer_enterprise_purchase',
         phoneHit: 'miss',
         channelId: 'enterprise',
-        winnerType: 'robot',
-        robotId: 'r5',
+        dealSide: 'buyer',
+        dealMethod: 'manual',
+        robotSource: 'buyer_package',
+        buyerGroup: 'self_bu',
+        buyerType: 'enterprise',
+        winnerType: 'buyer',
+        robotId: 'buyer_package',
         eventType: 'after_sale'
       }
     };
-    state.simulator = clone(presets[preset] || presets['phone-robot']);
+    state.simulator = clone(presets[preset] || presets['enterprise-account']);
     state.lastSim = null;
     ui.simDirty = false;
     saveState();
@@ -2568,7 +2957,7 @@
           preset: {
             name: `${business?.name || '业务'}业务归类`,
             conditions: [{ dimension: 'business_type', value: id }],
-            targetTypeId: linkedType?.id || 'rt_value'
+            targetTypeId: linkedType?.id || targetOptionsForStage('deal')[0]?.id || ''
           }
         });
         break;
@@ -2581,10 +2970,15 @@
         break;
       case 'open-type-rule': {
         const type = findRecycleType(id);
+        if (!isTypeConfigured(type)) {
+          if (type) openRecycleDialog(type);
+          break;
+        }
         openRuleDialog({
           preset: {
             name: `${type?.name || '类型'}归类`,
-            targetTypeId: id
+            targetTypeId: id,
+            stage: type?.usage || 'deal'
           }
         });
         break;
@@ -2667,6 +3061,12 @@
         saveState();
         render();
         break;
+      case 'set-sim-deal-side':
+        state.simulator.dealSide = actionElement.dataset.side;
+        ui.simDirty = Boolean(state.lastSim);
+        saveState();
+        render();
+        break;
       case 'apply-preset':
         handlePreset(actionElement.dataset.preset);
         break;
@@ -2714,8 +3114,18 @@
     const field = event.target.closest('[data-sim-field]');
     if (!field) return;
     state.simulator[field.dataset.simField] = field.value;
+    if (field.dataset.simField === 'robotSource') {
+      state.simulator.robotId = field.value;
+    }
+    if (field.dataset.simField === 'robotId') {
+      state.simulator.robotSource = findRobot(field.value)?.source || state.simulator.robotSource;
+    }
     ui.simDirty = Boolean(state.lastSim);
     saveState();
+    if (field.dataset.simField === 'dealMethod' || field.dataset.simField === 'phoneHit') {
+      render();
+      return;
+    }
     const shell = document.getElementById('sim-shell');
     if (shell) shell.classList.toggle('is-dirty', ui.simDirty);
   });
