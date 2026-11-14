@@ -78,13 +78,13 @@
   const TRANSFER_DIMENSIONS = ['transfer_scene', 'current_type', 'transfer_direction', 'after_sale_status'];
 
   const VIEW_META = {
-    overview: { label: '总览', crumb: 'WORKBENCH' },
-    business: { label: '业务类型', crumb: 'BUSINESS PARAMS' },
-    recycle: { label: '回收类型', crumb: 'RECYCLE TYPES' },
-    rules: { label: '分类规则', crumb: 'CLASSIFICATION RULES' },
-    transfer: { label: '物权转移', crumb: 'OWNERSHIP EVENTS' },
-    simulator: { label: '规则试算', crumb: 'RULE SIMULATOR' },
-    trace: { label: '类型追溯', crumb: 'TYPE TRACE' }
+    overview: { label: '总览', group: '工作台', crumb: 'WORKBENCH' },
+    business: { label: '业务类型', group: '配置', crumb: 'BUSINESS PARAMS' },
+    recycle: { label: '回收类型', group: '配置', crumb: 'RECYCLE TYPES' },
+    rules: { label: '分类规则', group: '规则与事件', crumb: 'CLASSIFICATION RULES' },
+    transfer: { label: '物权转移', group: '规则与事件', crumb: 'OWNERSHIP EVENTS' },
+    simulator: { label: '规则试算', group: '验证与追溯', crumb: 'RULE SIMULATOR' },
+    trace: { label: '类型追溯', group: '验证与追溯', crumb: 'TYPE TRACE' }
   };
 
   const ui = {
@@ -720,13 +720,16 @@
   function updateShell() {
     ui.view = activeViewFromHash();
     const meta = VIEW_META[ui.view];
-    document.querySelectorAll('.nav-item').forEach((item) => {
+    document.querySelectorAll('.admin-menu-item[data-nav]').forEach((item) => {
       const isActive = item.dataset.nav === ui.view;
       item.classList.toggle('is-active', isActive);
       if (isActive) item.setAttribute('aria-current', 'page');
       else item.removeAttribute('aria-current');
     });
-    breadcrumb.innerHTML = `<span>规则中心</span><b>${meta.label}</b><span>${meta.crumb}</span>`;
+    const headerTitle = document.getElementById('admin-header-title');
+    if (headerTitle) headerTitle.textContent = meta.label;
+    document.title = `${meta.label}｜回收类型规则中心`;
+    breadcrumb.innerHTML = `<span>规则中心</span><span>${meta.group}</span><b>${meta.label}</b>`;
     contextRuleCount.textContent = `${state.rules.length} RULES`;
   }
 
