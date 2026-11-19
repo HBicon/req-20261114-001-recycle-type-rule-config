@@ -358,7 +358,7 @@ svg {
 }
 
 .status-chip.is-gray {
-  color: #69727a;
+  color: #59636c;
   background: #f1f3f4;
   border-color: #d9dee1;
 }
@@ -1641,6 +1641,93 @@ button.data-table-row:hover,
 
 .field > span b {
   color: var(--red);
+}
+
+.field-help {
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.radio-card-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.radio-card {
+  position: relative;
+  min-width: 0;
+  min-height: 54px;
+  padding: 9px 10px 9px 34px;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.radio-card:hover {
+  border-color: var(--green);
+  background: rgba(20, 120, 91, 0.03);
+}
+
+.radio-card:has(input:checked) {
+  background: rgba(20, 120, 91, 0.07);
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(20, 120, 91, 0.08);
+}
+
+.radio-card input {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: var(--green);
+  transform: translateY(-50%);
+}
+
+.radio-card > span {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.radio-card b {
+  color: var(--ink);
+  font-size: 10px;
+}
+
+.radio-card small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.radio-card.is-legacy {
+  grid-column: 1 / -1;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.radio-card.is-legacy:has(input:checked) {
+  background: rgba(169, 114, 17, 0.05);
+  border-color: rgba(169, 114, 17, 0.35);
+  box-shadow: none;
+}
+
+#label-category-attribute > .field {
+  padding: 10px;
+  background: var(--paper-soft);
+  border: 1px solid var(--line);
+  border-radius: 6px;
 }
 
 .field-full {
@@ -3585,6 +3672,10 @@ button.data-table-row:hover,
   .form-grid-3,
   .dialog-grid-2,
   .dialog-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .radio-card-group {
     grid-template-columns: 1fr;
   }
 

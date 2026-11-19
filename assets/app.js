@@ -1,13 +1,15 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'business-label-governance-v5';
+  const STORAGE_KEY = 'business-label-governance-v8';
 
   const DEPARTMENTS = [
     { id: 'self', name: '自营', originalLabel: '闪回-闪回成交', color: 'green' },
     { id: 'eco', name: '生态', aliases: ['buyer'], originalLabel: '买家-买家成交', color: 'blue' },
     { id: 'shared', name: '两部门共用', originalLabel: '—', color: 'amber' }
   ];
+
+  const LABEL_DEPARTMENT_OPTIONS = DEPARTMENTS.filter((department) => ['self', 'eco'].includes(department.id));
 
   const CONDITION_FIELDS = [
     { id: 'dealMethod', name: '成交方式' },
@@ -53,6 +55,27 @@
     ]
   };
 
+  const LABEL_CATEGORY_FIELDS = {
+    cat_channel: {
+      key: 'channel',
+      label: '选择渠道',
+      type: 'select',
+      options: CONDITION_VALUES.channel.filter((value) => value.id !== 'normal')
+    },
+    cat_robot: {
+      key: 'robotSource',
+      label: '选择机器人',
+      type: 'select',
+      options: CONDITION_VALUES.robotSource
+    },
+    cat_phone: {
+      key: 'phone',
+      label: '录入手机号',
+      type: 'tel',
+      placeholder: '请输入 11 位手机号'
+    }
+  };
+
   const VIEW_META = {
     overview: { label: '治理总览', group: '工作台', code: 'OVERVIEW' },
     labels: { label: '业务标签', group: '配置', code: 'LABELS' },
@@ -89,7 +112,7 @@
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) return createDefaultState();
       const parsed = JSON.parse(saved);
-      if (!parsed || parsed.version !== 5 || !Array.isArray(parsed.labels)) return createDefaultState();
+      if (!parsed || parsed.version !== 8 || !Array.isArray(parsed.labels)) return createDefaultState();
       return parsed;
     } catch (error) {
       return createDefaultState();
@@ -171,6 +194,10 @@
     return false;
   }
 
+  function defaultLabelDepartment() {
+    return currentRole()?.id === 'eco_author' ? 'eco' : 'self';
+  }
+
   function canViewDepartment(department) {
     const normalized = normalizeDepartment(department);
     const role = currentRole();
@@ -200,6 +227,74 @@
 
   function categoryMeta(id) {
     return state.categories.find((item) => item.id === id) || { name: '未分类', code: 'UNSET' };
+  }
+
+  function categoryBindingText(label) {
+    return label?.categoryConfig?.name || '';
+  }
+
+  function categoryBindingFieldName(categoryId) {
+    return LABEL_CATEGORY_FIELDS[categoryId]?.label || '分类绑定';
+  }
+
+  function maskPhone(value) {
+    const phone = String(value || '').replace(/\D/g, '');
+    return /^1[3-9]\d{9}$/.test(phone) ? `${phone.slice(0, 3)}****${phone.slice(-4)}` : String(value || '');
+  }
+
+  function categoryFieldMarkup(categoryId, label = null) {
+    const field = LABEL_CATEGORY_FIELDS[categoryId];
+    if (!field) return '';
+    const currentValue = label?.categoryConfig?.value || '';
+    const input = field.type === 'select'
+      ? `<select class="select" name="categoryValue" required>
+          <option value="">请选择${escapeHtml(field.label.replace('选择', ''))}</option>
+          ${field.options.map((option) => `<option value="${escapeHtml(option.id)}" ${option.id === currentValue ? 'selected' : ''}>${escapeHtml(option.name)}</option>`).join('')}
+        </select>`
+      : `<input class="input mono" type="tel" inputmode="numeric" name="categoryValue" required maxlength="11" value="${escapeHtml(currentValue)}" placeholder="${escapeHtml(field.placeholder)}" pattern="1[3-9][0-9]{9}" title="请输入 11 位手机号" />`;
+    return `
+      <label class="field field-full" data-category-field="${escapeHtml(categoryId)}">
+        <span>${escapeHtml(field.label)} <b>*</b></span>
+        ${input}
+        <small class="field-help">${field.type === 'tel' ? '手机号用于配置消费和审计，列表与详情中按脱敏形式展示。' : '该选择将写入标签定义、审核记录和后续规则配置。'}</small>
+      </label>
+    `;
+  }
+
+  function updateLabelCategoryField(form) {
+    const container = form?.querySelector('#label-category-attribute');
+    if (!container) return;
+    const categoryId = String(form.elements.categoryId?.value || '');
+    const label = form.dataset.id ? findLabel(form.dataset.id) : null;
+    const relevantLabel = label?.categoryId === categoryId ? label : null;
+    container.innerHTML = categoryFieldMarkup(categoryId, relevantLabel);
+  }
+
+  function departmentRadioGroup(selectedDepartment, legacyShared = false) {
+    return `
+      <div class="field">
+        <span id="label-department-label">适用部门 <b>*</b></span>
+        <div class="radio-card-group" role="radiogroup" aria-labelledby="label-department-label">
+          ${LABEL_DEPARTMENT_OPTIONS.map((department) => `
+            <label class="radio-card">
+              <input type="radio" name="department" value="${department.id}" ${normalizeDepartment(selectedDepartment) === department.id ? 'checked' : ''} ${legacyShared ? 'disabled' : 'required'} />
+              <span>
+                <b>${escapeHtml(department.name)}</b>
+                <small>成交原始标签：${escapeHtml(department.originalLabel)}</small>
+              </span>
+            </label>
+          `).join('')}
+          ${legacyShared ? `
+            <label class="radio-card is-legacy" aria-disabled="true">
+              <input type="radio" checked disabled />
+              <span><b>两部门共用</b><small>历史共用标签，新建时不可选择</small></span>
+            </label>
+            <input type="hidden" name="department" value="shared" />
+          ` : ''}
+        </div>
+        <small class="field-help">单选。一个业务标签只能归属一个部门；审核按所选部门自动路由。</small>
+      </div>
+    `;
   }
 
   function findLabel(id) {
@@ -550,11 +645,10 @@
   function renderLabels() {
     const query = ui.labelQuery.trim().toLowerCase();
     const visible = state.labels.filter((label) => {
-      const departmentVisible = canViewDepartment(label.department);
       const departmentMatch = ui.labelDepartment === 'all' || normalizeDepartment(label.department) === ui.labelDepartment;
       const statusMatch = ui.labelStatus === 'all' || label.status === ui.labelStatus;
       const text = `${label.name} ${label.code} ${label.description} ${label.owner}`.toLowerCase();
-      return departmentVisible && departmentMatch && statusMatch && (!query || text.includes(query));
+      return departmentMatch && statusMatch && (!query || text.includes(query));
     });
 
     const body = `
@@ -621,14 +715,14 @@
                     <button class="name-link" data-action="open-label-detail" data-id="${escapeHtml(label.id)}">${escapeHtml(label.name)}</button>
                     <span class="mono-cell">${escapeHtml(label.code)} · ${escapeHtml(label.version)}</span>
                   </div>
-                  <div class="stack-cell">${departmentChip(label.department)}<span>${escapeHtml(categoryMeta(label.categoryId).name)}</span></div>
+                  <div class="stack-cell">${departmentChip(label.department)}<span>${escapeHtml(categoryMeta(label.categoryId).name)}${categoryBindingText(label) ? ` · ${escapeHtml(categoryBindingText(label))}` : ''}</span></div>
                   <div class="description-cell" title="${escapeHtml(label.description)}">${escapeHtml(label.description)}</div>
                   <div class="stack-cell"><b>${references.length} 条</b><span>${references.filter((rule) => rule.status === 'enabled').length} 条生效</span></div>
                   <div>${statusChip(label.status)}</div>
                   <div class="row-actions">
                     <button class="text-button" data-action="open-label-detail" data-id="${escapeHtml(label.id)}">详情</button>
-                    <button class="text-button" data-action="edit-label" data-id="${escapeHtml(label.id)}" ${canManageDepartment(label.department) ? '' : 'disabled'}>编辑</button>
-                    ${label.status === 'enabled' ? `<button class="text-button is-danger" data-action="disable-label" data-id="${escapeHtml(label.id)}" ${canManageDepartment(label.department) ? '' : 'disabled'}>停用</button>` : ''}
+                    <button class="text-button" data-action="edit-label" data-id="${escapeHtml(label.id)}" ${hasCapability('label:submit') ? '' : 'disabled'}>编辑</button>
+                    ${label.status === 'enabled' ? `<button class="text-button is-danger" data-action="disable-label" data-id="${escapeHtml(label.id)}" ${hasCapability('label:submit') ? '' : 'disabled'}>停用</button>` : ''}
                   </div>
                 </div>
               `;
@@ -645,10 +739,10 @@
 
     return {
       body,
-      review: reviewPanel('标签定义：编码稳定，名称可变', '本场景验证自营、生态、共用标签的字段、状态与权限边界。', [
-        { title: '关键规则', items: ['标签编码全局唯一，发布后不可修改。', '同名标签允许在不同部门存在，系统以编码识别。', '基础标签没有编辑、停用和覆盖入口。'] },
-        { title: '角色差异', items: [`当前角色为「${currentRole().title}」。`, hasCapability('label:submit') ? '可以新增、编辑和提交停用申请。' : '新增、编辑和停用按钮被禁用。'] },
-        { title: '异常状态', items: ['编码重复时阻止保存并定位字段。', '标签被生效规则引用时阻止停用。', '共用标签发布前必须获得双方确认。'] }
+      review: reviewPanel('标签定义：部门单选，分类决定明细', '本场景验证自营、生态标签的字段、分类联动、状态与权限边界。', [
+        { title: '关键规则', items: ['新建标签只能在自营、生态中选择一个部门。', '标签编码全局唯一，发布后不可修改。', '共用标签作为历史治理对象保留，不出现在新建选项。'] },
+        { title: '分类联动', items: ['机器人成交必须选择机器人。', '渠道成交必须选择渠道。', '指定手机号必须录入合法手机号并按脱敏形式展示。'] },
+        { title: '角色差异', items: [`当前角色为「${currentRole().title}」。`, hasCapability('label:submit') ? '可提交自营或生态标签，审核按归属部门自动路由。' : '新增、编辑和停用按钮被禁用。'] }
       ])
     };
   }
@@ -663,7 +757,7 @@
         )}
 
         <section class="taxonomy-summary">
-          <div><span>分类数</span><strong>${state.categories.length}</strong><small>覆盖成交、渠道、企业、售后等业务域</small></div>
+          <div><span>分类数</span><strong>${state.categories.length}</strong><small>覆盖机器人、渠道、指定手机号、企业购与售后等业务域</small></div>
           <div><span>业务标签</span><strong>${state.labels.length}</strong><small>${state.labels.filter((label) => label.status === 'enabled').length} 个已生效</small></div>
           <div><span>未分类</span><strong>${state.labels.filter((label) => !state.categories.some((category) => category.id === label.categoryId)).length}</strong><small>发布前必须完成分类</small></div>
         </section>
@@ -1053,8 +1147,8 @@
 
   function renderRuntime() {
     const roleRows = [
-      ['自营配置人', '自营标签与规则', '创建草稿、提交审核、查看追溯', '可编辑'],
-      ['生态配置人', '生态标签与规则', '创建草稿、提交审核、查看追溯', '可编辑'],
+      ['自营配置人', '全局标签定义、自营规则与追溯', '提交自营或生态标签；维护自营规则', '不能审核本人事项'],
+      ['生态配置人', '全局标签定义、生态规则与追溯', '提交自营或生态标签；维护生态规则', '不能审核本人事项'],
       ['自营 / 生态审核人', '本部门待审事项', '确认或驳回本部门事项', '不可审核本人提交内容'],
       ['平台管理员', '编码、共用标签、全局冲突', '复核共用标签与全局规则', '仍需遵守提交人分离'],
       ['运营异常处理人', '异常订单', '发起修复或重算申请', '不可直接修改标签'],
@@ -1100,7 +1194,7 @@
         </section>
 
         <section class="content-panel">
-          <div class="panel-heading"><div><h2>角色权限矩阵</h2><p>写操作按身份与数据范围双重控制。</p></div><span class="current-role-hint">当前：${escapeHtml(currentRole().title)}</span></div>
+          <div class="panel-heading"><div><h2>角色权限矩阵</h2><p>标签定义可统一查看和提交，审核权限按标签归属部门隔离。</p></div><span class="current-role-hint">当前：${escapeHtml(currentRole().title)}</span></div>
           <div class="table-scroll">
             <div class="permission-table">
               <div class="permission-head"><span>角色</span><span>可见范围</span><span>允许操作</span><span>限制</span></div>
@@ -1169,6 +1263,7 @@
       <dl class="detail-grid">
         <div><dt>适用部门</dt><dd>${departmentChip(label.department)}</dd></div>
         <div><dt>标签分类</dt><dd>${escapeHtml(categoryMeta(label.categoryId).name)}</dd></div>
+        ${categoryBindingText(label) ? `<div><dt>${escapeHtml(categoryBindingFieldName(label.categoryId))}</dt><dd>${escapeHtml(categoryBindingText(label))}</dd></div>` : ''}
         <div><dt>责任人</dt><dd>${escapeHtml(label.owner || '待确认')}</dd></div>
         <div><dt>当前版本</dt><dd>${escapeHtml(label.version || '基础标签')}</dd></div>
         <div><dt>最近更新</dt><dd>${escapeHtml(label.updatedAt || '系统初始化')}</dd></div>
@@ -1186,20 +1281,17 @@
       showToast('无操作权限', `当前角色「${currentRole().title}」不能提交标签配置。`, true);
       return;
     }
-    if (label && !canManageDepartment(label.department)) {
-      showToast('超出数据范围', `当前角色「${currentRole().title}」只能维护本部门业务标签。`, true);
-      return;
-    }
     const editing = Boolean(label);
-    const departmentOptions = DEPARTMENTS.filter((department) => canManageDepartment(department.id));
-    const selectedDepartment = label?.department || departmentOptions[0]?.id || 'self';
+    const selectedDepartment = label?.department || defaultLabelDepartment();
+    const legacyShared = normalizeDepartment(selectedDepartment) === 'shared';
     const body = `
       <form id="label-form" class="dialog-form" ${editing ? `data-id="${escapeHtml(label.id)}"` : ''}>
         <div class="form-grid form-grid-2">
           <label class="field"><span>标签名称 <b>*</b></span><input class="input" name="name" required maxlength="30" value="${escapeHtml(label?.name || '')}" placeholder="例如：买家-企业购" /></label>
           <label class="field"><span>标签编码 <b>*</b></span><input class="input mono" name="code" required maxlength="49" value="${escapeHtml(label?.code || '')}" placeholder="例如：BUYER_ENTERPRISE_PURCHASE" ${editing ? 'readonly' : ''} /></label>
-          <label class="field"><span>适用部门 <b>*</b></span><select class="select" name="department">${departmentOptions.map((department) => `<option value="${department.id}" ${normalizeDepartment(selectedDepartment) === department.id ? 'selected' : ''}>${escapeHtml(department.name)}</option>`).join('')}</select></label>
-          <label class="field"><span>标签分类 <b>*</b></span><select class="select" name="categoryId">${state.categories.map((category) => `<option value="${escapeHtml(category.id)}" ${label?.categoryId === category.id ? 'selected' : ''}>${escapeHtml(category.name)}</option>`).join('')}</select></label>
+          ${departmentRadioGroup(selectedDepartment, legacyShared)}
+          <label class="field"><span>标签分类 <b>*</b></span><select class="select" name="categoryId" required>${state.categories.map((category) => `<option value="${escapeHtml(category.id)}" ${label?.categoryId === category.id ? 'selected' : ''}>${escapeHtml(category.name)}</option>`).join('')}</select><small class="field-help">分类决定下方需要补充的业务明细。</small></label>
+          <div class="field-full" id="label-category-attribute">${categoryFieldMarkup(label?.categoryId || state.categories[0]?.id, label)}</div>
           <label class="field field-full"><span>责任人 <b>*</b></span><input class="input" name="owner" required maxlength="30" value="${escapeHtml(label?.owner || currentRole().title.replace('配置人', '运营'))}" placeholder="负责日常维护与异常响应" /></label>
           <label class="field field-full"><span>业务说明 <b>*</b></span><textarea class="textarea" name="description" required maxlength="200" placeholder="说明业务含义、适用边界和不适用场景">${escapeHtml(label?.description || '')}</textarea></label>
         </div>
@@ -1231,18 +1323,43 @@
       return;
     }
     const department = String(formData.get('department'));
-    if (!canManageDepartment(department)) {
-      showToast('超出数据范围', '当前角色不能维护该部门业务标签。', true);
+    const previous = editingId ? findLabel(editingId) : null;
+    const validDepartment = ['self', 'eco'].includes(department)
+      || (department === 'shared' && normalizeDepartment(previous?.department) === 'shared');
+    if (!validDepartment) {
+      showToast('请选择适用部门', '新增业务标签只能在自营、生态中选择一个部门。', true);
       return;
     }
     const categoryId = String(formData.get('categoryId'));
-    const previous = editingId ? findLabel(editingId) : null;
+    const categoryField = LABEL_CATEGORY_FIELDS[categoryId];
+    const rawCategoryValue = String(formData.get('categoryValue') || '').trim();
+    if (categoryField && !rawCategoryValue) {
+      showToast('请补充分类信息', `${categoryField.label}为必填项。`, true);
+      return;
+    }
+    if (categoryId === 'cat_phone' && !/^1[3-9]\d{9}$/.test(rawCategoryValue)) {
+      showToast('手机号格式不正确', '请输入 11 位中国大陆手机号。', true);
+      return;
+    }
+    if (categoryField?.type === 'select' && !categoryField.options.some((option) => option.id === rawCategoryValue)) {
+      showToast('请选择有效分类明细', `${categoryField.label}的值不在受控选项中。`, true);
+      return;
+    }
+    let categoryConfig = null;
+    if (categoryField) {
+      const selected = categoryField.options?.find((option) => option.id === rawCategoryValue);
+      categoryConfig = {
+        value: rawCategoryValue,
+        name: categoryId === 'cat_phone' ? maskPhone(rawCategoryValue) : (selected?.name || rawCategoryValue)
+      };
+    }
     const label = {
       id: editingId || `tag_${Date.now()}`,
       code,
       name: String(formData.get('name')).trim(),
       department,
       categoryId,
+      categoryConfig,
       description: String(formData.get('description')).trim(),
       owner: String(formData.get('owner')).trim(),
       status: 'pending',
@@ -1266,7 +1383,7 @@
       submitterRole: currentRole().title,
       submittedAt: nowLabel(),
       status: 'pending',
-      summary: editingId ? `修改业务标签定义并提交 ${label.version}。` : `新增业务标签 ${label.code}。`,
+      summary: `${editingId ? '修改' : '新增'}业务标签 ${label.code}；归属${departmentName(department)}；分类为${categoryMeta(categoryId).name}${categoryConfig ? `，${categoryBindingFieldName(categoryId)}：${categoryConfig.name}` : ''}。`,
       impact: '审核通过后仅允许新规则引用；不修改历史订单标签。',
       conflicts: 0,
       requiredApprovals: department === 'shared' ? ['自营审核人', '生态审核人'] : [department === 'self' ? '自营审核人' : '生态审核人'],
@@ -1837,6 +1954,10 @@
         input.setSelectionRange(cursor, cursor);
       }
     }
+    if (event.target.matches('#label-form [name="categoryValue"][type="tel"]')) {
+      const digits = event.target.value.replace(/\D/g, '').slice(0, 11);
+      if (event.target.value !== digits) event.target.value = digits;
+    }
   });
 
   document.addEventListener('change', (event) => {
@@ -1848,6 +1969,9 @@
     }
     if (event.target.matches('#rule-form [name="department"]')) {
       updateRuleTargetOptions(event.target.form);
+    }
+    if (event.target.matches('#label-form [name="categoryId"]')) {
+      updateLabelCategoryField(event.target.form);
     }
     if (event.target.matches('[data-condition-value]')) {
       const valueSelect = event.target;
