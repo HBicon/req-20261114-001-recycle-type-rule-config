@@ -41,7 +41,7 @@
     <main>
       <section class="doc-hero">
         <div class="doc-hero-main">
-          <div class="doc-meta-line"><span>REQ-20261114-001</span><i></i><span>PRD v0.7</span><i></i><span>更新于 2026-11-19</span></div>
+          <div class="doc-meta-line"><span>REQ-20261114-001</span><i></i><span>PRD v0.8</span><i></i><span>更新于 2026-11-19</span></div>
           <h1>订单业务标签<br />统一配置、审核与自动更新</h1>
           <p>一套标签定义服务自营与生态两个部门。订单成交时固定写入原始标签，命中已审核生效规则后只更新唯一当前标签，并完整保留版本、事件和人工审批证据。</p>
           <div class="hero-actions">
@@ -121,10 +121,10 @@
               <div class="scope-list is-included">
                 <h3><span>✓</span>本期包含</h3>
                 <ul>
-                  <li>自营、生态及共用标签的新增、编辑、停用与审核。</li>
+                  <li>自营、生态标签的新增、编辑、停用与审核，每个标签只归属一个部门。</li>
                   <li>受控字段规则、优先级、冲突检查与只读试算。</li>
                   <li>原始标签保护、唯一当前标签和订单事件自动更新。</li>
-                  <li>提交人与审核人分离，共用标签双方确认。</li>
+                  <li>提交人与审核人分离，标签和规则按归属部门独立审核。</li>
                   <li>经审批的异常修复或重算，以及完整审计追溯。</li>
                 </ul>
               </div>
@@ -160,7 +160,7 @@
               <article class="config-model">
                 <span>统一配置</span>
                 <strong>业务标签定义</strong>
-                <small>编码、部门单选、分类明细、说明、责任人、版本</small>
+                <small>REC_ORD_TYP 编码、部门单选、分类明细、说明、责任人、版本</small>
               </article>
               <i>→</i>
               <article class="result-model">
@@ -179,6 +179,11 @@
                   <tr><td>当前业务标签</td><td>初始化为原始标签</td><td>规则或审批后人工修复可更新</td><td>查询、展示与统计</td></tr>
                 </tbody>
               </table>
+            </div>
+
+            <div class="callout is-green">
+              <span>菜单职责</span>
+              <p><b>业务标签</b>管理“标签是什么”：系统编码、部门、分类绑定、状态与审核版本。<b>标签规则</b>管理“订单何时变成该标签”：条件、优先级、目标标签和事件范围。定义与执行分开，同一标签可被多条规则引用，编码不会重复定义。</p>
             </div>
           </section>
 
@@ -246,13 +251,15 @@
               <table>
                 <thead><tr><th>场景</th><th>关键操作</th><th>系统反馈</th><th>权限边界</th></tr></thead>
                 <tbody>
-                  <tr><td>新增业务标签</td><td>填写编码，在自营、生态中选择一个部门，并选择受控分类</td><td>分类明细联动；编码、非录入分类或绑定值重复时阻止提交</td><td>配置人或平台管理员可提交</td></tr>
+                  <tr><td>新增业务标签</td><td>从 REC_ORD_TYP 选择未占用编码，在自营、生态中选择一个部门，并选择受控分类</td><td>编码只读系统参数；编码、非录入分类或绑定值重复时阻止提交</td><td>配置人或平台管理员可提交</td></tr>
+                  <tr><td>标签编码选择</td><td>打开系统参数选择器，按 code、值或值2搜索</td><td>展示上级 code、值2 和占用标签；已占用参数禁用；编辑时编码锁定</td><td>不允许手工输入编码</td></tr>
+                  <tr><td>渠道成交</td><td>打开渠道字典大弹窗，按名称或渠道 ID 搜索</td><td>支持分组列表、添加、清空和保存；当前标签只能选择一个渠道</td><td>批量入口保留但禁用多选提交</td></tr>
                   <tr><td>分类唯一性</td><td>查看机器人、渠道、手机号、企业购或保值换新配置</td><td>已占用绑定项禁用；非录入分类同部门只保留一个配置</td><td>规则由服务端再次校验</td></tr>
                   <tr><td>标签分类字典</td><td>选择标签分类</td><td>不提供“自定义业务”，仅展示六个受控分类</td><td>分类编码保持稳定</td></tr>
                   <tr><td>编辑已生效标签</td><td>生成新版本并提交审核</td><td>原版本继续运行，新版未发布前不参与计算</td><td>提交人不能审核本人事项</td></tr>
                   <tr><td>规则冲突</td><td>同部门、同优先级且条件重叠</td><td>实时标红并禁止提交审核</td><td>试算与检查对所有配置角色可见</td></tr>
                   <tr><td>执行优先级</td><td>在规则构建器输入 1～999</td><td>输入框、±10、滑块和部门排序预览同步更新</td><td>数值越大越先执行</td></tr>
-                  <tr><td>共用标签</td><td>自营和生态分别确认</td><td>仅单方确认时保持待审核，双方完成后发布</td><td>平台复核不等同双方确认</td></tr>
+                  <tr><td>标签与规则</td><td>先定义并审核业务标签，再从已审核目录创建规则</td><td>规则不复制标签编码；两页独立版本与审核记录可追溯</td><td>平台不能替代归属部门审核</td></tr>
                   <tr><td>人工修复</td><td>选择目标标签并填写证据原因</td><td>只生成审批事项，订单值在审批前不变</td><td>仅异常运营或平台管理员可发起</td></tr>
                   <tr><td>无权限访问</td><td>只读角色查看后台</td><td>写操作隐藏或禁用，接口仍需二次校验</td><td>按角色与部门数据范围控制</td></tr>
                 </tbody>
@@ -279,7 +286,7 @@
             </div>
             <div class="prototype-guide">
               <div><b>建议 1</b><p>在“规则试算”依次运行自营多机器人、生态企业购、生态售后退货和无规则命中。</p></div>
-              <div><b>建议 2</b><p>切换生态审核人和自营审核人，完成共用标签的双方确认。</p></div>
+              <div><b>建议 2</b><p>新增业务标签，体验 REC_ORD_TYP 编码选择、渠道大弹窗和发布前编码唯一性检查。</p></div>
               <div><b>建议 3</b><p>进入订单追溯，发起异常修复并确认审批前订单标签保持原值。</p></div>
             </div>
           </section>
@@ -328,7 +335,7 @@
                 <tbody>
                   <tr><td>自营 / 生态配置人</td><td>全局标签定义、本部门规则与追溯</td><td>提交自营或生态标签，创建规则草稿</td><td>不能审核本人事项</td></tr>
                   <tr><td>自营 / 生态审核人</td><td>本部门待审事项</td><td>确认或驳回</td><td>不能审核本人提交内容</td></tr>
-                  <tr><td>平台管理员</td><td>全局配置、编码和共用标签</td><td>复核与处理全局冲突</td><td>不能替代部门双审</td></tr>
+                  <tr><td>平台管理员</td><td>全局配置、系统编码和规则</td><td>复核系统参数与全局冲突</td><td>不能替代部门审核</td></tr>
                   <tr><td>异常运营</td><td>异常订单与修复事项</td><td>发起修复或重算申请</td><td>不能直接改订单标签</td></tr>
                   <tr><td>业务只读</td><td>标签、规则与订单追溯</td><td>查询和筛选</td><td>所有写操作禁用</td></tr>
                 </tbody>
@@ -349,7 +356,9 @@
               <label><input type="checkbox" checked disabled /><span><b>唯一当前标签</b>所有规则竞争后仅输出一个当前标签。</span></label>
               <label><input type="checkbox" checked disabled /><span><b>默认不追溯</b>新规则发布不回算历史订单。</span></label>
               <label><input type="checkbox" checked disabled /><span><b>冲突阻断</b>同优先级条件重叠时禁止发布。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>权限分离</b>提交人不能自审，共用标签双方确认。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>编码受控</b>标签编码只从 REC_ORD_TYP 选择，且全局唯一。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>职责分离</b>业务标签定义“是什么”，标签规则定义“何时命中”。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>权限分离</b>提交人不能自审，标签和规则按归属部门审核。</span></label>
               <label><input type="checkbox" checked disabled /><span><b>人工修复</b>先审批后执行，原始标签保持不变。</span></label>
               <label><input type="checkbox" checked disabled /><span><b>失败兜底</b>标签服务异常不阻断订单成交。</span></label>
               <label><input type="checkbox" checked disabled /><span><b>追溯证据</b>可从订单还原规则版本、事件和前后值。</span></label>
@@ -362,7 +371,7 @@
             <ol class="question-list">
               <li><span>Q-001</span><div><b>存量标签如何导入</b><p>白板标签的部门、编码、数据来源与历史映射，由两个部门业务负责人确认。</p></div></li>
               <li><span>Q-002</span><div><b>哪些后续事件允许重算</b><p>候选包括渠道修正、业务类型变化、售后状态变化和物权生效，需形成正式事件契约。</p></div></li>
-              <li><span>Q-003</span><div><b>审核岗位如何配置</b><p>确认部门审核人岗位、共用标签双审顺序和平台复核职责。</p></div></li>
+              <li><span>Q-003</span><div><b>审核岗位如何配置</b><p>确认部门审核人岗位、部门审核顺序和平台复核职责。</p></div></li>
               <li><span>Q-004</span><div><b>历史报表如何切换口径</b><p>默认不追溯，但需明确报表从何时开始标识新口径及切换时间。</p></div></li>
               <li><span>Q-005</span><div><b>异常修复由谁执行</b><p>明确发起、审核、执行责任人，以及首期批量重算的审批方式。</p></div></li>
             </ol>
@@ -374,7 +383,7 @@
           </section>
 
           <footer class="doc-footer">
-            <span>REQ-20261114-001 · PRD v0.7 G2 评审版</span>
+            <span>REQ-20261114-001 · PRD v0.8 G2 评审版</span>
             <span>文档状态：评审中 · 非研发执行依据</span>
           </footer>
         </article>

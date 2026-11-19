@@ -2,7 +2,7 @@
   'use strict';
 
   window.BUSINESS_LABEL_DEFAULT_STATE = {
-    version: 9,
+    version: 11,
     currentUser: '林澜',
     currentRoleId: 'self_author',
     ruleVersion: 'v1.4',
@@ -74,7 +74,7 @@
       { id: 'P-007', title: '标签配置满足唯一性', level: '强制', detail: '非录入分类同部门仅允许一个有效配置；同一渠道、手机号或机器人不能同时绑定多个生效标签。' }
     ],
     audits: [
-      { id: 'AU-1048', time: '11-19 11:08', actor: '平台运营', action: '提交共用标签', object: '共管-机器人专项 · v0.1', result: '待自营、生态双审' },
+      { id: 'AU-1048', time: '11-19 11:08', actor: '系统参数管理员', action: '同步标签编码', object: 'REC_ORD_TYP', result: '参数唯一性校验通过' },
       { id: 'AU-1047', time: '11-19 10:36', actor: '规则引擎', action: '更新当前标签', object: 'TC202611190108', result: 'R-001 · v1.2 命中' },
       { id: 'AU-1046', time: '11-19 10:12', actor: '自营审核人', action: '发布规则', object: 'R-001 · v1.2', result: '已生效' },
       { id: 'AU-1045', time: '11-19 09:42', actor: '自营运营专员', action: '提交异常修复', object: 'TC202611180032', result: '待审核' },
@@ -84,6 +84,7 @@
       {
         id: 'BASE-SELF',
         code: 'FLASHBACK_DEAL',
+        systemCode: '1',
         name: '闪回-闪回成交',
         department: 'self',
         category: 'base',
@@ -94,6 +95,7 @@
       {
         id: 'BASE-BUYER',
         code: 'BUYER_DEAL',
+        systemCode: '2',
         name: '买家-买家成交',
         department: 'buyer',
         category: 'base',
@@ -114,6 +116,7 @@
       {
         id: 'tag_multi_robot',
         code: 'SELF_MULTI_ROBOT',
+        systemCode: '25',
         name: '多个机器人',
         department: 'self',
         categoryId: 'cat_robot',
@@ -128,6 +131,7 @@
       {
         id: 'tag_eco_no_quote',
         code: 'ECO_NO_QUOTE',
+        systemCode: '29',
         name: '生态-无人报价',
         department: 'eco',
         categoryId: 'cat_robot',
@@ -142,6 +146,7 @@
       {
         id: 'tag_eco_platform',
         code: 'ECO_PLATFORM_FALLBACK',
+        systemCode: '23',
         name: '生态-平台兜底报价',
         department: 'eco',
         categoryId: 'cat_robot',
@@ -156,6 +161,7 @@
       {
         id: 'tag_flash_value',
         code: 'FLASHBACK_VALUE',
+        systemCode: '11',
         name: '闪回-保值换新',
         department: 'self',
         categoryId: 'cat_value',
@@ -169,10 +175,11 @@
       {
         id: 'tag_eco_channel',
         code: 'ECO_CHANNEL',
+        systemCode: '0',
         name: '生态-生态渠道',
         department: 'eco',
         categoryId: 'cat_channel',
-        categoryConfig: { value: 'eco_channel', name: '生态合作渠道（脱敏）' },
+        categoryConfig: { value: 'CH-50003', name: '生态平台渠道（脱敏）' },
         description: '指定业务闲鱼通知兜底成交订单。',
         owner: '生态渠道运营',
         status: 'enabled',
@@ -183,10 +190,11 @@
       {
         id: 'tag_flash_xiaomi',
         code: 'FLASHBACK_SERVICE',
+        systemCode: '9',
         name: '闪回-小米售后',
         department: 'self',
         categoryId: 'cat_service',
-        categoryConfig: { value: 'service_channel', name: '指定售后渠道（脱敏）' },
+        categoryConfig: { value: 'CH-60003', name: '门店成交渠道 C' },
         description: '指定售后渠道成交订单，渠道编号在公网版本中脱敏。',
         owner: '闪回渠道运营',
         status: 'enabled',
@@ -197,6 +205,7 @@
       {
         id: 'tag_self_custom',
         code: 'SELF_CUSTOM',
+        systemCode: '34',
         name: '自定义',
         department: 'self',
         categoryId: 'cat_phone',
@@ -211,6 +220,7 @@
       {
         id: 'tag_eco_custom',
         code: 'ECO_CUSTOM',
+        systemCode: '35',
         name: '自定义',
         department: 'eco',
         categoryId: 'cat_phone',
@@ -225,6 +235,7 @@
       {
         id: 'tag_buyer_enterprise_purchase',
         code: 'BUYER_ENTERPRISE_PURCHASE',
+        systemCode: '4',
         name: '买家-企业购',
         department: 'buyer',
         categoryId: 'cat_enterprise',
@@ -238,6 +249,7 @@
       {
         id: 'tag_buyer_value',
         code: 'BUYER_VALUE',
+        systemCode: '12',
         name: '买家-保值换新',
         department: 'buyer',
         categoryId: 'cat_value',
@@ -251,6 +263,7 @@
       {
         id: 'tag_buyer_ai',
         code: 'BUYER_AI_QUOTE',
+        systemCode: '13',
         name: '买家-AI报价',
         department: 'buyer',
         categoryId: 'cat_robot',
@@ -265,6 +278,7 @@
       {
         id: 'tag_buyer_to_self',
         code: 'BUYER_TO_SELF',
+        systemCode: '31',
         name: '买家-转自营',
         department: 'buyer',
         categoryId: 'cat_service',
@@ -278,6 +292,7 @@
       {
         id: 'tag_eco_return',
         code: 'ECO_AFTERSALE_RETURN',
+        systemCode: '28',
         name: '生态-售后退货',
         department: 'eco',
         categoryId: 'cat_service',
@@ -287,33 +302,6 @@
         version: 'v1.0',
         updatedAt: '11-18 13:20',
         ruleIds: ['R-013']
-      },
-      {
-        id: 'tag_shared_robot',
-        code: 'SHARED_ROBOT_SPECIAL',
-        name: '共管-机器人专项',
-        department: 'shared',
-        categoryId: 'cat_robot',
-        categoryConfig: { value: 'self_multi', name: '多个自营机器人' },
-        description: '自营与生态共用规则演示标签，发布前需要双方共同确认。',
-        owner: '标签平台',
-        status: 'pending',
-        version: 'v0.1',
-        updatedAt: '11-19 11:08',
-        ruleIds: []
-      },
-      {
-        id: 'tag_shared_ownership',
-        code: 'SHARED_OWNERSHIP_SPECIAL',
-        name: '共管-售后专项',
-        department: 'shared',
-        categoryId: 'cat_service',
-        description: '自营与生态共用的售后物权专项标签，用于评审双部门确认流程。',
-        owner: '标签平台',
-        status: 'pending',
-        version: 'v0.1',
-        updatedAt: '11-19 11:16',
-        ruleIds: []
       }
     ],
     rules: [
@@ -489,21 +477,6 @@
         approvals: []
       },
       {
-        id: 'AP-002',
-        type: 'label',
-        title: '共管-机器人专项',
-        subjectId: 'tag_shared_robot',
-        department: 'shared',
-        submitter: '标签平台运营',
-        submittedAt: '11-19 11:08',
-        status: 'pending',
-        summary: '新增两部门共用业务标签，编码 SHARED_ROBOT_SPECIAL。',
-        impact: '发布后可由两个部门的已审核规则共同引用。',
-        conflicts: 0,
-        requiredApprovals: ['自营审核人', '生态审核人'],
-        approvals: []
-      },
-      {
         id: 'AP-003',
         type: 'manual',
         title: 'TC202611180032 异常修复',
@@ -532,21 +505,6 @@
         conflicts: 0,
         requiredApprovals: ['生态审核人'],
         approvals: [{ role: '生态审核人', user: '李审核', at: '11-18 17:48' }]
-      },
-      {
-        id: 'AP-005',
-        type: 'label',
-        title: '共管-售后专项',
-        subjectId: 'tag_shared_ownership',
-        department: 'shared',
-        submitter: '标签平台运营',
-        submittedAt: '11-19 11:16',
-        status: 'pending',
-        summary: '新增两部门共用售后物权业务标签，编码 SHARED_OWNERSHIP_SPECIAL。',
-        impact: '发布后可由两个部门的已审核规则共同引用。',
-        conflicts: 0,
-        requiredApprovals: ['自营审核人', '生态审核人'],
-        approvals: []
       }
     ],
     traces: [

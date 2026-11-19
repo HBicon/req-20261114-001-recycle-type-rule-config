@@ -1,12 +1,11 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'business-label-governance-v9';
+  const STORAGE_KEY = 'business-label-governance-v11';
 
   const DEPARTMENTS = [
     { id: 'self', name: '自营', originalLabel: '闪回-闪回成交', color: 'green' },
-    { id: 'eco', name: '生态', aliases: ['buyer'], originalLabel: '买家-买家成交', color: 'blue' },
-    { id: 'shared', name: '两部门共用', originalLabel: '—', color: 'amber' }
+    { id: 'eco', name: '生态', aliases: ['buyer'], originalLabel: '买家-买家成交', color: 'blue' }
   ];
 
   const LABEL_DEPARTMENT_OPTIONS = DEPARTMENTS.filter((department) => ['self', 'eco'].includes(department.id));
@@ -55,12 +54,71 @@
     ]
   };
 
+  const ORDER_TYPE_PARAMETERS = [
+    { code: '9', name: '闪回-小米售后', parentCode: '', value2: '闪回-小米售后', group: '售后与流转' },
+    { code: '4', name: '买家-企业购', parentCode: '', value2: '买家', group: '业务成交' },
+    { code: '37', name: '闪回-华强北', parentCode: '', value2: '自营BU', group: '渠道成交' },
+    { code: '33', name: '闪回-闲鱼竞价', parentCode: '', value2: '自营BU', group: '渠道成交' },
+    { code: '31', name: '买家-转自营', parentCode: '', value2: '生态BU', group: '售后与流转' },
+    { code: '3', name: '买家-企业版', parentCode: '', value2: '买家', group: '业务成交' },
+    { code: '29', name: '生态-无人报价', parentCode: '', value2: '生态BU', group: '机器人成交' },
+    { code: '28', name: '生态-售后退货', parentCode: '', value2: '生态BU', group: '售后与流转' },
+    { code: '27', name: '闪回-线上竞价', parentCode: '', value2: '自营BU', group: '渠道成交' },
+    { code: '26', name: '闪回-自报价', parentCode: '', value2: '自营BU', group: '业务成交' },
+    { code: '25', name: '闪回-8号机器人', parentCode: '', value2: '自营BU', group: '机器人成交' },
+    { code: '24', name: '闪回-AI代报价', parentCode: '', value2: '自营BU', group: '机器人成交' },
+    { code: '23', name: '生态-平台兜底', parentCode: '', value2: '生态BU', group: '机器人成交' },
+    { code: '22', name: '闪回-卖场-买家', parentCode: '', value2: '自营BU', group: '业务成交' },
+    { code: '21', name: '闪回-卖场-换新', parentCode: '', value2: '自营BU', group: '业务成交' },
+    { code: '18', name: '闪回-ZB机器人', parentCode: '', value2: '自营BU', group: '机器人成交' },
+    { code: '17', name: '闪回-报价单', parentCode: '', value2: '自营BU', group: '业务成交' },
+    { code: '16', name: '闪回-指定机器人', parentCode: '', value2: '自营BU', group: '机器人成交' },
+    { code: '15', name: '闪回-包销机器人', parentCode: '', value2: '自营BU', group: '机器人成交' },
+    { code: '14', name: '闪回-精准机器人', parentCode: '', value2: '自营BU', group: '机器人成交' },
+    { code: '13', name: '买家-AI报价', parentCode: '', value2: '买家', group: '机器人成交' },
+    { code: '12', name: '买家-保值换新', parentCode: '', value2: '买家', group: '业务成交' },
+    { code: '11', name: '闪回-保值换新', parentCode: '', value2: '闪回-保值换新', group: '业务成交' },
+    { code: '10', name: '闪回-兜底机器人', parentCode: '', value2: '自营BU', group: '机器人成交' },
+    { code: '2', name: '买家-买家成交', parentCode: '', value2: '买家', group: '成交默认' },
+    { code: '1', name: '闪回-闪回成交', parentCode: '', value2: '自营BU', group: '成交默认' },
+    { code: '0', name: '生态-生态渠道', parentCode: '38', value2: '生态BU', group: '渠道成交' },
+    { code: '34', name: '闪回-指定手机号', parentCode: '', value2: '自营BU', group: '演示待配置', isDemo: true },
+    { code: '35', name: '买家-指定手机号', parentCode: '', value2: '生态BU', group: '演示待配置', isDemo: true }
+  ];
+
+  const LABEL_SYSTEM_CODE_BY_ID = {
+    'BASE-SELF': '1',
+    'BASE-BUYER': '2',
+    tag_multi_robot: '25',
+    tag_eco_no_quote: '29',
+    tag_eco_platform: '23',
+    tag_flash_value: '11',
+    tag_eco_channel: '0',
+    tag_flash_xiaomi: '9',
+    tag_self_custom: '34',
+    tag_eco_custom: '35',
+    tag_buyer_enterprise_purchase: '4',
+    tag_buyer_value: '12',
+    tag_buyer_ai: '13',
+    tag_buyer_to_self: '31',
+    tag_eco_return: '28'
+  };
+
+  const CHANNEL_CATALOG = [
+    { code: 'CH-60001', name: '线下合作渠道 A', group: '线下渠道' },
+    { code: 'CH-60002', name: '上门回收渠道 B', group: '线下渠道' },
+    { code: 'CH-60003', name: '门店成交渠道 C', group: '线下渠道' },
+    { code: 'CH-50001', name: '闲鱼通知渠道（脱敏）', group: '线上渠道' },
+    { code: 'CH-50002', name: '支付宝合作渠道（脱敏）', group: '线上渠道' },
+    { code: 'CH-50003', name: '生态平台渠道（脱敏）', group: '线上渠道' }
+  ];
+
   const LABEL_CATEGORY_FIELDS = {
     cat_channel: {
       key: 'channel',
       label: '选择渠道',
-      type: 'select',
-      options: CONDITION_VALUES.channel.filter((value) => value.id !== 'normal')
+      type: 'picker',
+      options: CHANNEL_CATALOG.map((channel) => ({ id: channel.code, name: channel.name }))
     },
     cat_robot: {
       key: 'robotSource',
@@ -77,6 +135,21 @@
   };
 
   const SINGLE_CONFIG_CATEGORIES = new Set(['cat_enterprise', 'cat_value']);
+
+  const VIEW_RESPONSIBILITIES = {
+    labels: {
+      title: '业务标签负责“标签是什么”',
+      copy: '维护系统编码、归属部门、分类明细、责任人、状态与审核版本，形成可被规则引用的标签目录。',
+      primary: '定义标签',
+      secondary: '解决：名称、编码、部门、分类和绑定值'
+    },
+    rules: {
+      title: '标签规则负责“订单何时变成该标签”',
+      copy: '从已审核标签目录中选择目标标签，配置受控条件与优先级，决定成交或后续事件是否更新当前标签。',
+      primary: '定义生效条件',
+      secondary: '解决：条件、优先级、冲突与版本'
+    }
+  };
 
   const VIEW_META = {
     overview: { label: '治理总览', group: '工作台', code: 'OVERVIEW' },
@@ -114,7 +187,7 @@
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) return createDefaultState();
       const parsed = JSON.parse(saved);
-      if (!parsed || parsed.version !== 9 || !Array.isArray(parsed.labels)) return createDefaultState();
+      if (!parsed || parsed.version !== 11 || !Array.isArray(parsed.labels)) return createDefaultState();
       return parsed;
     } catch (error) {
       return createDefaultState();
@@ -205,8 +278,8 @@
     const role = currentRole();
     if (!role) return false;
     if (['platform_admin', 'ops_exception', 'viewer'].includes(role.id)) return true;
-    if (role.id.startsWith('self_')) return ['self', 'shared'].includes(normalized);
-    if (role.id.startsWith('eco_')) return ['eco', 'shared'].includes(normalized);
+    if (role.id.startsWith('self_')) return normalized === 'self';
+    if (role.id.startsWith('eco_')) return normalized === 'eco';
     return false;
   }
 
@@ -237,6 +310,30 @@
 
   function categoryBindingFieldName(categoryId) {
     return LABEL_CATEGORY_FIELDS[categoryId]?.label || '分类绑定';
+  }
+
+  function systemCodeForLabel(label) {
+    return String(label?.systemCode || LABEL_SYSTEM_CODE_BY_ID[label?.id] || '');
+  }
+
+  function systemParameterByCode(code) {
+    return ORDER_TYPE_PARAMETERS.find((parameter) => parameter.code === String(code));
+  }
+
+  function labelsUsingSystemCode(code, excludeId = '') {
+    return [...state.baseLabels, ...state.labels].filter((label) => label.id !== excludeId && systemCodeForLabel(label) === String(code));
+  }
+
+  function systemCodeStatus(code, excludeId = '') {
+    const parameter = systemParameterByCode(code);
+    if (!parameter) return { available: false, label: null, text: '参数不存在' };
+    const owner = labelsUsingSystemCode(code, excludeId)[0] || null;
+    return {
+      available: !owner,
+      label: owner,
+      parameter,
+      text: owner ? `已由「${owner.name}」占用` : parameter.isDemo ? '可用 · 演示占位参数' : '可用'
+    };
   }
 
   function uniquenessRule(categoryId) {
@@ -290,6 +387,7 @@
     const field = LABEL_CATEGORY_FIELDS[categoryId];
     if (!field) return '';
     const currentValue = label?.categoryConfig?.value || '';
+    const selectedOption = field.options?.find((option) => option.id === currentValue);
     const usedLabels = field.type === 'select'
       ? state.labels.filter((item) => item.id !== label?.id
         && item.categoryId === categoryId
@@ -304,12 +402,24 @@
             return `<option value="${escapeHtml(option.id)}" ${option.id === currentValue ? 'selected' : ''} ${owner && option.id !== currentValue ? 'disabled' : ''}>${escapeHtml(option.name)}${owner ? ` · 已由「${escapeHtml(owner.name)}」生效` : ''}</option>`;
           }).join('')}
         </select>`
-      : `<input class="input mono" type="tel" inputmode="numeric" name="categoryValue" required maxlength="11" value="${escapeHtml(currentValue)}" placeholder="${escapeHtml(field.placeholder)}" pattern="1[3-9][0-9]{9}" title="请输入 11 位手机号" />`;
+      : field.type === 'picker'
+        ? `<input type="hidden" name="categoryValue" value="${escapeHtml(currentValue)}" />
+          <button class="channel-select-trigger ${currentValue ? 'has-value' : ''}" type="button" data-action="open-channel-picker">
+            <span>${currentValue ? escapeHtml(selectedOption?.name || currentValue) : '请选择渠道'}</span>
+            <small>${currentValue ? `渠道 ID：${escapeHtml(currentValue)}` : '按名称或渠道 ID 查找'}</small>
+            <b>选择</b>
+          </button>`
+        : `<input class="input mono" type="tel" inputmode="numeric" name="categoryValue" required maxlength="11" value="${escapeHtml(currentValue)}" placeholder="${escapeHtml(field.placeholder)}" pattern="1[3-9][0-9]{9}" title="请输入 11 位手机号" />`;
+    const helpText = field.type === 'tel'
+      ? '手机号用于配置消费和审计，列表与详情中按脱敏形式展示。'
+      : field.type === 'picker'
+        ? '渠道来自统一系统字典。支持按名称或渠道 ID 查找，已被其他生效标签占用的渠道不可添加。'
+        : '该选择将写入标签定义、审核记录和后续规则配置。';
     return `
       <label class="field field-full" data-category-field="${escapeHtml(categoryId)}">
         <span>${escapeHtml(field.label)} <b>*</b></span>
         ${input}
-        <small class="field-help">${field.type === 'tel' ? '手机号用于配置消费和审计，列表与详情中按脱敏形式展示。' : '该选择将写入标签定义、审核记录和后续规则配置。'}</small>
+        <small class="field-help">${helpText}</small>
       </label>
     `;
   }
@@ -332,11 +442,14 @@
     if (!rule) {
       panel.innerHTML = '';
       panel.className = 'label-uniqueness-check';
+      syncLabelSubmitState(form);
       return;
     }
     const department = String(new FormData(form).get('department') || '');
     const rawValue = String(form.elements.categoryValue?.value || '').trim();
     const editingId = form.dataset.id || '';
+    const systemCode = String(form.elements.systemCode?.value || '');
+    const codeStatus = systemCode ? systemCodeStatus(systemCode, editingId) : { available: true, text: '待选择系统编码' };
     const conflicts = labelUniquenessConflicts({
       id: editingId,
       department,
@@ -362,13 +475,16 @@
           && label.categoryConfig?.value === option.id)
       })).filter((option) => !option.owner)
       : [];
-    panel.className = `label-uniqueness-check ${conflicts.length ? 'has-conflict' : ''}`;
+    panel.className = `label-uniqueness-check ${conflicts.length || !codeStatus.available ? 'has-conflict' : ''}`;
     panel.innerHTML = `
       <div class="label-uniqueness-head">
         <div><span>UNIQUENESS CHECK</span><h3>配置唯一性</h3></div>
         <b>${escapeHtml(rule.tag)}</b>
       </div>
       <p><strong>${escapeHtml(rule.title)}</strong>${escapeHtml(rule.description)}</p>
+      <div class="label-uniqueness-meta">
+        <span>标签编码</span><strong>${systemCode ? `REC_ORD_TYP ${escapeHtml(systemCode)} · ${escapeHtml(codeStatus.text)}` : '尚未选择系统编码'}</strong>
+      </div>
       <div class="label-uniqueness-meta">
         <span>校验范围</span><strong>${rule.type === 'single' ? `${escapeHtml(departmentName(department))} · ${escapeHtml(categoryMeta(categoryId).name)}` : `${escapeHtml(categoryMeta(categoryId).name)} · ${escapeHtml(bindingText)}`}</strong>
       </div>
@@ -395,34 +511,266 @@
       categoryId,
       categoryConfig: rawValue ? { value: rawValue } : null
     });
-    const blocked = Boolean(rule && conflicts.length);
+    const systemCode = String(form.elements.systemCode?.value || '');
+    const codeStatus = systemCode ? systemCodeStatus(systemCode, form.dataset.id || '') : { available: false };
+    const blocked = !systemCode || !codeStatus.available || Boolean(rule && conflicts.length);
     button.disabled = blocked;
-    button.title = blocked ? '存在重复配置，请先调整分类或绑定值' : '';
+    button.title = blocked ? (!systemCode ? '请先选择系统标签编码' : !codeStatus.available ? '系统标签编码已被占用' : '存在重复配置，请先调整分类或绑定值') : '';
   }
 
-  function departmentRadioGroup(selectedDepartment, legacyShared = false) {
+  function channelOwner(code, excludeLabelId = '') {
+    return state.labels.find((label) => label.id !== excludeLabelId
+      && label.categoryId === 'cat_channel'
+      && label.status === 'enabled'
+      && label.categoryConfig?.value === code);
+  }
+
+  function channelPickerMarkup(form, nameQuery = '', codeQuery = '') {
+    const layer = document.getElementById('channel-picker-layer');
+    const selectedCode = String(layer?.dataset.selected || form.elements.categoryValue?.value || '');
+    const selected = CHANNEL_CATALOG.find((channel) => channel.code === selectedCode);
+    const editingId = form.dataset.id || '';
+    const normalizedName = nameQuery.trim().toLowerCase();
+    const normalizedCode = codeQuery.trim().toLowerCase();
+    const filtered = CHANNEL_CATALOG.filter((channel) => {
+      const nameMatch = !normalizedName || channel.name.toLowerCase().includes(normalizedName);
+      const codeMatch = !normalizedCode || channel.code.toLowerCase().includes(normalizedCode);
+      return nameMatch && codeMatch;
+    });
+    const groups = [...new Set(filtered.map((channel) => channel.group))];
+    return `
+      <div class="picker-shell" aria-labelledby="channel-picker-title">
+        <div class="picker-head">
+          <div><span>SYSTEM CHANNEL DICTIONARY</span><h2 id="channel-picker-title">选择渠道</h2><p>支持按渠道名称和渠道 ID 搜索，保留批量入口与分组列表；当前业务标签按单选执行。</p></div>
+          <button type="button" class="dialog-close" data-action="close-channel-picker" aria-label="关闭渠道选择">×</button>
+        </div>
+        <div class="channel-picker-selected">
+          <div><span>已选渠道</span>${selected ? `<b>${escapeHtml(selected.name)}</b><small>${escapeHtml(selected.code)}</small>` : '<strong>尚未选择渠道</strong>'}</div>
+          <button type="button" class="button button-quiet button-small" data-action="clear-channel-picker">清空已选</button>
+        </div>
+        <div class="picker-search-tools">
+          <input class="input" id="channel-picker-name-search" value="${escapeHtml(nameQuery)}" placeholder="输入名称进行添加" autocomplete="off" autofocus />
+          <input class="input mono" id="channel-picker-code-search" value="${escapeHtml(codeQuery)}" placeholder="输入渠道 ID 添加" autocomplete="off" />
+          <button type="button" class="button button-primary button-small" disabled title="当前业务标签只允许绑定一个渠道">批量选择</button>
+          <button type="button" class="button button-secondary button-small" disabled title="公网评审版不执行批量导入">批量导入</button>
+          <button type="button" class="button button-quiet button-small" disabled title="单个渠道配置无需模板">模板</button>
+          <span class="picker-search-count">可添加 ${filtered.filter((channel) => !channelOwner(channel.code, editingId)).length} / ${CHANNEL_CATALOG.length}</span>
+        </div>
+        <div class="channel-picker-list">
+          ${groups.length ? groups.map((group) => `
+            <section class="channel-group">
+              <div class="channel-group-head"><span><i aria-hidden="true">⌄</i>${escapeHtml(group)}</span><small>${filtered.filter((channel) => channel.group === group).length} 个渠道</small></div>
+              ${filtered.filter((channel) => channel.group === group).map((channel) => {
+                const owner = channelOwner(channel.code, editingId);
+                const isSelected = channel.code === selectedCode;
+                return `
+                  <div class="channel-option ${isSelected ? 'is-selected' : ''}">
+                    <div><span class="channel-expand" aria-hidden="true">›</span><code>${escapeHtml(channel.code)}</code><strong>${escapeHtml(channel.name)}</strong>${owner ? `<small>已由“${escapeHtml(owner.name)}”生效</small>` : '<small>未绑定生效标签</small>'}</div>
+                    <button type="button" class="button button-small ${isSelected ? 'button-secondary' : 'button-primary'}" data-action="select-channel" data-code="${escapeHtml(channel.code)}" ${owner ? 'disabled' : ''}>${isSelected ? '已选' : owner ? '已占用' : '添加'}</button>
+                  </div>
+                `;
+              }).join('')}
+            </section>
+          `).join('') : '<div class="empty-state is-inline"><strong>没有匹配的渠道</strong><p>调整渠道名称或 ID 后重试。</p></div>'}
+        </div>
+        <div class="picker-foot">
+          <span>批量入口仅保留现有系统交互位置；当前标签配置只允许选择一个渠道。</span>
+          <div><button type="button" class="button button-secondary" data-action="close-channel-picker">关闭</button><button type="button" class="button button-primary" data-action="save-channel-picker" ${selected ? '' : 'disabled'}>保存</button></div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderChannelPicker(form, nameQuery = '', codeQuery = '') {
+    let layer = document.getElementById('channel-picker-layer');
+    if (!layer) {
+      layer = document.createElement('dialog');
+      layer.id = 'channel-picker-layer';
+      layer.className = 'app-dialog picker-dialog';
+      layer.dataset.selected = String(form.elements.categoryValue?.value || '');
+      layer.addEventListener('cancel', (event) => {
+        event.preventDefault();
+        closeChannelPicker();
+      });
+      layer.addEventListener('click', (event) => {
+        if (event.target === layer) closeChannelPicker();
+      });
+      document.body.appendChild(layer);
+    }
+    layer.innerHTML = channelPickerMarkup(form, nameQuery, codeQuery);
+    if (typeof layer.showModal === 'function' && !layer.open) layer.showModal();
+    if (!nameQuery && !codeQuery) window.setTimeout(() => layer.querySelector('#channel-picker-name-search')?.focus(), 20);
+  }
+
+  function openChannelPicker(form) {
+    if (!form) return;
+    const layer = document.getElementById('channel-picker-layer');
+    if (layer?.open) layer.close();
+    layer?.remove();
+    renderChannelPicker(form);
+  }
+
+  function closeChannelPicker() {
+    const layer = document.getElementById('channel-picker-layer');
+    if (!layer) return;
+    if (layer.open) layer.close();
+    layer.remove();
+  }
+
+  function saveChannelPicker(form) {
+    const layer = document.getElementById('channel-picker-layer');
+    const code = String(layer?.dataset.selected || '');
+    const channel = CHANNEL_CATALOG.find((item) => item.code === code);
+    if (!form || !channel) return;
+    form.elements.categoryValue.value = code;
+    const container = form.querySelector('#label-category-attribute');
+    if (container) {
+      container.innerHTML = categoryFieldMarkup('cat_channel', {
+        id: form.dataset.id || '',
+        categoryConfig: { value: channel.code, name: channel.name }
+      });
+    }
+    updateLabelUniquenessCheck(form);
+    closeChannelPicker();
+  }
+
+  function systemCodePickerMarkup(form, query = '') {
+    const layer = document.getElementById('system-code-picker-layer');
+    const systemCode = String(layer?.dataset.selected || form.elements.systemCode?.value || '');
+    const selected = systemParameterByCode(systemCode);
+    const editingId = form.dataset.id || '';
+    const normalizedQuery = query.trim().toLowerCase();
+    const filtered = ORDER_TYPE_PARAMETERS.filter((parameter) => !normalizedQuery
+      || parameter.code.toLowerCase().includes(normalizedQuery)
+      || parameter.name.toLowerCase().includes(normalizedQuery)
+      || parameter.value2.toLowerCase().includes(normalizedQuery));
+    const groups = [...new Set(filtered.map((parameter) => parameter.group))];
+    return `
+      <div class="picker-shell system-code-picker-shell" aria-labelledby="system-code-picker-title">
+        <div class="picker-head">
+          <div><span>SYSTEM PARAMETER / REC_ORD_TYP</span><h2 id="system-code-picker-title">选择标签编码</h2><p>编码只读系统参数表，不从页面手工录入。每个系统编码只能绑定一个业务标签。</p></div>
+          <button type="button" class="dialog-close" data-action="close-system-code-picker" aria-label="关闭标签编码选择">×</button>
+        </div>
+        <div class="system-code-selected">
+          <span>已选系统参数</span>
+          ${selected ? `<div><b>${escapeHtml(selected.code)}</b><strong>${escapeHtml(selected.name)}</strong><small>值2：${escapeHtml(selected.value2)} · 上级编码：${escapeHtml(selected.parentCode || '—')}</small></div>` : '<strong>尚未选择标签编码</strong>'}
+        </div>
+        <div class="picker-search-tools">
+          <label class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
+            <input id="system-code-search" value="${escapeHtml(query)}" placeholder="搜索 code、值或值2" autocomplete="off" autofocus />
+          </label>
+          <span class="picker-search-count">参数 ${ORDER_TYPE_PARAMETERS.length} 个 · 当前结果可用 ${filtered.filter((parameter) => systemCodeStatus(parameter.code, editingId).available).length} 个</span>
+        </div>
+        <div class="system-code-table">
+          <div class="system-code-table-head"><span>类型</span><span>code</span><span>上级 code</span><span>值</span><span>值2</span><span>占用状态</span><span>操作</span></div>
+          ${groups.length ? groups.map((group) => `
+            <div class="system-code-group-title"><span>${escapeHtml(group)}</span><small>${filtered.filter((parameter) => parameter.group === group).length} 个参数</small></div>
+            ${filtered.filter((parameter) => parameter.group === group).map((parameter) => {
+              const status = systemCodeStatus(parameter.code, editingId);
+              const isSelected = parameter.code === systemCode;
+              return `
+                <div class="system-code-row ${isSelected ? 'is-selected' : ''}">
+                  <span class="mono-cell">REC_ORD_TYP</span>
+                  <code>${escapeHtml(parameter.code)}</code>
+                  <span>${escapeHtml(parameter.parentCode || '—')}</span>
+                  <strong>${escapeHtml(parameter.name)}</strong>
+                  <span>${escapeHtml(parameter.value2)}</span>
+                  <span class="system-code-status ${status.available ? 'is-free' : 'is-used'}">${escapeHtml(status.text)}</span>
+                  <button type="button" class="text-button" data-action="select-system-code" data-code="${escapeHtml(parameter.code)}" ${status.available ? '' : 'disabled'}>${isSelected ? '已选' : status.available ? '选择' : '不可用'}</button>
+                </div>
+              `;
+            }).join('')}
+          `).join('') : '<div class="empty-state is-inline"><strong>没有匹配的系统参数</strong><p>调整 code、值或值2 后重试。</p></div>'}
+        </div>
+        <div class="picker-foot">
+          <span>标注“演示待配置”的参数不代表生产 REC_ORD_TYP 已配置，进入研发前由系统负责人补齐。</span>
+          <div><button type="button" class="button button-secondary" data-action="close-system-code-picker">取消</button><button type="button" class="button button-primary" data-action="save-system-code-picker" ${selected ? '' : 'disabled'}>保存编码</button></div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderSystemCodePicker(form, query = '') {
+    let layer = document.getElementById('system-code-picker-layer');
+    if (!layer) {
+      layer = document.createElement('dialog');
+      layer.id = 'system-code-picker-layer';
+      layer.className = 'app-dialog picker-dialog is-wide';
+      layer.dataset.selected = String(form.elements.systemCode?.value || '');
+      layer.addEventListener('cancel', (event) => {
+        event.preventDefault();
+        closeSystemCodePicker();
+      });
+      layer.addEventListener('click', (event) => {
+        if (event.target === layer) closeSystemCodePicker();
+      });
+      document.body.appendChild(layer);
+    }
+    layer.innerHTML = systemCodePickerMarkup(form, query);
+    if (typeof layer.showModal === 'function' && !layer.open) layer.showModal();
+    if (!query) window.setTimeout(() => layer.querySelector('#system-code-search')?.focus(), 20);
+  }
+
+  function openSystemCodePicker(form) {
+    if (!form || form.dataset.id) return;
+    const layer = document.getElementById('system-code-picker-layer');
+    if (layer?.open) layer.close();
+    layer?.remove();
+    renderSystemCodePicker(form);
+  }
+
+  function closeSystemCodePicker() {
+    const layer = document.getElementById('system-code-picker-layer');
+    if (!layer) return;
+    if (layer.open) layer.close();
+    layer.remove();
+  }
+
+  function updateSystemCodePreview(form) {
+    const preview = form?.querySelector('#label-system-code-preview');
+    if (!preview) return;
+    const code = String(form.elements.systemCode?.value || '');
+    const parameter = systemParameterByCode(code);
+    const status = systemCodeStatus(code, form.dataset.id || '');
+    preview.className = `system-code-preview ${parameter && status.available ? 'has-value' : ''} ${parameter && !status.available ? 'has-conflict' : ''}`;
+    preview.innerHTML = parameter
+      ? `<span>系统编码</span><strong>${escapeHtml(parameter.code)}</strong><div><b>${escapeHtml(parameter.name)}</b><small>值2：${escapeHtml(parameter.value2)} · ${escapeHtml(status.text)}</small></div>`
+      : '<span>系统编码</span><strong>—</strong><div><b>尚未选择</b><small>编码来自系统参数 REC_ORD_TYP</small></div>';
+  }
+
+  function saveSystemCodePicker(form) {
+    const layer = document.getElementById('system-code-picker-layer');
+    const code = String(layer?.dataset.selected || '');
+    const parameter = systemParameterByCode(code);
+    if (!form || !parameter) return;
+    const status = systemCodeStatus(code, form.dataset.id || '');
+    if (!status.available) {
+      showToast('标签编码已被占用', status.text, true);
+      return;
+    }
+    form.elements.systemCode.value = code;
+    updateSystemCodePreview(form);
+    updateLabelUniquenessCheck(form);
+    closeSystemCodePicker();
+  }
+
+  function departmentRadioGroup(selectedDepartment) {
     return `
       <div class="field">
         <span id="label-department-label">适用部门 <b>*</b></span>
         <div class="radio-card-group" role="radiogroup" aria-labelledby="label-department-label">
           ${LABEL_DEPARTMENT_OPTIONS.map((department) => `
             <label class="radio-card">
-              <input type="radio" name="department" value="${department.id}" ${normalizeDepartment(selectedDepartment) === department.id ? 'checked' : ''} ${legacyShared ? 'disabled' : 'required'} />
+              <input type="radio" name="department" value="${department.id}" ${normalizeDepartment(selectedDepartment) === department.id ? 'checked' : ''} required />
               <span>
                 <b>${escapeHtml(department.name)}</b>
                 <small>成交原始标签：${escapeHtml(department.originalLabel)}</small>
               </span>
             </label>
           `).join('')}
-          ${legacyShared ? `
-            <label class="radio-card is-legacy" aria-disabled="true">
-              <input type="radio" checked disabled />
-              <span><b>两部门共用</b><small>历史共用标签，新建时不可选择</small></span>
-            </label>
-            <input type="hidden" name="department" value="shared" />
-          ` : ''}
         </div>
-        <small class="field-help">单选。一个业务标签只能归属一个部门；审核按所选部门自动路由。</small>
+        <small class="field-help">单选且必填。一个业务标签只能归属自营或生态之一，审核按归属部门自动路由。</small>
       </div>
     `;
   }
@@ -606,6 +954,29 @@
     `;
   }
 
+  function responsibilityBand(view) {
+    const current = VIEW_RESPONSIBILITIES[view];
+    if (!current) return '';
+    const otherView = view === 'labels' ? 'rules' : 'labels';
+    const other = VIEW_RESPONSIBILITIES[otherView];
+    return `
+      <section class="responsibility-band" aria-label="菜单职责说明">
+        <article class="is-current">
+          <span>CURRENT MENU</span>
+          <div><h2>${escapeHtml(current.title)}</h2><p>${escapeHtml(current.copy)}</p></div>
+          <b>${escapeHtml(current.primary)}</b>
+          <small>${escapeHtml(current.secondary)}</small>
+        </article>
+        <div class="responsibility-link" aria-hidden="true">→</div>
+        <article>
+          <span>${view === 'labels' ? 'NEXT MENU' : 'UPSTREAM MENU'}</span>
+          <div><h2>${escapeHtml(other.title)}</h2><p>${escapeHtml(other.copy)}</p></div>
+          <button class="text-button" type="button" data-action="go-view" data-view="${otherView}">前往${otherView === 'labels' ? '业务标签' : '标签规则'} →</button>
+        </article>
+      </section>
+    `;
+  }
+
   function reviewPanel(title, description, groups) {
     return `
       <div class="review-panel-head">
@@ -777,7 +1148,7 @@
     const visible = state.labels.filter((label) => {
       const departmentMatch = ui.labelDepartment === 'all' || normalizeDepartment(label.department) === ui.labelDepartment;
       const statusMatch = ui.labelStatus === 'all' || label.status === ui.labelStatus;
-      const text = `${label.name} ${label.code} ${label.description} ${label.owner}`.toLowerCase();
+      const text = `${label.name} ${systemCodeForLabel(label)} ${label.description} ${label.owner}`.toLowerCase();
       return departmentMatch && statusMatch && (!query || text.includes(query));
     });
 
@@ -786,9 +1157,11 @@
         ${pageHeader(
           'CONFIGURATION / 01',
           '业务标签定义',
-          '编码是稳定业务标识，名称负责展示。基础标签受系统保护，业务标签需经过审核后才能被规则引用。',
+          '标签编码只从系统参数 REC_ORD_TYP 选择，编码全局唯一；业务标签审核发布后，才能被标签规则引用。',
           `<button class="button button-primary" data-action="open-label" ${hasCapability('label:submit') ? '' : 'disabled title="当前角色无提交权限"'}>新增业务标签</button>`
         )}
+
+        ${responsibilityBand('labels')}
 
         <section class="protected-label-grid">
           ${state.baseLabels.map((label) => `
@@ -800,7 +1173,7 @@
               <div class="protected-label-main">
                 <div>
                   <h2>${escapeHtml(label.name)}</h2>
-                  <code>${escapeHtml(label.code)}</code>
+                  <code>REC_ORD_TYP · ${escapeHtml(systemCodeForLabel(label))}</code>
                 </div>
                 ${departmentChip(label.department)}
               </div>
@@ -813,13 +1186,13 @@
         <section class="filter-toolbar">
           <div class="filter-toolbar-row">
             <div class="segmented-filters" aria-label="按部门筛选">
-              ${[['all', '全部'], ['self', '自营'], ['eco', '生态'], ['shared', '两部门共用']].map(([value, label]) => `
+              ${[['all', '全部'], ['self', '自营'], ['eco', '生态']].map(([value, label]) => `
                 <button class="${ui.labelDepartment === value ? 'is-active' : ''}" type="button" data-action="label-filter-department" data-value="${value}">${label}</button>
               `).join('')}
             </div>
             <label class="search-box">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
-              <input id="label-search" value="${escapeHtml(ui.labelQuery)}" placeholder="搜索名称、编码或责任人" autocomplete="off" />
+              <input id="label-search" value="${escapeHtml(ui.labelQuery)}" placeholder="搜索名称、REC_ORD_TYP 编码或责任人" autocomplete="off" />
             </label>
           </div>
           <div class="filter-toolbar-row is-secondary">
@@ -843,7 +1216,7 @@
                 <div class="data-table-row">
                   <div class="primary-cell">
                     <button class="name-link" data-action="open-label-detail" data-id="${escapeHtml(label.id)}">${escapeHtml(label.name)}</button>
-                    <span class="mono-cell">${escapeHtml(label.code)} · ${escapeHtml(label.version)}</span>
+                    <span class="mono-cell">REC_ORD_TYP · ${escapeHtml(systemCodeForLabel(label))} / ${escapeHtml(label.version)}</span>
                   </div>
                   <div class="stack-cell">${departmentChip(label.department)}<span>${escapeHtml(categoryMeta(label.categoryId).name)}${categoryBindingText(label) ? ` · ${escapeHtml(categoryBindingText(label))}` : ''}</span></div>
                   <div class="description-cell" title="${escapeHtml(label.description)}">${escapeHtml(label.description)}</div>
@@ -869,9 +1242,10 @@
 
     return {
       body,
-      review: reviewPanel('标签定义：部门单选，分类决定明细', '本场景验证自营、生态标签的字段、分类联动、状态与权限边界。', [
-        { title: '关键规则', items: ['新建标签只能在自营、生态中选择一个部门。', '标签编码全局唯一，发布后不可修改。', '非录入分类同部门唯一；渠道、手机号、机器人绑定值全局唯一。'] },
-        { title: '分类联动', items: ['机器人成交必须选择机器人。', '渠道成交必须选择渠道。', '指定手机号必须录入合法手机号并按脱敏形式展示。'] },
+      review: reviewPanel('业务标签定义“标签是什么”', '本页只管理系统编码、归属部门、分类明细、状态与审核版本；订单何时命中该标签由“标签规则”负责。', [
+        { title: '菜单职责', items: ['业务标签定义标签目录和唯一系统编码。', '标签规则定义条件、优先级和目标标签。', '两页分离后，标签可被多条规则引用，但编码不会重复定义。'] },
+        { title: '关键规则', items: ['新建标签只能在自营、生态中选择一个部门。', '标签编码只读取 REC_ORD_TYP，不能手工填写，且全局只能绑定一个业务标签。', '非录入分类同部门唯一；渠道、手机号、机器人绑定值全局唯一。'] },
+        { title: '分类联动', items: ['机器人成交必须选择机器人。', '渠道成交通过大弹窗从渠道字典选择，当前配置只允许一个渠道。', '指定手机号必须录入合法手机号并按脱敏形式展示。'] },
         { title: '角色差异', items: [`当前角色为「${currentRole().title}」。`, hasCapability('label:submit') ? '可提交自营或生态标签，审核按归属部门自动路由。' : '新增、编辑和停用按钮被禁用。'] }
       ])
     };
@@ -913,6 +1287,29 @@
           }).join('')}
         </div>
 
+        <section class="content-panel system-parameter-panel">
+          <div class="panel-heading">
+            <div><h2>标签编码系统参数 · REC_ORD_TYP</h2><p>标签弹窗只能从下列参数中选择编码；已绑定基础标签或业务标签的编码不可重复选择。</p></div>
+            <span class="parameter-source-badge">系统参数主数据</span>
+          </div>
+          <div class="system-parameter-table">
+            <div class="system-parameter-head"><span>code</span><span>上级 code</span><span>值</span><span>值2</span><span>占用状态</span></div>
+            ${ORDER_TYPE_PARAMETERS.map((parameter) => {
+              const status = systemCodeStatus(parameter.code);
+              return `
+                <div class="system-parameter-row ${parameter.isDemo ? 'is-demo' : ''}">
+                  <code>${escapeHtml(parameter.code)}</code>
+                  <span>${escapeHtml(parameter.parentCode || '—')}</span>
+                  <strong>${escapeHtml(parameter.name)}</strong>
+                  <span>${escapeHtml(parameter.value2)}</span>
+                  <span class="system-code-status ${status.available ? 'is-free' : 'is-used'}">${escapeHtml(status.text)}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="notice is-warning"><span>!</span><p>编码 34、35 及名称“买家 / 生态”等映射用于脱敏演示，上线前由系统负责人补齐正式 REC_ORD_TYP 参数；同步后仍须保持 code 全局唯一。</p></div>
+        </section>
+
         <section class="content-panel">
           <div class="panel-heading"><div><h2>业务字段字典</h2><p>规则只能引用下列受控字段，不允许输入任意表达式、SQL 或脚本。</p></div></div>
           <div class="dictionary-table">
@@ -929,8 +1326,9 @@
     `;
     return {
       body,
-      review: reviewPanel('标签分类：组织口径并约束唯一性', '分类负责组织标签，同时声明“同部门唯一”或“绑定值唯一”约束；分类不是订单命中条件。', [
-        { title: '数据来源', items: ['分类和字段选项来自统一配置字典。', '分类编码发布后保持稳定。', '自定义业务分类不再提供。'] },
+      review: reviewPanel('分类与编码：受控字典决定可选范围', '分类负责组织标签并约束绑定唯一性；REC_ORD_TYP 负责提供唯一标签编码。两者都不直接决定订单命中。', [
+        { title: '数据来源', items: ['分类和字段选项来自统一配置字典。', '标签编码只读取系统参数 REC_ORD_TYP，不从页面输入。', '自定义业务分类不再提供。'] },
+        { title: '编码唯一', items: ['基础标签占用编码 1 和 2。', '业务标签一旦绑定系统编码，其他标签不可重复选择。', '编辑标签时系统编码锁定，避免已发布口径漂移。'] },
         { title: '唯一性', items: ['保值换新、企业购在同部门只允许一个启用或待审核配置。', '同一渠道、手机号、机器人不能绑定多个生效标签。'] },
         { title: '交互检查', items: ['点击分类中的标签可查看标签详情。', '点击“查看标签”会携带分类筛选进入标签列表。', '分类变更不会触发订单重算。'] },
         { title: '待确认', items: ['Q-001：存量标签的部门、编码与数据来源。', '字段字典是否需要支持枚举值级权限控制。'] }
@@ -955,6 +1353,8 @@
           '规则消费已审核生效标签。命中多条时按优先级降序选择唯一胜出规则；同优先级冲突必须在发布前阻断。',
           `<button class="button button-primary" data-action="open-rule" ${hasCapability('rule:submit') ? '' : 'disabled title="当前角色无提交权限"'}>新建规则</button>`
         )}
+
+        ${responsibilityBand('rules')}
 
         <section class="rule-meter-grid">
           <article><span>生效规则</span><strong>${active.length}</strong><small>仅这些规则参与订单计算</small></article>
@@ -1018,7 +1418,8 @@
     `;
     return {
       body,
-      review: reviewPanel('标签规则：发布前解决冲突', '本场景确认条件表达、优先级、版本与试算入口是否足以支撑两个部门独立配置。', [
+      review: reviewPanel('标签规则定义“何时命中”', '本页只从已审核标签目录选择目标标签，再配置条件、优先级和事件范围；标签名称与系统编码在业务标签页维护。', [
+        { title: '菜单职责', items: ['业务标签维护“标签是什么”及其唯一系统编码。', '标签规则维护“订单何时变成该标签”。', '分离后同一业务标签可被多条规则引用，规则也不复制标签定义。'] },
         { title: '执行顺序', items: ['读取订单事实与所属部门。', '筛选该部门已审核、已生效且事件范围允许的规则。', '优先级数值越大越先执行，最高唯一规则胜出。', '无规则命中时保留原始标签。'] },
         { title: '配置入口', items: ['点击“新建规则”打开执行优先级配置区。', '输入 1～999、使用滑块或按 10 调整。', '排列预览实时显示新规则在本部门的执行位置。'] },
         { title: '发布边界', items: ['同优先级冲突禁止提交审核。', '规则提交后不立即生效。', '规则发布只影响新订单及后续事件。'] },
@@ -1036,7 +1437,7 @@
         ${pageHeader(
           'GOVERNANCE / 04',
           '审核与发布',
-          '标签、规则与人工修复共用审核入口。提交人不能审核自己的事项，共用标签必须获得自营、生态双方确认。',
+          '标签、规则与人工修复共用审核入口。提交人不能审核自己的事项；标签和规则按归属部门由对应审核人独立确认。',
           `<span class="header-summary">${pending} 项待处理</span>`
         )}
 
@@ -1098,9 +1499,9 @@
     return {
       body,
       review: reviewPanel('审核发布：权限分离可验证', '切换顶部“评审视角”，可验证提交人、部门审核人和平台管理员的按钮差异。', [
-        { title: '审核规则', items: ['提交人不能审核本人事项。', '自营、生态标签分别由本部门审核人确认。', '共用标签必须完成两次独立确认。', '审计日志记录确认人、角色、时间与版本。'] },
+        { title: '审核规则', items: ['提交人不能审核本人事项。', '自营、生态标签分别由本部门审核人确认。', '平台管理员不能替代部门审核人。', '审计日志记录确认人、角色、时间与版本。'] },
         { title: '状态变化', items: ['所有变更先进入待审核，不直接修改生产配置。', '驳回后回到草稿，已生效版本不受影响。', '审核通过后仍需记录发布版本和生效时间。'] },
-        { title: '演示方式', items: ['切换为“生态审核人”并打开共用标签，可完成其中一侧确认；再切换自营审核人完成另一侧。', '当前事项由本人提交时，系统会明确提示不能自审。'] }
+        { title: '演示方式', items: ['切换为对应部门审核人，可确认或驳回本部门待审事项。', '当前事项由本人提交时，系统会明确提示不能自审。'] }
       ])
     };
   }
@@ -1153,7 +1554,7 @@
 
         <section class="coverage-grid">
           <article><span>已覆盖场景</span><strong>8 / 10</strong><p>覆盖机器人、企业购、渠道、手机号与售后物权事件。</p></article>
-          <article><span>待补场景</span><strong>2</strong><p>存量未归类标签、跨部门共用规则仍需业务确认。</p></article>
+          <article><span>待补场景</span><strong>2</strong><p>存量未归类标签和生产 REC_ORD_TYP 参数仍需业务确认。</p></article>
           <article><span>执行边界</span><strong>只读</strong><p>试算不产生标签版本、事件流水或订单写入。</p></article>
         </section>
       </div>
@@ -1298,7 +1699,7 @@
       ['自营配置人', '全局标签定义、自营规则与追溯', '提交自营或生态标签；维护自营规则', '不能审核本人事项'],
       ['生态配置人', '全局标签定义、生态规则与追溯', '提交自营或生态标签；维护生态规则', '不能审核本人事项'],
       ['自营 / 生态审核人', '本部门待审事项', '确认或驳回本部门事项', '不可审核本人提交内容'],
-      ['平台管理员', '编码、共用标签、全局冲突', '复核共用标签与全局规则', '仍需遵守提交人分离'],
+      ['平台管理员', '全局标签、系统编码、冲突与规则', '复核系统参数与全局冲突', '不能替代部门审核'],
       ['运营异常处理人', '异常订单', '发起修复或重算申请', '不可直接修改标签'],
       ['业务只读', '标签、规则与订单追溯', '查看和筛选', '全部写操作隐藏或禁用']
     ];
@@ -1365,7 +1766,7 @@
     return {
       body,
       review: reviewPanel('运行与权限：实现不能自行补规则', '本场景用于研发和测试确认事件范围、异常兜底、幂等与权限边界。', [
-        { title: '阻塞项', items: ['Q-002：成交后哪些事件允许重算。', 'Q-003：审核岗位与共用标签双审顺序。', 'Q-005：异常修复的发起、审核和执行责任人。'] },
+        { title: '阻塞项', items: ['Q-002：成交后哪些事件允许重算。', 'Q-003：审核岗位及部门审核顺序。', 'Q-005：异常修复的发起、审核和执行责任人。'] },
         { title: '建议实现', items: ['幂等键：订单号 + 事件类型 + 事件 ID。', '配置发布与订单事件按事件发生时间取版本。', '标签服务失败只影响标签任务，不回滚订单成交。'] },
         { title: '待验证', items: ['重复事件是否能保持幂等。', '权限变化后已打开页面是否及时失效。', '规则回滚是否只影响未来事件。'] }
       ])
@@ -1387,6 +1788,8 @@
   }
 
   function closeDialog() {
+    closeChannelPicker();
+    closeSystemCodePicker();
     if (appDialog.open) appDialog.close();
   }
 
@@ -1405,10 +1808,11 @@
     const body = `
       <div class="detail-summary">
         <div class="detail-title-row"><h3>${escapeHtml(label.name)}</h3>${statusChip(label.status)}</div>
-        <code>${escapeHtml(label.code)}</code>
+        <code>REC_ORD_TYP · ${escapeHtml(systemCodeForLabel(label))} · ${escapeHtml(systemParameterByCode(systemCodeForLabel(label))?.name || '未匹配参数')}</code>
         <p>${escapeHtml(label.description)}</p>
       </div>
       <dl class="detail-grid">
+        <div><dt>系统标签编码</dt><dd class="mono-cell">${escapeHtml(systemCodeForLabel(label))} · ${escapeHtml(systemParameterByCode(systemCodeForLabel(label))?.value2 || '—')}</dd></div>
         <div><dt>适用部门</dt><dd>${departmentChip(label.department)}</dd></div>
         <div><dt>标签分类</dt><dd>${escapeHtml(categoryMeta(label.categoryId).name)}</dd></div>
         ${categoryBindingText(label) ? `<div><dt>${escapeHtml(categoryBindingFieldName(label.categoryId))}</dt><dd>${escapeHtml(categoryBindingText(label))}</dd></div>` : ''}
@@ -1431,20 +1835,22 @@
     }
     const editing = Boolean(label);
     const selectedDepartment = label?.department || defaultLabelDepartment();
-    const legacyShared = normalizeDepartment(selectedDepartment) === 'shared';
+    const selectedSystemCode = systemCodeForLabel(label);
+    const selectedParameter = systemParameterByCode(selectedSystemCode);
     const body = `
       <form id="label-form" class="dialog-form" ${editing ? `data-id="${escapeHtml(label.id)}"` : ''}>
         <div class="form-grid form-grid-2">
           <label class="field"><span>标签名称 <b>*</b></span><input class="input" name="name" required maxlength="30" value="${escapeHtml(label?.name || '')}" placeholder="例如：买家-企业购" /></label>
-          <label class="field"><span>标签编码 <b>*</b></span><input class="input mono" name="code" required maxlength="49" value="${escapeHtml(label?.code || '')}" placeholder="例如：BUYER_ENTERPRISE_PURCHASE" ${editing ? 'readonly' : ''} /></label>
-          ${departmentRadioGroup(selectedDepartment, legacyShared)}
+          <label class="field"><span>标签编码 <b>*</b></span><input type="hidden" name="systemCode" value="${escapeHtml(selectedSystemCode)}" /><button class="system-code-trigger ${selectedSystemCode ? 'has-value' : ''}" type="button" data-action="open-system-code-picker" ${editing ? 'disabled title="编辑时锁定系统编码"' : ''}><span>${selectedSystemCode ? `REC_ORD_TYP · ${escapeHtml(selectedSystemCode)}` : '请选择系统参数编码'}</span><small>${selectedSystemCode ? escapeHtml(selectedParameter?.name || '参数待同步') : '编码来自系统参数，不允许手工输入'}</small><b>${editing ? '已锁定' : '选择'}</b></button><small class="field-help">系统编码唯一绑定业务标签，发布后不可修改。</small></label>
+          <div class="field-full system-code-preview ${selectedSystemCode ? 'has-value' : ''}" id="label-system-code-preview"><span>系统编码</span><strong>${escapeHtml(selectedSystemCode || '—')}</strong><div><b>${escapeHtml(selectedParameter?.name || '尚未选择')}</b><small>${selectedSystemCode ? `值2：${escapeHtml(selectedParameter?.value2 || '—')} · ${escapeHtml(systemCodeStatus(selectedSystemCode, label?.id || '').text)}` : '编码来自系统参数 REC_ORD_TYP'}</small></div></div>
+          ${departmentRadioGroup(selectedDepartment)}
           <label class="field"><span>标签分类 <b>*</b></span><select class="select" name="categoryId" required>${state.categories.map((category) => `<option value="${escapeHtml(category.id)}" ${label?.categoryId === category.id ? 'selected' : ''}>${escapeHtml(category.name)}</option>`).join('')}</select><small class="field-help">分类决定下方需要补充的业务明细。</small></label>
           <div class="field-full" id="label-category-attribute">${categoryFieldMarkup(label?.categoryId || state.categories[0]?.id, label)}</div>
           <div class="field-full label-uniqueness-check" id="label-uniqueness-check" aria-live="polite"></div>
           <label class="field field-full"><span>责任人 <b>*</b></span><input class="input" name="owner" required maxlength="30" value="${escapeHtml(label?.owner || currentRole().title.replace('配置人', '运营'))}" placeholder="负责日常维护与异常响应" /></label>
           <label class="field field-full"><span>业务说明 <b>*</b></span><textarea class="textarea" name="description" required maxlength="200" placeholder="说明业务含义、适用边界和不适用场景">${escapeHtml(label?.description || '')}</textarea></label>
         </div>
-        <div class="notice is-info"><span>i</span><p>标签编码发布后不可修改。提交后生成待审核版本，原生效版本继续使用。</p></div>
+        <div class="notice is-info"><span>i</span><p>标签编码只来自 REC_ORD_TYP，新建时只能选择未被占用的编码，编辑时锁定。提交后生成待审核版本，原生效版本继续使用。</p></div>
         <label class="checkbox-line"><input type="checkbox" checked disabled /><span>我确认该标签不替代原始业务标签，也不会直接修改历史订单。</span></label>
       </form>
     `;
@@ -1462,20 +1868,20 @@
   function submitLabel(form) {
     const formData = new FormData(form);
     const editingId = form.dataset.id || '';
-    const code = String(formData.get('code') || '').trim().toUpperCase();
-    if (!/^[A-Z][A-Z0-9_]{3,48}$/.test(code)) {
-      showToast('编码格式不正确', '请使用 4～49 位大写字母、数字和下划线，并以字母开头。', true);
+    const systemCode = String(formData.get('systemCode') || '').trim();
+    const systemParameter = systemParameterByCode(systemCode);
+    if (!systemParameter) {
+      showToast('请选择标签编码', '标签编码只允许从系统参数 REC_ORD_TYP 中选择。', true);
       return;
     }
-    const duplicate = [...state.baseLabels, ...state.labels].find((label) => label.code === code && label.id !== editingId);
-    if (duplicate) {
-      showToast('标签编码已存在', `与“${duplicate.name}”冲突，请更换编码。`, true);
+    const systemCodeConflicts = labelsUsingSystemCode(systemCode, editingId);
+    if (systemCodeConflicts.length) {
+      showToast('标签编码已被占用', `编码 ${systemCode} 已绑定“${systemCodeConflicts.map((label) => label.name).join('、')}”，每个系统编码只能使用一次。`, true);
       return;
     }
     const department = String(formData.get('department'));
     const previous = editingId ? findLabel(editingId) : null;
-    const validDepartment = ['self', 'eco'].includes(department)
-      || (department === 'shared' && normalizeDepartment(previous?.department) === 'shared');
+    const validDepartment = ['self', 'eco'].includes(department);
     if (!validDepartment) {
       showToast('请选择适用部门', '新增业务标签只能在自营、生态中选择一个部门。', true);
       return;
@@ -1518,9 +1924,11 @@
       updateLabelUniquenessCheck(form);
       return;
     }
+    const labelId = editingId || `tag_${Date.now()}`;
     const label = {
-      id: editingId || `tag_${Date.now()}`,
-      code,
+      id: labelId,
+      code: previous?.code || `ORDER_TYPE_${systemCode}`,
+      systemCode,
       name: String(formData.get('name')).trim(),
       department,
       categoryId,
@@ -1548,10 +1956,10 @@
       submitterRole: currentRole().title,
       submittedAt: nowLabel(),
       status: 'pending',
-      summary: `${editingId ? '修改' : '新增'}业务标签 ${label.code}；归属${departmentName(department)}；分类为${categoryMeta(categoryId).name}${categoryConfig ? `，${categoryBindingFieldName(categoryId)}：${categoryConfig.name}` : ''}。`,
+      summary: `${editingId ? '修改' : '新增'}业务标签 REC_ORD_TYP ${systemCode}（${systemParameter.name}）；归属${departmentName(department)}；分类为${categoryMeta(categoryId).name}${categoryConfig ? `，${categoryBindingFieldName(categoryId)}：${categoryConfig.name}` : ''}。`,
       impact: '审核通过后仅允许新规则引用；不修改历史订单标签。',
       conflicts: 0,
-      requiredApprovals: department === 'shared' ? ['自营审核人', '生态审核人'] : [department === 'self' ? '自营审核人' : '生态审核人'],
+      requiredApprovals: [department === 'self' ? '自营审核人' : '生态审核人'],
       approvals: []
     });
     saveState();
@@ -1599,10 +2007,10 @@
       submitterRole: currentRole().title,
       submittedAt: nowLabel(),
       status: 'pending',
-      summary: `停用业务标签 ${label.code}。`,
+      summary: `停用业务标签 REC_ORD_TYP ${systemCodeForLabel(label)}（${label.name}）。`,
       impact: '历史订单保持不变；停用后不再允许新规则引用。',
       conflicts: 0,
-      requiredApprovals: normalizeDepartment(label.department) === 'shared' ? ['自营审核人', '生态审核人'] : [normalizeDepartment(label.department) === 'self' ? '自营审核人' : '生态审核人'],
+      requiredApprovals: [normalizeDepartment(label.department) === 'self' ? '自营审核人' : '生态审核人'],
       approvals: [],
       operation: 'disable'
     });
@@ -1620,8 +2028,8 @@
     const normalized = normalizeDepartment(department);
     return state.labels
       .filter((label) => ['enabled', 'pending'].includes(label.status))
-      .filter((label) => normalizeDepartment(label.department) === normalized || normalizeDepartment(label.department) === 'shared')
-      .map((label) => `<option value="${escapeHtml(label.id)}" ${label.id === selected ? 'selected' : ''}>${escapeHtml(label.name)} · ${escapeHtml(label.code)} · ${escapeHtml(departmentName(label.department))}</option>`)
+      .filter((label) => normalizeDepartment(label.department) === normalized)
+      .map((label) => `<option value="${escapeHtml(label.id)}" ${label.id === selected ? 'selected' : ''}>${escapeHtml(label.name)} · REC_ORD_TYP ${escapeHtml(systemCodeForLabel(label))} · ${escapeHtml(departmentName(label.department))}</option>`)
       .join('');
   }
 
@@ -1716,7 +2124,7 @@
     const conflicts = conditions.length ? conflictsForRule(department, priority, targetLabelId, conditions) : [];
     const target = findLabel(targetLabelId);
     const targetValid = target && ['enabled', 'pending'].includes(target.status)
-      && [normalizeDepartment(department), 'shared'].includes(normalizeDepartment(target.department));
+      && normalizeDepartment(target.department) === normalizeDepartment(department);
     const panel = document.getElementById('live-rule-check');
     if (!panel) return;
     const ranking = document.getElementById('priority-ranking');
@@ -1802,8 +2210,8 @@
       return;
     }
     if (!target || !['enabled', 'pending'].includes(target.status)
-      || ![normalizeDepartment(department), 'shared'].includes(normalizeDepartment(target.department))) {
-      showToast('目标标签不可用', '目标标签必须已生效或待审核，并且属于当前部门或为两部门共用标签。', true);
+      || normalizeDepartment(target.department) !== normalizeDepartment(department)) {
+      showToast('目标标签不可用', '目标标签必须已生效或待审核，并且归属于规则所在部门。', true);
       return;
     }
     if (!conditions.length) {
@@ -1887,7 +2295,8 @@
       ? state.labels.find((label) => label.id === item.subjectId)
       : null;
     const uniquenessConflicts = labelSubject ? labelUniquenessConflicts(labelSubject) : [];
-    const approvalBlocked = uniquenessConflicts.length > 0;
+    const systemCodeConflicts = labelSubject ? labelsUsingSystemCode(systemCodeForLabel(labelSubject), labelSubject.id) : [];
+    const approvalBlocked = uniquenessConflicts.length > 0 || systemCodeConflicts.length > 0;
     const rejectable = !isOwnSubmission && pendingRoles.some((role) => canApproveDepartment(approvalRoleKey(role)));
     const approvableRoles = pendingRoles.filter((role) => {
       if (isOwnSubmission) return false;
@@ -1919,12 +2328,12 @@
         <h3>发布检查</h3>
         <div class="check-list">
           <div><span>✓</span><p>编码与配置格式检查通过</p></div>
-          <div><span>${approvalBlocked || item.conflicts ? '!' : '✓'}</span><p>${approvalBlocked ? `唯一性冲突：${uniquenessConflicts.map((label) => label.name).join('、')}，发布被阻断` : item.conflicts ? `${item.conflicts} 条冲突，发布被阻断` : '规则冲突与配置唯一性检查通过'}</p></div>
+          <div><span>${approvalBlocked || item.conflicts ? '!' : '✓'}</span><p>${systemCodeConflicts.length ? `系统编码冲突：${systemCodeConflicts.map((label) => label.name).join('、')}，发布被阻断` : uniquenessConflicts.length ? `唯一性冲突：${uniquenessConflicts.map((label) => label.name).join('、')}，发布被阻断` : item.conflicts ? `${item.conflicts} 条冲突，发布被阻断` : '规则冲突、系统编码与配置唯一性检查通过'}</p></div>
           <div><span>✓</span><p>默认不追溯历史订单，仅影响新订单及后续事件</p></div>
           <div><span>✓</span><p>操作将记录提交、审核、发布和前后版本差异</p></div>
         </div>
       </section>
-      ${approvalBlocked ? `<div class="notice is-warning"><span>!</span><p><strong>发布前唯一性校验未通过。</strong>同一非录入分类已存在有效配置，或同一渠道、手机号、机器人已绑定其他生效标签。请先调整冲突配置。</p></div>` : ''}
+      ${approvalBlocked ? `<div class="notice is-warning"><span>!</span><p><strong>发布前唯一性校验未通过。</strong>${systemCodeConflicts.length ? '同一 REC_ORD_TYP 编码已被其他标签占用。' : '同一非录入分类已存在有效配置，或同一渠道、手机号、机器人已绑定其他生效标签。'}请先调整冲突配置。</p></div>` : ''}
       ${item.submitter === currentRole().name ? '<div class="notice is-warning"><span>!</span><p>当前事项由你提交，系统禁止审核本人事项。请切换为独立审核人。</p></div>' : ''}
     `;
     const actionButtons = item.status === 'pending'
@@ -1958,10 +2367,11 @@
     if (item.type === 'label' && item.operation !== 'disable') {
       const label = state.labels.find((candidate) => candidate.id === item.subjectId);
       const conflicts = label ? labelUniquenessConflicts(label) : [];
-      if (conflicts.length) {
+      const codeConflicts = label ? labelsUsingSystemCode(systemCodeForLabel(label), label.id) : [];
+      if (conflicts.length || codeConflicts.length) {
         item.conflicts = conflicts.length;
         saveState();
-        showToast('唯一性冲突', `配置与“${conflicts.map((candidate) => candidate.name).join('、')}”重复，禁止发布。`, true);
+        showToast('唯一性冲突', codeConflicts.length ? `系统编码已被“${codeConflicts.map((candidate) => candidate.name).join('、')}”占用，禁止发布。` : `配置与“${conflicts.map((candidate) => candidate.name).join('、')}”重复，禁止发布。`, true);
         return;
       }
     }
@@ -2057,7 +2467,7 @@
         <p>${trace.facts.map((fact) => escapeHtml(fact)).join(' · ')}</p>
       </div>
       <form id="repair-form" data-order="${escapeHtml(trace.orderNo)}" class="dialog-form">
-        <label class="field"><span>目标当前业务标签 <b>*</b></span><select class="select" name="targetLabelId">${state.labels.filter((label) => label.status === 'enabled' && normalizeDepartment(label.department) === normalizeDepartment(trace.department)).map((label) => `<option value="${escapeHtml(label.id)}">${escapeHtml(label.name)} · ${escapeHtml(label.code)}</option>`).join('')}</select></label>
+        <label class="field"><span>目标当前业务标签 <b>*</b></span><select class="select" name="targetLabelId">${state.labels.filter((label) => label.status === 'enabled' && normalizeDepartment(label.department) === normalizeDepartment(trace.department)).map((label) => `<option value="${escapeHtml(label.id)}">${escapeHtml(label.name)} · REC_ORD_TYP ${escapeHtml(systemCodeForLabel(label))}</option>`).join('')}</select></label>
         <label class="field"><span>修复原因 <b>*</b></span><textarea class="textarea" name="reason" required minlength="8" maxlength="200" placeholder="说明异常原因、证据与修复依据"></textarea></label>
         <div class="notice is-warning"><span>!</span><p>原始标签 <strong>${escapeHtml(trace.originalLabel)}</strong> 不会被修改。审批通过后仅更新当前业务标签并记录审批编号。</p></div>
       </form>
@@ -2139,6 +2549,28 @@
 
   function handleClick(element) {
     const action = element.dataset.action;
+    const labelForm = document.getElementById('label-form');
+    if (action === 'open-channel-picker') openChannelPicker(labelForm);
+    if (action === 'close-channel-picker') closeChannelPicker();
+    if (action === 'clear-channel-picker') {
+      const layer = document.getElementById('channel-picker-layer');
+      if (layer) layer.dataset.selected = '';
+      renderChannelPicker(labelForm, document.getElementById('channel-picker-name-search')?.value || '', document.getElementById('channel-picker-code-search')?.value || '');
+    }
+    if (action === 'select-channel') {
+      const layer = document.getElementById('channel-picker-layer');
+      if (layer) layer.dataset.selected = String(element.dataset.code || '');
+      renderChannelPicker(labelForm, document.getElementById('channel-picker-name-search')?.value || '', document.getElementById('channel-picker-code-search')?.value || '');
+    }
+    if (action === 'save-channel-picker') saveChannelPicker(labelForm);
+    if (action === 'open-system-code-picker') openSystemCodePicker(labelForm);
+    if (action === 'close-system-code-picker') closeSystemCodePicker();
+    if (action === 'select-system-code') {
+      const layer = document.getElementById('system-code-picker-layer');
+      if (layer) layer.dataset.selected = String(element.dataset.code || '');
+      renderSystemCodePicker(labelForm, document.getElementById('system-code-search')?.value || '');
+    }
+    if (action === 'save-system-code-picker') saveSystemCodePicker(labelForm);
     if (action === 'priority-adjust') {
       const form = element.closest('#rule-form');
       const current = Number(form?.elements.priority?.value || 250);
@@ -2214,6 +2646,30 @@
   });
 
   document.addEventListener('input', (event) => {
+    if (event.target.id === 'channel-picker-name-search' || event.target.id === 'channel-picker-code-search') {
+      const labelForm = document.getElementById('label-form');
+      const nameQuery = document.getElementById('channel-picker-name-search')?.value || '';
+      const codeQuery = document.getElementById('channel-picker-code-search')?.value || '';
+      const focusId = event.target.id;
+      const selectionStart = event.target.selectionStart;
+      renderChannelPicker(labelForm, nameQuery, codeQuery);
+      const focused = document.getElementById(focusId);
+      if (focused) {
+        focused.focus();
+        focused.setSelectionRange(selectionStart, selectionStart);
+      }
+    }
+    if (event.target.id === 'system-code-search') {
+      const labelForm = document.getElementById('label-form');
+      const query = event.target.value;
+      const selectionStart = event.target.selectionStart;
+      renderSystemCodePicker(labelForm, query);
+      const focused = document.getElementById('system-code-search');
+      if (focused) {
+        focused.focus();
+        focused.setSelectionRange(selectionStart, selectionStart);
+      }
+    }
     if (event.target.id === 'label-search') {
       ui.labelQuery = event.target.value;
       const cursor = event.target.selectionStart;
