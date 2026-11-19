@@ -832,6 +832,22 @@
           <article><span>当前规则版本</span><strong>${escapeHtml(state.ruleVersion)}</strong><small>每次发布生成独立只读版本</small></article>
         </section>
 
+        <section class="priority-guide">
+          <div class="priority-guide-intro">
+            <span>EXECUTION ORDER</span>
+            <h2>优先级为 1～999，数值越大越先执行</h2>
+            <p>示例：优先级 300 的规则先于 250 参与胜出判断；只有最高优先级规则输出当前业务标签。</p>
+          </div>
+          <div class="priority-guide-scale" aria-label="优先级方向">
+            <span>低优先</span><b>1</b><i></i><b>999</b><span>高优先</span>
+          </div>
+          <div class="priority-guide-risk">
+            <span>同优先级</span>
+            <strong>条件可同时满足且目标标签不同</strong>
+            <small>系统阻止发布，要求调整优先级或条件</small>
+          </div>
+        </section>
+
         <section class="filter-toolbar">
           <div class="segmented-filters">
             ${[['all', '全部部门'], ['self', '自营'], ['eco', '生态']].map(([value, label]) => `<button class="${ui.ruleDepartment === value ? 'is-active' : ''}" data-action="rule-filter-department" data-value="${value}">${label}</button>`).join('')}
@@ -872,7 +888,8 @@
     return {
       body,
       review: reviewPanel('标签规则：发布前解决冲突', '本场景确认条件表达、优先级、版本与试算入口是否足以支撑两个部门独立配置。', [
-        { title: '执行顺序', items: ['读取订单事实与所属部门。', '筛选该部门已审核、已生效且事件范围允许的规则。', '按优先级降序选择唯一胜出规则。', '无规则命中时保留原始标签。'] },
+        { title: '执行顺序', items: ['读取订单事实与所属部门。', '筛选该部门已审核、已生效且事件范围允许的规则。', '优先级数值越大越先执行，最高唯一规则胜出。', '无规则命中时保留原始标签。'] },
+        { title: '配置入口', items: ['点击“新建规则”打开执行优先级配置区。', '输入 1～999、使用滑块或按 10 调整。', '排列预览实时显示新规则在本部门的执行位置。'] },
         { title: '发布边界', items: ['同优先级冲突禁止提交审核。', '规则提交后不立即生效。', '规则发布只影响新订单及后续事件。'] },
         { title: '操作权限', items: [`当前角色为「${currentRole().title}」。`, hasCapability('rule:submit') ? '可创建规则并提交审核。' : '新建规则按钮被禁用。'] }
       ])
@@ -1469,12 +1486,33 @@
     const initialDepartment = departmentOptions[0] || 'self';
     const body = `
       <form id="rule-form" class="dialog-form">
-        <div class="form-grid form-grid-3">
-          <label class="field field-span-2"><span>规则名称 <b>*</b></span><input class="input" name="name" required maxlength="40" placeholder="例如：生态平台兜底成交" /></label>
-          <label class="field"><span>优先级 <b>*</b></span><input class="input mono" name="priority" type="number" min="1" max="999" value="250" required /></label>
+        <div class="form-grid form-grid-2">
+          <label class="field field-full"><span>规则名称 <b>*</b></span><input class="input" name="name" required maxlength="40" placeholder="例如：生态平台兜底成交" /></label>
           <label class="field"><span>适用部门 <b>*</b></span><select class="select" name="department">${departmentOptions.map((department) => `<option value="${department}" ${department === initialDepartment ? 'selected' : ''}>${escapeHtml(departmentName(department))}</option>`).join('')}</select></label>
-          <label class="field field-span-2"><span>目标业务标签 <b>*</b></span><select class="select" name="targetLabelId">${targetLabelOptions(initialDepartment)}</select></label>
+          <label class="field"><span>目标业务标签 <b>*</b></span><select class="select" name="targetLabelId">${targetLabelOptions(initialDepartment)}</select></label>
         </div>
+        <section class="priority-config">
+          <div class="priority-config-head">
+            <div><span>EXECUTION PRIORITY</span><h3>执行优先级</h3><p>同一订单被多条规则命中时，数值大的规则先执行并作为胜出候选。</p></div>
+            <strong>1～999</strong>
+          </div>
+          <div class="priority-editor">
+            <div class="priority-number-control">
+              <button type="button" class="priority-step-button" data-action="priority-adjust" data-delta="-10" aria-label="优先级降低 10">−10</button>
+              <label>
+                <span>当前值</span>
+                <input class="input mono" name="priority" type="number" min="1" max="999" step="1" value="250" required aria-label="执行优先级数值" />
+              </label>
+              <button type="button" class="priority-step-button" data-action="priority-adjust" data-delta="10" aria-label="优先级提高 10">+10</button>
+            </div>
+            <div class="priority-slider">
+              <span>低</span>
+              <input type="range" min="1" max="999" step="1" value="250" data-priority-range aria-label="执行优先级滑块" />
+              <span>高</span>
+            </div>
+          </div>
+          <div class="priority-ranking" id="priority-ranking" aria-live="polite"></div>
+        </section>
         <section class="condition-builder">
           <div class="condition-builder-head"><div><h3>命中条件</h3><p>条件之间为“且”。首期每条规则最多 3 个受控条件。</p></div><span>ALL CONDITIONS</span></div>
           <div class="condition-row">
@@ -1507,6 +1545,7 @@
       footer: `<span class="dialog-foot-note">提交后执行编码、冲突和标签状态检查。</span><div class="dialog-actions"><button class="button button-secondary" data-dialog-close>取消</button><button class="button button-primary" type="submit" form="rule-form">提交规则审核</button></div>`,
       size: 'large'
     });
+    updateRuleCheck(document.getElementById('rule-form'));
   }
 
   function selectedRuleConditions(form) {
@@ -1532,8 +1571,63 @@
       && [normalizeDepartment(department), 'shared'].includes(normalizeDepartment(target.department));
     const panel = document.getElementById('live-rule-check');
     if (!panel) return;
+    const ranking = document.getElementById('priority-ranking');
+    if (ranking) ranking.innerHTML = priorityRankingMarkup(form, department, priority, target);
     panel.classList.toggle('has-conflict', conflicts.length > 0 || !targetValid);
     panel.innerHTML = `<span>LIVE CHECK</span><strong>${escapeHtml(departmentName(department))} · 优先级 ${priority || '—'} → ${escapeHtml(target?.name || '未选择标签')}</strong><p>${conditions.length ? escapeHtml(conditionsText(conditions)) : '尚未设置完整条件'}</p><div class="${conflicts.length || !targetValid ? 'is-danger' : 'is-success'}">${!targetValid ? '目标标签不可用或不属于该部门，请重新选择' : conflicts.length ? `发现 ${conflicts.length} 条冲突：${conflicts.map((rule) => rule.id).join('、')}` : '冲突检查通过，可继续提交审核'}</div>`;
+  }
+
+  function priorityRankingMarkup(form, department, priority, target) {
+    const proposedName = String(form.elements.name?.value || '').trim() || '当前待提交规则';
+    const existing = state.rules
+      .filter((rule) => normalizeDepartment(rule.department) === normalizeDepartment(department))
+      .filter((rule) => ['enabled', 'pending'].includes(rule.status))
+      .map((rule) => ({
+        id: rule.id,
+        name: rule.name,
+        priority: Number(rule.priority),
+        status: rule.status === 'enabled' ? '生效中' : '待审核',
+        isDraft: false
+      }));
+    const items = [
+      ...existing,
+      {
+        id: 'DRAFT',
+        name: proposedName,
+        priority: priority || 0,
+        targetName: target?.name || '未选择标签',
+        status: '当前配置',
+        isDraft: true
+      }
+    ].sort((first, second) => second.priority - first.priority || Number(first.isDraft) - Number(second.isDraft));
+    const samePriority = existing.filter((rule) => rule.priority === priority).length;
+    return `
+      <div class="priority-ranking-head">
+        <div><h4>本部门规则顺序预览</h4><p>按优先级从高到低排列；若同一订单命中多条，排在前面的规则先胜出。</p></div>
+        <span>${escapeHtml(departmentName(department))} · ${items.length} 条</span>
+      </div>
+      <div class="priority-ranking-list">
+        ${items.map((item, index) => `
+          <div class="priority-ranking-row ${item.isDraft ? 'is-draft' : ''}">
+            <span class="priority-rank-index">${String(index + 1).padStart(2, '0')}</span>
+            <div><strong>${escapeHtml(item.name)}</strong><small>${item.isDraft ? `${escapeHtml(item.targetName)} · ${item.status}` : `${escapeHtml(item.id)} · ${item.status}`}</small></div>
+            <b>${item.priority || '—'}</b>
+          </div>
+        `).join('')}
+      </div>
+      <div class="priority-ranking-note">${samePriority ? `当前部门已有 ${samePriority} 条规则使用优先级 ${priority}，仍需检查条件是否可同时满足。` : `当前部门尚无其他规则使用优先级 ${priority || '—'}，仍需确认条件配置完整。`}</div>
+    `;
+  }
+
+  function setRulePriority(form, value) {
+    if (!form) return;
+    const input = form.elements.priority;
+    const slider = form.querySelector('[data-priority-range]');
+    const parsed = Number(value);
+    const priority = Number.isFinite(parsed) ? Math.min(999, Math.max(1, Math.round(parsed))) : 250;
+    if (input) input.value = String(priority);
+    if (slider) slider.value = String(priority);
+    updateRuleCheck(form);
   }
 
   function updateRuleTargetOptions(form) {
@@ -1551,6 +1645,10 @@
     const targetLabelId = String(data.get('targetLabelId'));
     const conditions = selectedRuleConditions(form);
     const target = findLabel(targetLabelId);
+    if (!Number.isInteger(priority) || priority < 1 || priority > 999) {
+      showToast('优先级不合法', '请输入 1～999 的整数，数值越大越先执行。', true);
+      return;
+    }
     if (!canManageDepartment(department)) {
       showToast('超出数据范围', '当前角色不能维护该部门规则。', true);
       return;
@@ -1875,6 +1973,12 @@
 
   function handleClick(element) {
     const action = element.dataset.action;
+    if (action === 'priority-adjust') {
+      const form = element.closest('#rule-form');
+      const current = Number(form?.elements.priority?.value || 250);
+      setRulePriority(form, current + Number(element.dataset.delta || 0));
+      return;
+    }
     if (action === 'go-view') goTo(element.dataset.view);
     if (action === 'open-label') openLabelDialog();
     if (action === 'edit-label') openLabelDialog(findLabel(element.dataset.id));
@@ -1958,6 +2062,23 @@
       const digits = event.target.value.replace(/\D/g, '').slice(0, 11);
       if (event.target.value !== digits) event.target.value = digits;
     }
+    if (event.target.matches('#rule-form [name="priority"]')) {
+      const form = event.target.form;
+      const slider = form?.querySelector('[data-priority-range]');
+      const value = Number(event.target.value);
+      if (slider && Number.isFinite(value) && value >= 1 && value <= 999) slider.value = String(value);
+      if (form) updateRuleCheck(form);
+    }
+    if (event.target.matches('#rule-form [data-priority-range]')) {
+      const form = event.target.form;
+      const input = form?.elements.priority;
+      if (input) input.value = event.target.value;
+      if (form) updateRuleCheck(form);
+    }
+    if (event.target.matches('#rule-form [name="name"]')) {
+      const form = event.target.form;
+      if (form) updateRuleCheck(form);
+    }
   });
 
   document.addEventListener('change', (event) => {
@@ -1969,6 +2090,9 @@
     }
     if (event.target.matches('#rule-form [name="department"]')) {
       updateRuleTargetOptions(event.target.form);
+    }
+    if (event.target.matches('#rule-form [name="priority"]')) {
+      setRulePriority(event.target.form, event.target.value);
     }
     if (event.target.matches('#label-form [name="categoryId"]')) {
       updateLabelCategoryField(event.target.form);

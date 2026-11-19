@@ -41,7 +41,7 @@
     <main>
       <section class="doc-hero">
         <div class="doc-hero-main">
-          <div class="doc-meta-line"><span>REQ-20261114-001</span><i></i><span>PRD v0.5</span><i></i><span>更新于 2026-11-19</span></div>
+          <div class="doc-meta-line"><span>REQ-20261114-001</span><i></i><span>PRD v0.6</span><i></i><span>更新于 2026-11-19</span></div>
           <h1>订单业务标签<br />统一配置、审核与自动更新</h1>
           <p>一套标签定义服务自营与生态两个部门。订单成交时固定写入原始标签，命中已审核生效规则后只更新唯一当前标签，并完整保留版本、事件和人工审批证据。</p>
           <div class="hero-actions">
@@ -187,7 +187,7 @@
             <h2>六个决定订单结果的规则</h2>
             <div class="rule-list">
               <article><span>R1</span><div><h3>成交写入原始标签</h3><p>自营固定为“闪回-闪回成交”，生态固定为“买家-买家成交”；接口、页面和规则均不能覆盖。</p></div><b>P0</b></article>
-              <article><span>R2</span><div><h3>规则只输出一个当前标签</h3><p>全部生效规则参与计算，最高优先级唯一规则胜出；无命中时当前标签保持原始标签。</p></div><b>P0</b></article>
+              <article><span>R2</span><div><h3>规则只输出一个当前标签</h3><p>全部生效规则参与计算，优先级数值越大越先执行，最高优先级唯一规则胜出；无命中时当前标签保持原始标签。</p></div><b>P0</b></article>
               <article><span>R3</span><div><h3>冲突必须发布前处理</h3><p>同部门、同优先级、条件可重叠且目标标签不同时禁止发布；运行时发现冲突则保留原值并告警。</p></div><b>P0</b></article>
               <article><span>R4</span><div><h3>默认仅影响未来</h3><p>新规则审核发布后，仅处理新订单及事件发生时间晚于生效时间的已登记事件，不回算历史订单。</p></div><b>P0</b></article>
               <article><span>R5</span><div><h3>人工变更必须审批</h3><p>运营只能发起异常修复或重算申请；审批通过前订单不变，通过后也仅更新当前标签。</p></div><b>P0</b></article>
@@ -219,6 +219,17 @@
               <article><span>07</span><h3>运行与权限</h3><p>集中评审事件契约、失败兜底、角色权限和审计流水。</p><a href="./prototype.html#runtime">查看页面 →</a></article>
             </div>
 
+            <div class="flow-panel">
+              <div class="flow-head"><span>执行优先级配置</span><b>数值越大 · 越先执行</b></div>
+              <div class="flow-steps">
+                <div><span>01</span><strong>打开规则构建器</strong><small>进入新建规则</small></div><i>→</i>
+                <div><span>02</span><strong>设置 1～999</strong><small>输入、±10 或滑块</small></div><i>→</i>
+                <div><span>03</span><strong>查看排序预览</strong><small>定位本部门执行顺序</small></div><i>→</i>
+                <div><span>04</span><strong>检查同优先级</strong><small>冲突则阻断提交</small></div><i>→</i>
+                <div><span>05</span><strong>提交审核</strong><small>审核详情同步展示</small></div>
+              </div>
+            </div>
+
             <h3 class="subhead">关键交互说明</h3>
             <div class="table-wrap">
               <table>
@@ -228,6 +239,7 @@
                   <tr><td>分类绑定</td><td>选择机器人、渠道或指定手机号</td><td>只显示当前分类对应输入项；手机号在列表和审核摘要中脱敏</td><td>选项来自统一受控字典</td></tr>
                   <tr><td>编辑已生效标签</td><td>生成新版本并提交审核</td><td>原版本继续运行，新版未发布前不参与计算</td><td>提交人不能审核本人事项</td></tr>
                   <tr><td>规则冲突</td><td>同部门、同优先级且条件重叠</td><td>实时标红并禁止提交审核</td><td>试算与检查对所有配置角色可见</td></tr>
+                  <tr><td>执行优先级</td><td>在规则构建器输入 1～999</td><td>输入框、±10、滑块和部门排序预览同步更新</td><td>数值越大越先执行</td></tr>
                   <tr><td>共用标签</td><td>自营和生态分别确认</td><td>仅单方确认时保持待审核，双方完成后发布</td><td>平台复核不等同双方确认</td></tr>
                   <tr><td>人工修复</td><td>选择目标标签并填写证据原因</td><td>只生成审批事项，订单值在审批前不变</td><td>仅异常运营或平台管理员可发起</td></tr>
                   <tr><td>无权限访问</td><td>只读角色查看后台</td><td>写操作隐藏或禁用，接口仍需二次校验</td><td>按角色与部门数据范围控制</td></tr>
@@ -350,7 +362,7 @@
           </section>
 
           <footer class="doc-footer">
-            <span>REQ-20261114-001 · PRD v0.5 G2 评审版</span>
+            <span>REQ-20261114-001 · PRD v0.6 G2 评审版</span>
             <span>文档状态：评审中 · 非研发执行依据</span>
           </footer>
         </article>
