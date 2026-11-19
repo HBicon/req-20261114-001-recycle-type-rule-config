@@ -6,159 +6,353 @@
     <meta name="theme-color" content="#ffffff" />
     <meta
       name="description"
-      content="回收类型规则中心交互原型：分类地图、16 个回收类型位、成交分类规则、物权转移规则、试算与订单追溯。"
+      content="订单业务标签统一配置、审核与自动更新机制 G2 评审 PRD，包含可交互产品原型。"
     />
-    <title>回收类型规则中心｜配置交互原型</title>
-    <link
-      rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230f766e'/%3E%3Cpath d='M17 20h30v7H17zm0 11h16v7H17zm19 0h11v7H36zM17 42h30v7H17z' fill='%23ffffff'/%3E%3C/svg%3E"
-    />
-    <link rel="stylesheet" href="./assets/app.css?v=20261114-5" />
-    <link rel="stylesheet" href="./assets/admin-shell.css?v=20261114-1" />
+    <title>订单业务标签 PRD｜G2 评审</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2314785b'/%3E%3Cpath d='M17 18h30v8H17zm0 11h18v8H17zm21 0h9v8h-9zM17 40h30v8H17z' fill='%23fff'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./assets/docs.css?v=20261119-3" />
   </head>
-  <body class="admin-body">
-    <a class="skip-link" href="#main-content">跳到主要内容</a>
+  <body>
+    <a class="skip-link" href="#document">跳到 PRD 正文</a>
 
-    <div class="admin-shell" id="admin-shell" data-storage-key="recycle-rule-admin-collapsed">
-      <aside class="admin-sider" id="admin-sider" aria-label="后台菜单">
-        <div class="admin-sider-brand">
-          <a class="admin-brand" href="#overview" aria-label="回收类型规则中心首页">
-            <span class="admin-brand-mark" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 5h16M4 11h9M4 17h16" />
-                <path d="M15 9h5v5h-5z" />
-              </svg>
-            </span>
-            <span class="admin-brand-text">
-              <strong>回收类型规则中心</strong>
-              <small>RECYCLE TYPE RULE STUDIO</small>
-            </span>
-          </a>
-          <button class="admin-sider-close" id="admin-sider-close" type="button" aria-label="关闭菜单">×</button>
-        </div>
-
-        <nav class="admin-menu" id="side-nav" aria-label="主导航">
-          <div class="admin-menu-group" aria-labelledby="menu-group-workbench">
-            <div class="admin-menu-group-title" id="menu-group-workbench">工作台</div>
-            <a class="admin-menu-item" href="#overview" data-nav="overview" aria-current="page" title="总览">
-              <span class="admin-menu-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
-              </span>
-              <span class="admin-menu-label">总览</span>
-            </a>
-          </div>
-
-          <div class="admin-menu-group" aria-labelledby="menu-group-config">
-            <div class="admin-menu-group-title" id="menu-group-config">配置</div>
-            <a class="admin-menu-item" href="#business" data-nav="business" title="业务类型">
-              <span class="admin-menu-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16" /><circle cx="8" cy="7" r="1.6" fill="currentColor" stroke="none" /><circle cx="15" cy="12" r="1.6" fill="currentColor" stroke="none" /><circle cx="10" cy="17" r="1.6" fill="currentColor" stroke="none" /></svg>
-              </span>
-              <span class="admin-menu-label">业务类型</span>
-            </a>
-            <a class="admin-menu-item" href="#recycle" data-nav="recycle" title="回收类型">
-              <span class="admin-menu-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 7.2 12 11.4l7.5-4.2L12 3Z" /><path d="m4.5 12 7.5 4.2 7.5-4.2M4.5 16.8 12 21l7.5-4.2" /></svg>
-              </span>
-              <span class="admin-menu-label">回收类型</span>
-            </a>
-            <a class="admin-menu-item" href="#map" data-nav="map" title="分类地图">
-              <span class="admin-menu-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h5v5H5zM14 15h5v5h-5zM7.5 9v3h9v3M10 4h5a2 2 0 0 1 2 2v9" /></svg>
-              </span>
-              <span class="admin-menu-label">分类地图</span>
-            </a>
-          </div>
-
-          <div class="admin-menu-group" aria-labelledby="menu-group-rules">
-            <div class="admin-menu-group-title" id="menu-group-rules">规则与事件</div>
-            <a class="admin-menu-item" href="#rules" data-nav="rules" title="分类规则">
-              <span class="admin-menu-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5" /><circle cx="18" cy="6" r="2.5" /><circle cx="12" cy="18" r="2.5" /><path d="M8.5 6h7M7.2 8.4l3.6 7.2M16.8 8.4l-3.6 7.2" /></svg>
-              </span>
-              <span class="admin-menu-label">分类规则</span>
-            </a>
-            <a class="admin-menu-item" href="#transfer" data-nav="transfer" title="物权转移">
-              <span class="admin-menu-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3M20 17H7l3 3" /></svg>
-              </span>
-              <span class="admin-menu-label">物权转移</span>
-            </a>
-          </div>
-
-          <div class="admin-menu-group" aria-labelledby="menu-group-verify">
-            <div class="admin-menu-group-title" id="menu-group-verify">验证与追溯</div>
-            <a class="admin-menu-item" href="#simulator" data-nav="simulator" title="规则试算">
-              <span class="admin-menu-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v5l-5 9.2A2.2 2.2 0 0 0 6.9 21h10.2a2.2 2.2 0 0 0 1.9-3.8L14 8V3" /><path d="M7.5 15h9" /></svg>
-              </span>
-              <span class="admin-menu-label">规则试算</span>
-            </a>
-            <a class="admin-menu-item" href="#trace" data-nav="trace" title="类型追溯">
-              <span class="admin-menu-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5M12 7v5l3 2" /></svg>
-              </span>
-              <span class="admin-menu-label">类型追溯</span>
-            </a>
-          </div>
-        </nav>
-
-        <div class="admin-sider-footer">
-          <div class="admin-sider-status"><span>规则版本</span><strong>v2.0</strong></div>
-          <div class="admin-sider-status"><span>配置状态</span><strong><i aria-hidden="true"></i>3 个待完善</strong></div>
-        </div>
-      </aside>
-
-      <div class="admin-main">
-        <header class="admin-header">
-          <div class="admin-header-left">
-            <button class="admin-sidebar-trigger" id="admin-sidebar-trigger" type="button" aria-controls="admin-sider" aria-expanded="true" aria-label="收起菜单">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
-            </button>
-            <div class="admin-header-title" id="admin-header-title">总览</div>
-            <span class="admin-header-divider" aria-hidden="true"></span>
-            <span class="admin-env"><i aria-hidden="true"></i><span>配置演示环境</span></span>
-          </div>
-          <div class="admin-header-right">
-            <span class="admin-demo-badge">脱敏演示</span>
-            <button class="button button-quiet" type="button" data-action="reset-demo">重置</button>
-            <button class="button button-primary" type="button" data-action="publish">
-              <span aria-hidden="true">↗</span> 发布变更
-            </button>
-            <div class="admin-user" aria-label="当前用户：运营管理员">
-              <span class="admin-avatar" aria-hidden="true">运</span>
-              <span class="admin-user-name">运营管理员</span>
-            </div>
-          </div>
-        </header>
-
-        <main class="workspace admin-workspace" id="main-content" tabindex="-1">
-          <div class="context-line">
-            <div class="breadcrumb" id="breadcrumb" aria-label="面包屑"></div>
-            <div class="context-meta">
-              <span class="context-chip"><i class="chip-dot"></i>规则引擎在线</span>
-              <span class="context-chip mono" id="context-rule-count">13 RULES</span>
-            </div>
-          </div>
-          <div id="view-root"></div>
-          <footer class="workspace-footer">
-            <span>RECYCLE TYPE RULE STUDIO</span>
-            <span>交互原型 · 静态演示 · 不连接真实业务系统</span>
-          </footer>
-        </main>
+    <header class="doc-header">
+      <a class="doc-brand" href="./index.html" aria-label="返回 PRD 顶部">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 5h16M4 11h9M4 17h16" />
+            <path d="M15 9h5v5h-5z" />
+          </svg>
+        </span>
+        <span><strong>业务标签治理</strong><small>PRODUCT REQUIREMENTS</small></span>
+      </a>
+      <nav class="doc-nav" aria-label="文档导航">
+        <a href="#overview">方案摘要</a>
+        <a href="#scope">本期范围</a>
+        <a href="#rules">业务规则</a>
+        <a href="#prototype">交互原型</a>
+        <a href="#approval-review">评审结论</a>
+      </nav>
+      <div class="header-status">
+        <span>G2 评审中</span>
+        <a class="button button-primary" href="./prototype.html">打开完整原型</a>
       </div>
+    </header>
 
-      <button class="admin-mask" id="admin-mask" type="button" aria-label="关闭菜单"></button>
-    </div>
+    <main>
+      <section class="doc-hero">
+        <div class="doc-hero-main">
+          <div class="doc-meta-line"><span>REQ-20261114-001</span><i></i><span>PRD v0.4</span><i></i><span>更新于 2026-11-19</span></div>
+          <h1>订单业务标签<br />统一配置、审核与自动更新</h1>
+          <p>一套标签定义服务自营与生态两个部门。订单成交时固定写入原始标签，命中已审核生效规则后只更新唯一当前标签，并完整保留版本、事件和人工审批证据。</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#prototype">评审交互原型</a>
+            <a class="button button-secondary" href="./prd.md">查看 PRD 原文</a>
+          </div>
+        </div>
+        <aside class="doc-hero-side">
+          <div class="hero-side-head"><span>评审状态</span><strong>G2 待确认</strong></div>
+          <dl>
+            <div><dt>需求方</dt><dd>hz</dd></div>
+            <div><dt>Scope Gate</dt><dd class="is-success">G1 已通过</dd></div>
+            <div><dt>当前阶段</dt><dd>方案与原型评审</dd></div>
+            <div><dt>未决问题</dt><dd>5 项，不阻塞 G2 阅读</dd></div>
+          </dl>
+          <p>G2 通过前，不将本文视为研发执行依据。</p>
+        </aside>
+      </section>
 
-    <dialog class="app-dialog" id="app-dialog" aria-labelledby="dialog-title">
-      <div id="dialog-content"></div>
-    </dialog>
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录">
+          <span>目录</span>
+          <a class="is-active" href="#overview">01 方案摘要</a>
+          <a href="#scope">02 本期范围</a>
+          <a href="#model">03 标签模型</a>
+          <a href="#rules">04 业务规则</a>
+          <a href="#interaction">05 页面交互</a>
+          <a href="#prototype">06 可交互原型</a>
+          <a href="#states">07 状态与异常</a>
+          <a href="#permission">08 权限与审计</a>
+          <a href="#acceptance">09 验收结论</a>
+          <a href="#approval-review">10 待确认项</a>
+        </aside>
 
-    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+        <article class="doc-content" id="document">
+          <section id="overview" class="doc-section">
+            <div class="section-kicker">01 / SOLUTION SUMMARY</div>
+            <div class="section-heading">
+              <h2>先把“原始归属”和“业务归类”拆开</h2>
+              <span class="status-tag is-green">已确认方向</span>
+            </div>
+            <p class="lead">当前混乱的根因不是标签名称不够多，而是成交归属、后续业务分类和人工修正共用了一个可修改字段。统一方案需要把三类信息拆开，并让配置与订单执行解耦。</p>
 
-    <script src="./assets/admin-shell.js?v=20261114-3"></script>
-    <script src="./assets/state-v2.js?v=20261114-4"></script>
-    <script src="./assets/app.js?v=20261114-5"></script>
+            <div class="principle-grid">
+              <article>
+                <span>01</span>
+                <h3>原始标签不可变</h3>
+                <p>自营固定写入“闪回-闪回成交”，生态固定写入“买家-买家成交”，用于证明成交归属。</p>
+              </article>
+              <article>
+                <span>02</span>
+                <h3>当前标签唯一</h3>
+                <p>页面、报表和业务查询读取唯一当前标签；命中规则时只替换当前标签。</p>
+              </article>
+              <article>
+                <span>03</span>
+                <h3>高优先级胜出</h3>
+                <p>多条规则可命中，但只能有一条最高优先级规则输出标签；冲突必须在发布前阻断。</p>
+              </article>
+              <article>
+                <span>04</span>
+                <h3>变更全程留痕</h3>
+                <p>每个版本保留提交、审核、发布、运行时命中和人工修复证据。</p>
+              </article>
+            </div>
+
+            <div class="callout is-green">
+              <span>核心结论</span>
+              <p>系统统一的是标签定义、规则与治理流程，两个部门仍可维护各自业务口径；同一订单不会因两个部门工具差异生成多个当前标签。</p>
+            </div>
+          </section>
+
+          <section id="scope" class="doc-section">
+            <div class="section-kicker">02 / SCOPE</div>
+            <h2>本期范围与不做事项</h2>
+            <div class="scope-grid">
+              <div class="scope-list is-included">
+                <h3><span>✓</span>本期包含</h3>
+                <ul>
+                  <li>自营、生态及共用标签的新增、编辑、停用与审核。</li>
+                  <li>受控字段规则、优先级、冲突检查与只读试算。</li>
+                  <li>原始标签保护、唯一当前标签和订单事件自动更新。</li>
+                  <li>提交人与审核人分离，共用标签双方确认。</li>
+                  <li>经审批的异常修复或重算，以及完整审计追溯。</li>
+                </ul>
+              </div>
+              <div class="scope-list is-excluded">
+                <h3><span>−</span>明确不做</h3>
+                <ul>
+                  <li>一个订单并存多个当前业务标签。</li>
+                  <li>运营直接编辑订单标签值。</li>
+                  <li>任意表达式、SQL、脚本或 AI 自动推断标签。</li>
+                  <li>新规则默认回算全部历史订单。</li>
+                  <li>首期跨部门分成、结算拆分或自由 BI 配置。</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section id="model" class="doc-section">
+            <div class="section-kicker">03 / LABEL MODEL</div>
+            <h2>三个标签字段，职责必须清楚</h2>
+            <div class="label-model">
+              <article class="base-model">
+                <span>基础标签</span>
+                <strong>闪回-闪回成交</strong>
+                <small>自营订单 · 系统保护</small>
+              </article>
+              <i>+</i>
+              <article class="base-model">
+                <span>基础标签</span>
+                <strong>买家-买家成交</strong>
+                <small>生态订单 · 系统保护</small>
+              </article>
+              <i>→</i>
+              <article class="config-model">
+                <span>统一配置</span>
+                <strong>业务标签定义</strong>
+                <small>编码、部门、分类、说明、责任人、版本</small>
+              </article>
+              <i>→</i>
+              <article class="result-model">
+                <span>订单结果</span>
+                <strong>唯一当前标签</strong>
+                <small>原始标签始终保留</small>
+              </article>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>对象</th><th>成交时</th><th>后续变化</th><th>业务用途</th></tr></thead>
+                <tbody>
+                  <tr><td>原始业务标签</td><td>按部门写入</td><td>永远不可变</td><td>证明成交归属</td></tr>
+                  <tr><td>业务标签定义</td><td>不直接写入</td><td>审核发布后形成新版本</td><td>定义规则目标与口径</td></tr>
+                  <tr><td>当前业务标签</td><td>初始化为原始标签</td><td>规则或审批后人工修复可更新</td><td>查询、展示与统计</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="rules" class="doc-section">
+            <div class="section-kicker">04 / BUSINESS RULES</div>
+            <h2>五个决定订单结果的规则</h2>
+            <div class="rule-list">
+              <article><span>R1</span><div><h3>成交写入原始标签</h3><p>自营固定为“闪回-闪回成交”，生态固定为“买家-买家成交”；接口、页面和规则均不能覆盖。</p></div><b>P0</b></article>
+              <article><span>R2</span><div><h3>规则只输出一个当前标签</h3><p>全部生效规则参与计算，最高优先级唯一规则胜出；无命中时当前标签保持原始标签。</p></div><b>P0</b></article>
+              <article><span>R3</span><div><h3>冲突必须发布前处理</h3><p>同部门、同优先级、条件可重叠且目标标签不同时禁止发布；运行时发现冲突则保留原值并告警。</p></div><b>P0</b></article>
+              <article><span>R4</span><div><h3>默认仅影响未来</h3><p>新规则审核发布后，仅处理新订单及事件发生时间晚于生效时间的已登记事件，不回算历史订单。</p></div><b>P0</b></article>
+              <article><span>R5</span><div><h3>人工变更必须审批</h3><p>运营只能发起异常修复或重算申请；审批通过前订单不变，通过后也仅更新当前标签。</p></div><b>P0</b></article>
+            </div>
+
+            <div class="flow-panel">
+              <div class="flow-head"><span>订单标签执行链路</span><b>事件驱动 · 版本可复现</b></div>
+              <div class="flow-steps">
+                <div><span>01</span><strong>订单成交</strong><small>写入原始标签</small></div><i>→</i>
+                <div><span>02</span><strong>加载生效版本</strong><small>按事件时间匹配</small></div><i>→</i>
+                <div><span>03</span><strong>计算全部候选</strong><small>记录匹配与未命中</small></div><i>→</i>
+                <div><span>04</span><strong>最高优先级胜出</strong><small>输出唯一标签</small></div><i>→</i>
+                <div><span>05</span><strong>保存快照</strong><small>规则、版本、事件 ID</small></div>
+              </div>
+            </div>
+          </section>
+
+          <section id="interaction" class="doc-section">
+            <div class="section-kicker">05 / INTERACTION DESIGN</div>
+            <h2>页面不是功能拼盘，每个入口对应一个治理动作</h2>
+            <div class="interaction-grid">
+              <article><span>01</span><h3>治理总览</h3><p>判断生效版本、待审风险、处理失败和最近订单变化。</p><a href="./prototype.html#overview">查看页面 →</a></article>
+              <article><span>02</span><h3>业务标签</h3><p>维护标签定义、编码、部门和规则引用，并提交审核。</p><a href="./prototype.html#labels">查看页面 →</a></article>
+              <article><span>03</span><h3>标签规则</h3><p>构建受控条件、设置优先级、检查冲突并提交发布。</p><a href="./prototype.html#rules">查看页面 →</a></article>
+              <article><span>04</span><h3>审核与发布</h3><p>确认配置差异、双部门审核进度和发布边界。</p><a href="./prototype.html#approvals">查看页面 →</a></article>
+              <article><span>05</span><h3>规则试算</h3><p>解释命中、未命中和冲突，验证规则是否表达业务口径。</p><a href="./prototype.html#simulator">查看页面 →</a></article>
+              <article><span>06</span><h3>订单追溯</h3><p>还原原始标签、当前标签、规则版本与人工修复审批。</p><a href="./prototype.html#trace">查看页面 →</a></article>
+              <article><span>07</span><h3>运行与权限</h3><p>集中评审事件契约、失败兜底、角色权限和审计流水。</p><a href="./prototype.html#runtime">查看页面 →</a></article>
+            </div>
+
+            <h3 class="subhead">关键交互说明</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>场景</th><th>关键操作</th><th>系统反馈</th><th>权限边界</th></tr></thead>
+                <tbody>
+                  <tr><td>新增业务标签</td><td>填写编码、部门、分类和说明</td><td>编码重复立即阻止；提交后进入待审核</td><td>配置人或平台管理员可提交</td></tr>
+                  <tr><td>编辑已生效标签</td><td>生成新版本并提交审核</td><td>原版本继续运行，新版未发布前不参与计算</td><td>提交人不能审核本人事项</td></tr>
+                  <tr><td>规则冲突</td><td>同部门、同优先级且条件重叠</td><td>实时标红并禁止提交审核</td><td>试算与检查对所有配置角色可见</td></tr>
+                  <tr><td>共用标签</td><td>自营和生态分别确认</td><td>仅单方确认时保持待审核，双方完成后发布</td><td>平台复核不等同双方确认</td></tr>
+                  <tr><td>人工修复</td><td>选择目标标签并填写证据原因</td><td>只生成审批事项，订单值在审批前不变</td><td>仅异常运营或平台管理员可发起</td></tr>
+                  <tr><td>无权限访问</td><td>只读角色查看后台</td><td>写操作隐藏或禁用，接口仍需二次校验</td><td>按角色与部门数据范围控制</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="prototype" class="doc-section prototype-section">
+            <div class="section-kicker">06 / INTERACTIVE PROTOTYPE</div>
+            <div class="section-heading">
+              <div>
+                <h2>在评审文档内直接体验关键流程</h2>
+                <p>左侧场景导航、中间业务界面、下方评审旁注。可在原型顶部切换配置人、审核人、平台管理员和只读角色。</p>
+              </div>
+              <a class="button button-primary" href="./prototype.html" target="_blank" rel="noopener">全屏打开</a>
+            </div>
+            <div class="prototype-frame">
+              <div class="prototype-toolbar">
+                <span><i></i>交互原型</span>
+                <span>脱敏演示 · 本地状态 · 不连接真实系统</span>
+                <a href="./prototype.html" target="_blank" rel="noopener">新窗口打开 ↗</a>
+              </div>
+              <iframe src="./prototype.html#overview" title="订单业务标签治理可交互原型" loading="lazy"></iframe>
+            </div>
+            <div class="prototype-guide">
+              <div><b>建议 1</b><p>在“规则试算”依次运行自营多机器人、生态企业购、生态售后退货和无规则命中。</p></div>
+              <div><b>建议 2</b><p>切换生态审核人和自营审核人，完成共用标签的双方确认。</p></div>
+              <div><b>建议 3</b><p>进入订单追溯，发起异常修复并确认审批前订单标签保持原值。</p></div>
+            </div>
+          </section>
+
+          <section id="states" class="doc-section">
+            <div class="section-kicker">07 / STATE &amp; FAILURE</div>
+            <h2>业务人员与研发必须看到同一组状态</h2>
+            <div class="state-columns">
+              <div>
+                <h3>配置状态</h3>
+                <div class="state-flow">
+                  <span>草稿</span><i>→</i><span>待审核</span><i>→</i><span class="is-success">已通过</span><i>→</i><span class="is-success">生效中</span><i>→</i><span>已停用</span>
+                </div>
+                <p>驳回退回草稿；已生效版本在修改审核期间继续运行，不允许被直接覆盖。</p>
+              </div>
+              <div>
+                <h3>订单标签任务</h3>
+                <div class="state-flow">
+                  <span>待处理</span><i>→</i><span>计算中</span><i>→</i><span class="is-success">已更新</span><i>或</i><span class="is-danger">处理失败</span><i>→</i><span class="is-warning">待修复</span>
+                </div>
+                <p>标签服务失败不得阻断订单成交；失败任务可重试，人工修复必须审批。</p>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>异常场景</th><th>系统处理</th><th>订单结果</th><th>人工处理</th></tr></thead>
+                <tbody>
+                  <tr><td>缺少部门</td><td>不改写当前标签，进入异常队列</td><td>成交正常</td><td>补齐事实或提交审批修复</td></tr>
+                  <tr><td>同优先级冲突</td><td>阻断发布；运行时保持原标签并告警</td><td>成交正常</td><td>调整优先级或条件后重新提交</td></tr>
+                  <tr><td>标签服务超时</td><td>订单成功，标签任务重试</td><td>成交正常</td><td>重试失败后按异常队列处理</td></tr>
+                  <tr><td>重复事件投递</td><td>按订单号、事件类型和事件 ID 幂等</td><td>仅执行一次</td><td>无需人工处理</td></tr>
+                  <tr><td>发布与事件并发</td><td>按事件发生时间选择当时生效版本</td><td>结果可复现</td><td>通过版本快照核对</td></tr>
+                  <tr><td>历史存量标签</td><td>导入待确认，不自动上线</td><td>历史值保持</td><td>业务逐项确认映射</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="permission" class="doc-section">
+            <div class="section-kicker">08 / PERMISSION &amp; AUDIT</div>
+            <h2>提交、审核、执行职责分离</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>角色</th><th>可见范围</th><th>允许操作</th><th>明确限制</th></tr></thead>
+                <tbody>
+                  <tr><td>自营 / 生态配置人</td><td>本部门标签、规则与追溯</td><td>创建草稿、提交审核</td><td>不能审核本人事项</td></tr>
+                  <tr><td>自营 / 生态审核人</td><td>本部门待审事项</td><td>确认或驳回</td><td>不能审核本人提交内容</td></tr>
+                  <tr><td>平台管理员</td><td>全局配置、编码和共用标签</td><td>复核与处理全局冲突</td><td>不能替代部门双审</td></tr>
+                  <tr><td>异常运营</td><td>异常订单与修复事项</td><td>发起修复或重算申请</td><td>不能直接改订单标签</td></tr>
+                  <tr><td>业务只读</td><td>标签、规则与订单追溯</td><td>查询和筛选</td><td>所有写操作禁用</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="audit-band">
+              <div><span>AU</span><p><b>标签与规则</b>保存操作者、角色、差异、版本和审批依据。</p></div>
+              <div><span>EV</span><p><b>订单事件</b>保存事件 ID、规则 ID、规则版本、命中前后值。</p></div>
+              <div><span>FD</span><p><b>失败任务</b>保存失败原因、重试次数和人工修复审批编号。</p></div>
+            </div>
+          </section>
+
+          <section id="acceptance" class="doc-section">
+            <div class="section-kicker">09 / ACCEPTANCE</div>
+            <h2>G2 阶段的核心验收结论</h2>
+            <div class="acceptance-list">
+              <label><input type="checkbox" checked disabled /><span><b>原始标签</b>自营与生态成交时分别写入固定原始标签。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>唯一当前标签</b>所有规则竞争后仅输出一个当前标签。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>默认不追溯</b>新规则发布不回算历史订单。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>冲突阻断</b>同优先级条件重叠时禁止发布。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>权限分离</b>提交人不能自审，共用标签双方确认。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>人工修复</b>先审批后执行，原始标签保持不变。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>失败兜底</b>标签服务异常不阻断订单成交。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>追溯证据</b>可从订单还原规则版本、事件和前后值。</span></label>
+            </div>
+          </section>
+
+          <section id="approval-review" class="doc-section">
+            <div class="section-kicker">10 / OPEN DECISIONS</div>
+            <h2>G2 评审需要确认的 5 个问题</h2>
+            <ol class="question-list">
+              <li><span>Q-001</span><div><b>存量标签如何导入</b><p>白板标签的部门、编码、数据来源与历史映射，由两个部门业务负责人确认。</p></div></li>
+              <li><span>Q-002</span><div><b>哪些后续事件允许重算</b><p>候选包括渠道修正、业务类型变化、售后状态变化和物权生效，需形成正式事件契约。</p></div></li>
+              <li><span>Q-003</span><div><b>审核岗位如何配置</b><p>确认部门审核人岗位、共用标签双审顺序和平台复核职责。</p></div></li>
+              <li><span>Q-004</span><div><b>历史报表如何切换口径</b><p>默认不追溯，但需明确报表从何时开始标识新口径及切换时间。</p></div></li>
+              <li><span>Q-005</span><div><b>异常修复由谁执行</b><p>明确发起、审核、执行责任人，以及首期批量重算的审批方式。</p></div></li>
+            </ol>
+
+            <div class="gate-card">
+              <div><span>G2</span><h3>方案与交互评审</h3><p>确认业务规则、页面流程、异常与权限后，才进入研发规格和正式测试用例。</p></div>
+              <a class="button button-primary" href="./prototype.html">进入交互原型</a>
+            </div>
+          </section>
+
+          <footer class="doc-footer">
+            <span>REQ-20261114-001 · PRD v0.4 G2 评审版</span>
+            <span>文档状态：评审中 · 非研发执行依据</span>
+          </footer>
+        </article>
+      </div>
+    </main>
   </body>
 </html>

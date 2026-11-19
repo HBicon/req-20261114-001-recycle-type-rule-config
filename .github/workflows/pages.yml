@@ -1,4 +1,4 @@
-name: 发布回收类型规则配置评审站
+name: 发布订单业务标签治理评审站
 
 on:
   push:
@@ -29,10 +29,22 @@ jobs:
         with:
           enablement: true
 
-      - name: 打包静态站点
+      - name: 打包公网评审站点
+        shell: bash
+        run: |
+          mkdir -p _site/assets
+          cp index.html prototype.html prd.md _site/
+          cp assets/admin-shell.css _site/assets/
+          cp assets/admin-shell.js _site/assets/
+          cp assets/app.css _site/assets/
+          cp assets/app.js _site/assets/
+          cp assets/docs.css _site/assets/
+          cp assets/state-v2.js _site/assets/
+
+      - name: 上传静态站点
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - name: 发布到 Pages
         id: deployment

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="订单业务标签统一配置、审核与自动更新机制交互原型，用于 G2 方案评审。"
+    />
+    <title>业务标签治理台｜G2 交互原型</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230f766e'/%3E%3Cpath d='M17 20h30v7H17zm0 11h16v7H17zm19 0h11v7H36zM17 42h30v7H17z' fill='%23ffffff'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./assets/app.css?v=20261119-6" />
+    <link rel="stylesheet" href="./assets/admin-shell.css?v=20261114-1" />
+  </head>
+  <body class="admin-body">
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+
+    <div class="admin-shell" id="admin-shell" data-storage-key="recycle-rule-admin-collapsed">
+      <aside class="admin-sider" id="admin-sider" aria-label="后台菜单">
+        <div class="admin-sider-brand">
+          <a class="admin-brand" href="#overview" aria-label="业务标签治理台首页">
+            <span class="admin-brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 5h16M4 11h9M4 17h16" />
+                <path d="M15 9h5v5h-5z" />
+              </svg>
+            </span>
+            <span class="admin-brand-text">
+              <strong>业务标签治理台</strong>
+              <small>ORDER LABEL GOVERNANCE</small>
+            </span>
+          </a>
+          <button class="admin-sider-close" id="admin-sider-close" type="button" aria-label="关闭菜单">×</button>
+        </div>
+
+        <nav class="admin-menu" id="side-nav" aria-label="主导航">
+          <section class="admin-menu-group" aria-labelledby="menu-group-workbench">
+            <div class="admin-menu-group-title" id="menu-group-workbench">工作台</div>
+            <a class="admin-menu-item" href="#overview" data-nav="overview" aria-current="page" title="总览">
+              <span class="admin-menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
+              </span>
+              <span class="admin-menu-label">总览</span>
+            </a>
+          </section>
+
+          <section class="admin-menu-group" aria-labelledby="menu-group-config">
+            <div class="admin-menu-group-title" id="menu-group-config">配置</div>
+            <a class="admin-menu-item" href="#labels" data-nav="labels" title="业务标签">
+              <span class="admin-menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16" /><circle cx="8" cy="7" r="1.6" fill="currentColor" stroke="none" /><circle cx="15" cy="12" r="1.6" fill="currentColor" stroke="none" /><circle cx="10" cy="17" r="1.6" fill="currentColor" stroke="none" /></svg>
+              </span>
+              <span class="admin-menu-label">业务标签</span>
+            </a>
+            <a class="admin-menu-item" href="#categories" data-nav="categories" title="标签分类">
+              <span class="admin-menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 7.2 12 11.4l7.5-4.2L12 3Z" /><path d="m4.5 12 7.5 4.2 7.5-4.2M4.5 16.8 12 21l7.5-4.2" /></svg>
+              </span>
+              <span class="admin-menu-label">标签分类</span>
+            </a>
+          </section>
+
+          <section class="admin-menu-group" aria-labelledby="menu-group-rules">
+            <div class="admin-menu-group-title" id="menu-group-rules">规则与事件</div>
+            <a class="admin-menu-item" href="#rules" data-nav="rules" title="标签规则">
+              <span class="admin-menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5" /><circle cx="18" cy="6" r="2.5" /><circle cx="12" cy="18" r="2.5" /><path d="M8.5 6h7M7.2 8.4l3.6 7.2M16.8 8.4l-3.6 7.2" /></svg>
+              </span>
+              <span class="admin-menu-label">标签规则</span>
+            </a>
+            <a class="admin-menu-item" href="#runtime" data-nav="runtime" title="运行与权限">
+              <span class="admin-menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 7v5c0 4.2 3 7.4 7.5 9 4.5-1.6 7.5-4.8 7.5-9V7L12 3Z" /><path d="m9 12 2 2 4-5" /></svg>
+              </span>
+              <span class="admin-menu-label">运行与权限</span>
+            </a>
+            <a class="admin-menu-item" href="#approvals" data-nav="approvals" title="审核与发布">
+              <span class="admin-menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3M20 17H7l3 3" /></svg>
+              </span>
+              <span class="admin-menu-label">审核与发布</span>
+            </a>
+          </section>
+
+          <section class="admin-menu-group" aria-labelledby="menu-group-verify">
+            <div class="admin-menu-group-title" id="menu-group-verify">验证与追溯</div>
+            <a class="admin-menu-item" href="#simulator" data-nav="simulator" title="规则试算">
+              <span class="admin-menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v5l-5 9.2A2.2 2.2 0 0 0 6.9 21h10.2a2.2 2.2 0 0 0 1.9-3.8L14 8V3" /><path d="M7.5 15h9" /></svg>
+              </span>
+              <span class="admin-menu-label">规则试算</span>
+            </a>
+            <a class="admin-menu-item" href="#trace" data-nav="trace" title="订单追溯">
+              <span class="admin-menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5M12 7v5l3 2" /></svg>
+              </span>
+              <span class="admin-menu-label">订单追溯</span>
+            </a>
+          </section>
+        </nav>
+
+        <div class="admin-sider-footer">
+          <div class="admin-sider-status"><span>配置版本</span><strong>v1.4</strong></div>
+          <div class="admin-sider-status"><span>评审状态</span><strong><i aria-hidden="true"></i>G2 评审中</strong></div>
+        </div>
+      </aside>
+
+      <div class="admin-main">
+        <header class="admin-header">
+          <div class="admin-header-left">
+            <button class="admin-sidebar-trigger" id="admin-sidebar-trigger" type="button" aria-controls="admin-sider" aria-expanded="true" aria-label="收起菜单">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+            </button>
+            <div class="admin-header-title" id="admin-header-title">总览</div>
+            <span class="admin-header-divider" aria-hidden="true"></span>
+            <span class="admin-env"><i aria-hidden="true"></i><span>脱敏演示环境</span></span>
+          </div>
+          <div class="admin-header-right">
+            <span class="admin-demo-badge">REQ-20261114-001 · v0.4</span>
+            <label class="role-switcher">
+              <span>评审视角</span>
+              <select id="role-switcher" aria-label="切换评审角色"></select>
+            </label>
+            <button class="button button-quiet" type="button" data-action="reset-demo">重置</button>
+            <a class="button button-quiet" href="./index.html">PRD 文档</a>
+            <a class="button button-primary" href="./index.html#prototype">G2 评审说明</a>
+            <div class="admin-user" aria-label="当前用户：标签管理员">
+              <span class="admin-avatar" id="admin-avatar" aria-hidden="true">林</span>
+              <span class="admin-user-name" id="admin-user-name">林澜</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="workspace admin-workspace" id="main-content" tabindex="-1">
+          <div class="context-line">
+            <div class="breadcrumb" id="breadcrumb" aria-label="面包屑"></div>
+            <div class="context-meta">
+              <span class="context-chip"><i class="chip-dot"></i>当前为 G2 方案评审</span>
+              <span class="context-chip mono" id="context-rule-count">13 ACTIVE RULES</span>
+            </div>
+          </div>
+          <div class="view-layout">
+            <div id="view-root"></div>
+            <aside class="review-rail" id="review-rail" aria-label="当前场景评审说明"></aside>
+          </div>
+          <footer class="workspace-footer">
+            <span>物资回收 · 订单业务标签治理 · REQ-20261114-001</span>
+            <span>场景、状态、权限、异常与降级均已覆盖 · 脱敏演示 · 不连接真实业务系统</span>
+          </footer>
+        </main>
+      </div>
+
+      <button class="admin-mask" id="admin-mask" type="button" aria-label="关闭菜单"></button>
+    </div>
+
+    <dialog class="app-dialog" id="app-dialog" aria-labelledby="dialog-title">
+      <div id="dialog-content"></div>
+    </dialog>
+
+    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="./assets/admin-shell.js?v=20261114-3"></script>
+    <script src="./assets/state-v2.js?v=20261119-2"></script>
+    <script src="./assets/app.js?v=20261119-4"></script>
+  </body>
+</html>
