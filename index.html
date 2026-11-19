@@ -41,7 +41,7 @@
     <main>
       <section class="doc-hero">
         <div class="doc-hero-main">
-          <div class="doc-meta-line"><span>REQ-20261114-001</span><i></i><span>PRD v0.6</span><i></i><span>更新于 2026-11-19</span></div>
+          <div class="doc-meta-line"><span>REQ-20261114-001</span><i></i><span>PRD v0.7</span><i></i><span>更新于 2026-11-19</span></div>
           <h1>订单业务标签<br />统一配置、审核与自动更新</h1>
           <p>一套标签定义服务自营与生态两个部门。订单成交时固定写入原始标签，命中已审核生效规则后只更新唯一当前标签，并完整保留版本、事件和人工审批证据。</p>
           <div class="hero-actions">
@@ -191,7 +191,7 @@
               <article><span>R3</span><div><h3>冲突必须发布前处理</h3><p>同部门、同优先级、条件可重叠且目标标签不同时禁止发布；运行时发现冲突则保留原值并告警。</p></div><b>P0</b></article>
               <article><span>R4</span><div><h3>默认仅影响未来</h3><p>新规则审核发布后，仅处理新订单及事件发生时间晚于生效时间的已登记事件，不回算历史订单。</p></div><b>P0</b></article>
               <article><span>R5</span><div><h3>人工变更必须审批</h3><p>运营只能发起异常修复或重算申请；审批通过前订单不变，通过后也仅更新当前标签。</p></div><b>P0</b></article>
-              <article><span>R6</span><div><h3>部门单选，分类决定明细</h3><p>新标签只能在自营、生态中选择一个部门；机器人成交、渠道成交、指定手机号必须补充对应机器、渠道或手机号。</p></div><b>P0</b></article>
+              <article><span>R6</span><div><h3>分类单选且配置唯一</h3><p>新标签只能选择一个部门；保值换新、企业购在同部门唯一；同一渠道、手机号或机器人不能绑定多个生效配置。</p></div><b>P0</b></article>
             </div>
 
             <div class="flow-panel">
@@ -230,13 +230,25 @@
               </div>
             </div>
 
+            <div class="flow-panel">
+              <div class="flow-head"><span>配置唯一性控制</span><b>提交检查 · 发布复查</b></div>
+              <div class="flow-steps">
+                <div><span>01</span><strong>选择分类</strong><small>受控分类字典</small></div><i>→</i>
+                <div><span>02</span><strong>识别约束</strong><small>分类唯一或绑定唯一</small></div><i>→</i>
+                <div><span>03</span><strong>实时检查</strong><small>展示占用配置</small></div><i>→</i>
+                <div><span>04</span><strong>阻断重复</strong><small>禁止提交冲突值</small></div><i>→</i>
+                <div><span>05</span><strong>发布复查</strong><small>再次校验生效配置</small></div>
+              </div>
+            </div>
+
             <h3 class="subhead">关键交互说明</h3>
             <div class="table-wrap">
               <table>
                 <thead><tr><th>场景</th><th>关键操作</th><th>系统反馈</th><th>权限边界</th></tr></thead>
                 <tbody>
-                  <tr><td>新增业务标签</td><td>填写编码，在自营、生态中选择一个部门，并选择分类</td><td>分类明细联动；缺少绑定值、手机号非法或编码重复时阻止提交</td><td>配置人或平台管理员可提交</td></tr>
-                  <tr><td>分类绑定</td><td>选择机器人、渠道或指定手机号</td><td>只显示当前分类对应输入项；手机号在列表和审核摘要中脱敏</td><td>选项来自统一受控字典</td></tr>
+                  <tr><td>新增业务标签</td><td>填写编码，在自营、生态中选择一个部门，并选择受控分类</td><td>分类明细联动；编码、非录入分类或绑定值重复时阻止提交</td><td>配置人或平台管理员可提交</td></tr>
+                  <tr><td>分类唯一性</td><td>查看机器人、渠道、手机号、企业购或保值换新配置</td><td>已占用绑定项禁用；非录入分类同部门只保留一个配置</td><td>规则由服务端再次校验</td></tr>
+                  <tr><td>标签分类字典</td><td>选择标签分类</td><td>不提供“自定义业务”，仅展示六个受控分类</td><td>分类编码保持稳定</td></tr>
                   <tr><td>编辑已生效标签</td><td>生成新版本并提交审核</td><td>原版本继续运行，新版未发布前不参与计算</td><td>提交人不能审核本人事项</td></tr>
                   <tr><td>规则冲突</td><td>同部门、同优先级且条件重叠</td><td>实时标红并禁止提交审核</td><td>试算与检查对所有配置角色可见</td></tr>
                   <tr><td>执行优先级</td><td>在规则构建器输入 1～999</td><td>输入框、±10、滑块和部门排序预览同步更新</td><td>数值越大越先执行</td></tr>
@@ -362,7 +374,7 @@
           </section>
 
           <footer class="doc-footer">
-            <span>REQ-20261114-001 · PRD v0.6 G2 评审版</span>
+            <span>REQ-20261114-001 · PRD v0.7 G2 评审版</span>
             <span>文档状态：评审中 · 非研发执行依据</span>
           </footer>
         </article>

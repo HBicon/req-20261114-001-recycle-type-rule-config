@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'business-label-governance-v8';
+  const STORAGE_KEY = 'business-label-governance-v9';
 
   const DEPARTMENTS = [
     { id: 'self', name: '自营', originalLabel: '闪回-闪回成交', color: 'green' },
@@ -76,6 +76,8 @@
     }
   };
 
+  const SINGLE_CONFIG_CATEGORIES = new Set(['cat_enterprise', 'cat_value']);
+
   const VIEW_META = {
     overview: { label: '治理总览', group: '工作台', code: 'OVERVIEW' },
     labels: { label: '业务标签', group: '配置', code: 'LABELS' },
@@ -112,7 +114,7 @@
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) return createDefaultState();
       const parsed = JSON.parse(saved);
-      if (!parsed || parsed.version !== 8 || !Array.isArray(parsed.labels)) return createDefaultState();
+      if (!parsed || parsed.version !== 9 || !Array.isArray(parsed.labels)) return createDefaultState();
       return parsed;
     } catch (error) {
       return createDefaultState();
@@ -237,6 +239,48 @@
     return LABEL_CATEGORY_FIELDS[categoryId]?.label || '分类绑定';
   }
 
+  function uniquenessRule(categoryId) {
+    if (SINGLE_CONFIG_CATEGORIES.has(categoryId)) {
+      return {
+        type: 'single',
+        tag: '同部门唯一',
+        title: '该非录入分类在同一部门只允许一个配置',
+        description: '已生效或待审核配置均占用该分类，必须调整、停用或等待现有配置结束。'
+      };
+    }
+    if (LABEL_CATEGORY_FIELDS[categoryId]?.type) {
+      return {
+        type: 'binding',
+        tag: '绑定值唯一',
+        title: '同一渠道、手机号或机器人只能绑定一个生效标签',
+        description: '唯一性跨部门校验；待审核配置可并存，但发布时会再次检查已生效绑定。'
+      };
+    }
+    return null;
+  }
+
+  function normalizedCategoryValue(categoryId, value) {
+    const normalized = String(value || '').trim();
+    return categoryId === 'cat_phone' ? normalized.replace(/\D/g, '') : normalized;
+  }
+
+  function labelUniquenessConflicts(candidate) {
+    if (!candidate?.categoryId) return [];
+    const rule = uniquenessRule(candidate.categoryId);
+    if (!rule) return [];
+    const candidateValue = normalizedCategoryValue(candidate.categoryId, candidate.categoryConfig?.value);
+    if (rule.type === 'binding' && !candidateValue) return [];
+    return state.labels.filter((label) => {
+      if (label.id === candidate.id || label.categoryId !== candidate.categoryId) return false;
+      if (rule.type === 'single') {
+        if (!['enabled', 'pending'].includes(label.status)) return false;
+        return normalizeDepartment(label.department) === normalizeDepartment(candidate.department);
+      }
+      if (label.status !== 'enabled') return false;
+      return normalizedCategoryValue(label.categoryId, label.categoryConfig?.value) === candidateValue;
+    });
+  }
+
   function maskPhone(value) {
     const phone = String(value || '').replace(/\D/g, '');
     return /^1[3-9]\d{9}$/.test(phone) ? `${phone.slice(0, 3)}****${phone.slice(-4)}` : String(value || '');
@@ -246,10 +290,19 @@
     const field = LABEL_CATEGORY_FIELDS[categoryId];
     if (!field) return '';
     const currentValue = label?.categoryConfig?.value || '';
+    const usedLabels = field.type === 'select'
+      ? state.labels.filter((item) => item.id !== label?.id
+        && item.categoryId === categoryId
+        && item.status === 'enabled'
+        && item.categoryConfig?.value)
+      : [];
     const input = field.type === 'select'
       ? `<select class="select" name="categoryValue" required>
           <option value="">请选择${escapeHtml(field.label.replace('选择', ''))}</option>
-          ${field.options.map((option) => `<option value="${escapeHtml(option.id)}" ${option.id === currentValue ? 'selected' : ''}>${escapeHtml(option.name)}</option>`).join('')}
+          ${field.options.map((option) => {
+            const owner = usedLabels.find((item) => item.categoryConfig.value === option.id);
+            return `<option value="${escapeHtml(option.id)}" ${option.id === currentValue ? 'selected' : ''} ${owner && option.id !== currentValue ? 'disabled' : ''}>${escapeHtml(option.name)}${owner ? ` · 已由「${escapeHtml(owner.name)}」生效` : ''}</option>`;
+          }).join('')}
         </select>`
       : `<input class="input mono" type="tel" inputmode="numeric" name="categoryValue" required maxlength="11" value="${escapeHtml(currentValue)}" placeholder="${escapeHtml(field.placeholder)}" pattern="1[3-9][0-9]{9}" title="请输入 11 位手机号" />`;
     return `
@@ -268,6 +321,83 @@
     const label = form.dataset.id ? findLabel(form.dataset.id) : null;
     const relevantLabel = label?.categoryId === categoryId ? label : null;
     container.innerHTML = categoryFieldMarkup(categoryId, relevantLabel);
+    updateLabelUniquenessCheck(form);
+  }
+
+  function updateLabelUniquenessCheck(form) {
+    const panel = form?.querySelector('#label-uniqueness-check');
+    if (!panel) return;
+    const categoryId = String(form.elements.categoryId?.value || '');
+    const rule = uniquenessRule(categoryId);
+    if (!rule) {
+      panel.innerHTML = '';
+      panel.className = 'label-uniqueness-check';
+      return;
+    }
+    const department = String(new FormData(form).get('department') || '');
+    const rawValue = String(form.elements.categoryValue?.value || '').trim();
+    const editingId = form.dataset.id || '';
+    const conflicts = labelUniquenessConflicts({
+      id: editingId,
+      department,
+      categoryId,
+      categoryConfig: rawValue ? { value: rawValue } : null
+    });
+    const pendingBindings = rule.type === 'binding' && rawValue
+      ? state.labels.filter((label) => label.id !== editingId
+        && label.categoryId === categoryId
+        && label.status === 'pending'
+        && normalizedCategoryValue(label.categoryId, label.categoryConfig?.value) === normalizedCategoryValue(categoryId, rawValue))
+      : [];
+    const selectedOption = LABEL_CATEGORY_FIELDS[categoryId]?.options?.find((option) => option.id === rawValue);
+    const bindingText = rawValue
+      ? categoryId === 'cat_phone' ? maskPhone(rawValue) : (selectedOption?.name || rawValue)
+      : '待选择';
+    const availabilityText = rule.type === 'binding'
+      ? (LABEL_CATEGORY_FIELDS[categoryId]?.options || []).map((option) => ({
+        ...option,
+        owner: state.labels.find((label) => label.id !== editingId
+          && label.categoryId === categoryId
+          && label.status === 'enabled'
+          && label.categoryConfig?.value === option.id)
+      })).filter((option) => !option.owner)
+      : [];
+    panel.className = `label-uniqueness-check ${conflicts.length ? 'has-conflict' : ''}`;
+    panel.innerHTML = `
+      <div class="label-uniqueness-head">
+        <div><span>UNIQUENESS CHECK</span><h3>配置唯一性</h3></div>
+        <b>${escapeHtml(rule.tag)}</b>
+      </div>
+      <p><strong>${escapeHtml(rule.title)}</strong>${escapeHtml(rule.description)}</p>
+      <div class="label-uniqueness-meta">
+        <span>校验范围</span><strong>${rule.type === 'single' ? `${escapeHtml(departmentName(department))} · ${escapeHtml(categoryMeta(categoryId).name)}` : `${escapeHtml(categoryMeta(categoryId).name)} · ${escapeHtml(bindingText)}`}</strong>
+      </div>
+      ${rule.type === 'binding' ? `<div class="label-binding-availability"><span>当前可用</span>${availabilityText.length ? availabilityText.map((option) => `<b>${escapeHtml(option.name)}</b>`).join('') : '<strong>无可用绑定值</strong>'}</div>` : ''}
+      <div class="label-uniqueness-result ${conflicts.length ? 'is-danger' : 'is-success'}">
+        ${conflicts.length
+          ? `<span>!</span><div><strong>发现 ${conflicts.length} 个重复配置</strong><p>${conflicts.map((label) => `${escapeHtml(label.name)}（${label.status === 'enabled' ? '生效中' : '待审核'}）`).join('、')}</p></div>`
+          : `<span>✓</span><div><strong>${rule.type === 'binding' && !rawValue ? '选择绑定值后完成检查' : '当前配置未发现重复'}</strong><p>${pendingBindings.length ? `${pendingBindings.map((label) => escapeHtml(label.name)).join('、')} 使用同一绑定值但尚未生效，发布时仍需复查。` : '提交与发布时还会由服务端再次校验。'}</p></div>`}
+      </div>
+    `;
+    syncLabelSubmitState(form);
+  }
+
+  function syncLabelSubmitState(form) {
+    if (!form) return;
+    const button = document.querySelector('button[form="label-form"][type="submit"]');
+    if (!button) return;
+    const categoryId = String(form.elements.categoryId?.value || '');
+    const rule = uniquenessRule(categoryId);
+    const rawValue = String(form.elements.categoryValue?.value || '').trim();
+    const conflicts = labelUniquenessConflicts({
+      id: form.dataset.id || '',
+      department: String(new FormData(form).get('department') || ''),
+      categoryId,
+      categoryConfig: rawValue ? { value: rawValue } : null
+    });
+    const blocked = Boolean(rule && conflicts.length);
+    button.disabled = blocked;
+    button.title = blocked ? '存在重复配置，请先调整分类或绑定值' : '';
   }
 
   function departmentRadioGroup(selectedDepartment, legacyShared = false) {
@@ -740,7 +870,7 @@
     return {
       body,
       review: reviewPanel('标签定义：部门单选，分类决定明细', '本场景验证自营、生态标签的字段、分类联动、状态与权限边界。', [
-        { title: '关键规则', items: ['新建标签只能在自营、生态中选择一个部门。', '标签编码全局唯一，发布后不可修改。', '共用标签作为历史治理对象保留，不出现在新建选项。'] },
+        { title: '关键规则', items: ['新建标签只能在自营、生态中选择一个部门。', '标签编码全局唯一，发布后不可修改。', '非录入分类同部门唯一；渠道、手机号、机器人绑定值全局唯一。'] },
         { title: '分类联动', items: ['机器人成交必须选择机器人。', '渠道成交必须选择渠道。', '指定手机号必须录入合法手机号并按脱敏形式展示。'] },
         { title: '角色差异', items: [`当前角色为「${currentRole().title}」。`, hasCapability('label:submit') ? '可提交自营或生态标签，审核按归属部门自动路由。' : '新增、编辑和停用按钮被禁用。'] }
       ])
@@ -770,7 +900,7 @@
               <article class="taxonomy-card">
                 <div class="taxonomy-card-head">
                   <span class="taxonomy-index">${String(index + 1).padStart(2, '0')}</span>
-                  <code>${escapeHtml(category.code)}</code>
+                  <div><code>${escapeHtml(category.code)}</code>${category.uniqueness ? `<span class="taxonomy-uniqueness">${category.uniqueness === 'single' ? '同部门唯一' : '绑定值唯一'}</span>` : ''}</div>
                 </div>
                 <h2>${escapeHtml(category.name)}</h2>
                 <p>${escapeHtml(category.description)}</p>
@@ -799,8 +929,9 @@
     `;
     return {
       body,
-      review: reviewPanel('标签分类：只影响组织方式', '分类不是标签命中条件，评审重点是字段字典是否足以表达现存业务规则。', [
-        { title: '数据来源', items: ['分类和字段选项来自统一配置字典。', '分类编码发布后保持稳定。', '字段值由订单事实按事件版本提供。'] },
+      review: reviewPanel('标签分类：组织口径并约束唯一性', '分类负责组织标签，同时声明“同部门唯一”或“绑定值唯一”约束；分类不是订单命中条件。', [
+        { title: '数据来源', items: ['分类和字段选项来自统一配置字典。', '分类编码发布后保持稳定。', '自定义业务分类不再提供。'] },
+        { title: '唯一性', items: ['保值换新、企业购在同部门只允许一个启用或待审核配置。', '同一渠道、手机号、机器人不能绑定多个生效标签。'] },
         { title: '交互检查', items: ['点击分类中的标签可查看标签详情。', '点击“查看标签”会携带分类筛选进入标签列表。', '分类变更不会触发订单重算。'] },
         { title: '待确认', items: ['Q-001：存量标签的部门、编码与数据来源。', '字段字典是否需要支持枚举值级权限控制。'] }
       ])
@@ -1309,6 +1440,7 @@
           ${departmentRadioGroup(selectedDepartment, legacyShared)}
           <label class="field"><span>标签分类 <b>*</b></span><select class="select" name="categoryId" required>${state.categories.map((category) => `<option value="${escapeHtml(category.id)}" ${label?.categoryId === category.id ? 'selected' : ''}>${escapeHtml(category.name)}</option>`).join('')}</select><small class="field-help">分类决定下方需要补充的业务明细。</small></label>
           <div class="field-full" id="label-category-attribute">${categoryFieldMarkup(label?.categoryId || state.categories[0]?.id, label)}</div>
+          <div class="field-full label-uniqueness-check" id="label-uniqueness-check" aria-live="polite"></div>
           <label class="field field-full"><span>责任人 <b>*</b></span><input class="input" name="owner" required maxlength="30" value="${escapeHtml(label?.owner || currentRole().title.replace('配置人', '运营'))}" placeholder="负责日常维护与异常响应" /></label>
           <label class="field field-full"><span>业务说明 <b>*</b></span><textarea class="textarea" name="description" required maxlength="200" placeholder="说明业务含义、适用边界和不适用场景">${escapeHtml(label?.description || '')}</textarea></label>
         </div>
@@ -1324,6 +1456,7 @@
       footer: `<span class="dialog-foot-note">提交人：${escapeHtml(currentRole().name)} · ${escapeHtml(currentRole().title)}</span><div class="dialog-actions"><button class="button button-secondary" data-dialog-close>取消</button><button class="button button-primary" form="label-form" type="submit">提交审核</button></div>`,
       size: 'medium'
     });
+    updateLabelUniquenessCheck(document.getElementById('label-form'));
   }
 
   function submitLabel(form) {
@@ -1369,6 +1502,21 @@
         value: rawCategoryValue,
         name: categoryId === 'cat_phone' ? maskPhone(rawCategoryValue) : (selected?.name || rawCategoryValue)
       };
+    }
+    const uniquenessConflicts = labelUniquenessConflicts({
+      id: editingId,
+      department,
+      categoryId,
+      categoryConfig
+    });
+    if (uniquenessConflicts.length) {
+      const rule = uniquenessRule(categoryId);
+      const message = rule.type === 'single'
+        ? `同一部门已有“${uniquenessConflicts.map((item) => item.name).join('、')}”，该非录入分类只能保留一个有效或待审核配置。`
+        : `“${categoryConfig?.name || rawCategoryValue}”已绑定生效标签“${uniquenessConflicts.map((item) => item.name).join('、')}”，同一绑定值不能同时生效多个配置。`;
+      showToast('配置唯一性冲突', message, true);
+      updateLabelUniquenessCheck(form);
+      return;
     }
     const label = {
       id: editingId || `tag_${Date.now()}`,
@@ -1735,8 +1883,15 @@
     const required = approvalRolesFor(item);
     const pendingRoles = required.filter((role) => !item.approvals.some((approval) => approval.role === role));
     const isOwnSubmission = item.submitter === currentRole().name;
+    const labelSubject = item.type === 'label' && item.operation !== 'disable'
+      ? state.labels.find((label) => label.id === item.subjectId)
+      : null;
+    const uniquenessConflicts = labelSubject ? labelUniquenessConflicts(labelSubject) : [];
+    const approvalBlocked = uniquenessConflicts.length > 0;
+    const rejectable = !isOwnSubmission && pendingRoles.some((role) => canApproveDepartment(approvalRoleKey(role)));
     const approvableRoles = pendingRoles.filter((role) => {
       if (isOwnSubmission) return false;
+      if (approvalBlocked) return false;
       return canApproveDepartment(approvalRoleKey(role));
     });
     const typeName = item.type === 'label' ? '标签配置' : item.type === 'rule' ? '规则配置' : '订单异常修复';
@@ -1764,15 +1919,16 @@
         <h3>发布检查</h3>
         <div class="check-list">
           <div><span>✓</span><p>编码与配置格式检查通过</p></div>
-          <div><span>✓</span><p>${item.conflicts ? `${item.conflicts} 条冲突，发布被阻断` : '同优先级规则冲突检查通过'}</p></div>
+          <div><span>${approvalBlocked || item.conflicts ? '!' : '✓'}</span><p>${approvalBlocked ? `唯一性冲突：${uniquenessConflicts.map((label) => label.name).join('、')}，发布被阻断` : item.conflicts ? `${item.conflicts} 条冲突，发布被阻断` : '规则冲突与配置唯一性检查通过'}</p></div>
           <div><span>✓</span><p>默认不追溯历史订单，仅影响新订单及后续事件</p></div>
           <div><span>✓</span><p>操作将记录提交、审核、发布和前后版本差异</p></div>
         </div>
       </section>
+      ${approvalBlocked ? `<div class="notice is-warning"><span>!</span><p><strong>发布前唯一性校验未通过。</strong>同一非录入分类已存在有效配置，或同一渠道、手机号、机器人已绑定其他生效标签。请先调整冲突配置。</p></div>` : ''}
       ${item.submitter === currentRole().name ? '<div class="notice is-warning"><span>!</span><p>当前事项由你提交，系统禁止审核本人事项。请切换为独立审核人。</p></div>' : ''}
     `;
     const actionButtons = item.status === 'pending'
-      ? `<button class="button button-danger" data-action="reject-approval" data-id="${escapeHtml(item.id)}" ${approvableRoles.length ? '' : 'disabled'}>驳回</button>${approvableRoles.map((role) => `<button class="button button-primary" data-action="approve-approval" data-id="${escapeHtml(item.id)}" data-role="${escapeHtml(role)}">以${escapeHtml(role.replace('审核人', ''))}身份同意</button>`).join('') || `<button class="button button-primary" disabled>当前角色不可审核</button>`}`
+      ? `<button class="button button-danger" data-action="reject-approval" data-id="${escapeHtml(item.id)}" ${rejectable ? '' : 'disabled'}>驳回</button>${approvalBlocked ? '<button class="button button-primary" disabled>唯一性冲突 · 禁止发布</button>' : approvableRoles.map((role) => `<button class="button button-primary" data-action="approve-approval" data-id="${escapeHtml(item.id)}" data-role="${escapeHtml(role)}">以${escapeHtml(role.replace('审核人', ''))}身份同意</button>`).join('') || `<button class="button button-primary" disabled>当前角色不可审核</button>`}`
       : '<button class="button button-secondary" data-dialog-close>关闭</button>';
     openDialog({
       title: '审核事项详情',
@@ -1798,6 +1954,16 @@
     if (!canApproveDepartment(approvalRoleKey(role))) {
       showToast('权限不足', '当前角色不能替代本部门审核人确认。', true);
       return;
+    }
+    if (item.type === 'label' && item.operation !== 'disable') {
+      const label = state.labels.find((candidate) => candidate.id === item.subjectId);
+      const conflicts = label ? labelUniquenessConflicts(label) : [];
+      if (conflicts.length) {
+        item.conflicts = conflicts.length;
+        saveState();
+        showToast('唯一性冲突', `配置与“${conflicts.map((candidate) => candidate.name).join('、')}”重复，禁止发布。`, true);
+        return;
+      }
     }
     if (item.approvals.some((approval) => approval.role === role)) {
       showToast('已完成确认', '该审核角色已确认，无需重复操作。');
@@ -2061,6 +2227,7 @@
     if (event.target.matches('#label-form [name="categoryValue"][type="tel"]')) {
       const digits = event.target.value.replace(/\D/g, '').slice(0, 11);
       if (event.target.value !== digits) event.target.value = digits;
+      updateLabelUniquenessCheck(event.target.form);
     }
     if (event.target.matches('#rule-form [name="priority"]')) {
       const form = event.target.form;
@@ -2096,6 +2263,9 @@
     }
     if (event.target.matches('#label-form [name="categoryId"]')) {
       updateLabelCategoryField(event.target.form);
+    }
+    if (event.target.matches('#label-form [name="categoryValue"]:not([type="tel"])') || event.target.matches('#label-form [name="department"]')) {
+      updateLabelUniquenessCheck(event.target.form);
     }
     if (event.target.matches('[data-condition-value]')) {
       const valueSelect = event.target;

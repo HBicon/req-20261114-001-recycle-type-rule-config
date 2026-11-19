@@ -2,7 +2,7 @@
   'use strict';
 
   window.BUSINESS_LABEL_DEFAULT_STATE = {
-    version: 8,
+    version: 9,
     currentUser: '林澜',
     currentRoleId: 'self_author',
     ruleVersion: 'v1.4',
@@ -70,7 +70,8 @@
       { id: 'P-003', title: '高优先级胜出', level: '强制', detail: '多条规则命中时，仅最高优先级的唯一规则参与输出。' },
       { id: 'P-004', title: '同优先级冲突阻断', level: '强制', detail: '同部门、同优先级、条件可重叠且目标不同时禁止发布。' },
       { id: 'P-005', title: '历史订单默认不追溯', level: '强制', detail: '新版本配置仅影响新订单及后续事件，不自动回算历史订单。' },
-      { id: 'P-006', title: '人工变更必须审批', level: '强制', detail: '运营不能直接改写订单标签，修复与重算均通过独立审批事项执行。' }
+      { id: 'P-006', title: '人工变更必须审批', level: '强制', detail: '运营不能直接改写订单标签，修复与重算均通过独立审批事项执行。' },
+      { id: 'P-007', title: '标签配置满足唯一性', level: '强制', detail: '非录入分类同部门仅允许一个有效配置；同一渠道、手机号或机器人不能同时绑定多个生效标签。' }
     ],
     audits: [
       { id: 'AU-1048', time: '11-19 11:08', actor: '平台运营', action: '提交共用标签', object: '共管-机器人专项 · v0.1', result: '待自营、生态双审' },
@@ -102,13 +103,12 @@
       }
     ],
     categories: [
-      { id: 'cat_robot', name: '机器人成交', code: 'ROBOT', description: '机器人报价、自营机器人、生态兜底机器人等场景。', count: 4 },
-      { id: 'cat_channel', name: '渠道成交', code: 'CHANNEL', description: '指定渠道、闲鱼兜底与生态渠道场景。', count: 2 },
-      { id: 'cat_phone', name: '指定手机号', code: 'PHONE', description: '按指定手机号命中的成交订单。', count: 2 },
-      { id: 'cat_enterprise', name: '企业购', code: 'ENTERPRISE', description: '企业购和企业版买家成交场景。', count: 2 },
-      { id: 'cat_value', name: '保值换新', code: 'VALUE_TRADE', description: '闪回或买家保值订单中标成交。', count: 2 },
-      { id: 'cat_service', name: '售后与物权', code: 'OWNERSHIP', description: '售后、物权变更和转自营场景。', count: 3 },
-      { id: 'cat_custom', name: '自定义业务', code: 'CUSTOM', description: '部门按指定手机号或业务规则定义的特殊标签。', count: 2 }
+      { id: 'cat_robot', name: '机器人成交', code: 'ROBOT', description: '机器人报价、自营机器人、生态兜底机器人等场景。', uniqueness: 'binding', count: 4 },
+      { id: 'cat_channel', name: '渠道成交', code: 'CHANNEL', description: '指定渠道、闲鱼兜底与生态渠道场景。', uniqueness: 'binding', count: 2 },
+      { id: 'cat_phone', name: '指定手机号', code: 'PHONE', description: '按指定手机号命中的成交订单。', uniqueness: 'binding', count: 2 },
+      { id: 'cat_enterprise', name: '企业购', code: 'ENTERPRISE', description: '企业购买家成交场景；同部门仅允许一个配置。', uniqueness: 'single', count: 1 },
+      { id: 'cat_value', name: '保值换新', code: 'VALUE_TRADE', description: '闪回或买家保值订单中标成交；同部门仅允许一个配置。', uniqueness: 'single', count: 2 },
+      { id: 'cat_service', name: '售后与物权', code: 'OWNERSHIP', description: '售后、物权变更和转自营场景。', count: 3 }
     ],
     labels: [
       {
@@ -236,19 +236,6 @@
         ruleIds: ['R-009']
       },
       {
-        id: 'tag_buyer_enterprise_account',
-        code: 'BUYER_ENTERPRISE_ACCOUNT',
-        name: '买家-企业版',
-        department: 'buyer',
-        categoryId: 'cat_enterprise',
-        description: '买家类型为企业版的订单。原业务备注为“已废弃？”，当前仍保留但未绑定生效规则。',
-        owner: '企业业务运营',
-        status: 'draft',
-        version: 'v0.9',
-        updatedAt: '11-16 15:12',
-        ruleIds: []
-      },
-      {
         id: 'tag_buyer_value',
         code: 'BUYER_VALUE',
         name: '买家-保值换新',
@@ -313,6 +300,19 @@
         status: 'pending',
         version: 'v0.1',
         updatedAt: '11-19 11:08',
+        ruleIds: []
+      },
+      {
+        id: 'tag_shared_ownership',
+        code: 'SHARED_OWNERSHIP_SPECIAL',
+        name: '共管-售后专项',
+        department: 'shared',
+        categoryId: 'cat_service',
+        description: '自营与生态共用的售后物权专项标签，用于评审双部门确认流程。',
+        owner: '标签平台',
+        status: 'pending',
+        version: 'v0.1',
+        updatedAt: '11-19 11:16',
         ruleIds: []
       }
     ],
@@ -532,6 +532,21 @@
         conflicts: 0,
         requiredApprovals: ['生态审核人'],
         approvals: [{ role: '生态审核人', user: '李审核', at: '11-18 17:48' }]
+      },
+      {
+        id: 'AP-005',
+        type: 'label',
+        title: '共管-售后专项',
+        subjectId: 'tag_shared_ownership',
+        department: 'shared',
+        submitter: '标签平台运营',
+        submittedAt: '11-19 11:16',
+        status: 'pending',
+        summary: '新增两部门共用售后物权业务标签，编码 SHARED_OWNERSHIP_SPECIAL。',
+        impact: '发布后可由两个部门的已审核规则共同引用。',
+        conflicts: 0,
+        requiredApprovals: ['自营审核人', '生态审核人'],
+        approvals: []
       }
     ],
     traces: [
