@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="description"
+      content="订单货物归属、自营与生态双向扭转、四类统计模式产品文档。"
+    />
+    <title>订单归属与统计模式｜产品文档 v1.0</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2314785b'/%3E%3Cpath d='M16 18h32v8H16zm0 10h19v8H16zm23 0h9v8h-9zM16 38h32v8H16z' fill='%23fff'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./assets/docs.css?v=20261120-1" />
+    <style>
+      .decision-banner {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr);
+        gap: 14px;
+        margin-top: 20px;
+      }
+      .decision-banner > article {
+        padding: 18px;
+        background: var(--green-soft);
+        border: 1px solid #b8ddcf;
+        border-radius: 6px;
+      }
+      .decision-banner > article:last-child {
+        background: var(--amber-soft);
+        border-color: #ead2aa;
+      }
+      .decision-banner span {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 9px;
+      }
+      .decision-banner h3 { margin: 8px 0 7px; font-size: 16px; }
+      .decision-banner p { margin: 0; color: var(--ink-2); font-size: 12px; }
+      .attribution-chain {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 9px;
+        margin-top: 20px;
+      }
+      .attribution-chain > div {
+        position: relative;
+        min-height: 104px;
+        padding: 13px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 5px;
+      }
+      .attribution-chain > div::after {
+        content: "→";
+        position: absolute;
+        right: -10px;
+        top: 44px;
+        width: 12px;
+        color: var(--muted-2);
+        font-family: var(--mono);
+        font-size: 10px;
+        text-align: center;
+      }
+      .attribution-chain > div:last-child::after { content: ""; }
+      .attribution-chain span {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 8px;
+      }
+      .attribution-chain strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 13px;
+      }
+      .attribution-chain small {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 9px;
+        line-height: 1.5;
+      }
+      .attribution-chain > div:nth-child(5) {
+        background: var(--green-soft);
+        border-color: #b8ddcf;
+      }
+      .mode-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .mode-card {
+        padding: 17px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-top: 3px solid var(--line-strong);
+        border-radius: 6px;
+      }
+      .mode-card.is-twist { border-top-color: var(--amber); }
+      .mode-card.is-base { border-top-color: var(--green); }
+      .mode-card > div {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+      .mode-card span,
+      .mode-card b {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 9px;
+      }
+      .mode-card h3 { margin: 14px 0 5px; font-size: 16px; }
+      .mode-card p { min-height: 43px; margin: 0; color: var(--muted); font-size: 11px; line-height: 1.65; }
+      .mode-card small {
+        display: block;
+        margin-top: 10px;
+        padding-top: 9px;
+        color: var(--ink-2);
+        border-top: 1px solid var(--line);
+        font-size: 10px;
+      }
+      .rule-priority {
+        overflow: hidden;
+        margin-top: 18px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+      }
+      .rule-priority article {
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr) 180px;
+        gap: 14px;
+        align-items: center;
+        padding: 13px 15px;
+        border-bottom: 1px solid var(--line);
+      }
+      .rule-priority article:last-child { border-bottom: 0; }
+      .rule-priority article > span {
+        color: var(--green);
+        font-family: var(--mono);
+        font-size: 10px;
+      }
+      .rule-priority b { font-size: 12px; }
+      .rule-priority p { margin: 3px 0 0; color: var(--muted); font-size: 10px; }
+      .rule-priority code {
+        justify-self: end;
+        padding: 4px 7px;
+        color: var(--green);
+        background: var(--green-soft);
+        border-radius: 4px;
+        font-family: var(--mono);
+        font-size: 8px;
+        text-align: center;
+      }
+      .formula {
+        margin-top: 16px;
+        padding: 17px;
+        color: #e8f4ef;
+        background: #17242c;
+        border-radius: 6px;
+        font-family: var(--mono);
+        font-size: 10px;
+        line-height: 1.8;
+        white-space: pre-wrap;
+      }
+      .evidence-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 9px;
+        margin-top: 18px;
+      }
+      .evidence-grid article {
+        padding: 14px;
+        background: var(--paper-soft);
+        border: 1px solid var(--line);
+        border-radius: 5px;
+      }
+      .evidence-grid span {
+        color: var(--blue);
+        font-family: var(--mono);
+        font-size: 8px;
+      }
+      .evidence-grid h3 { margin: 7px 0 4px; font-size: 13px; }
+      .evidence-grid p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+      .source-note {
+        margin-top: 14px;
+        padding: 13px 15px;
+        color: var(--muted);
+        background: var(--paper-soft);
+        border-left: 3px solid var(--line-strong);
+        font-size: 10px;
+      }
+      .source-note b { color: var(--ink-2); }
+      @media (max-width: 960px) {
+        .attribution-chain { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .attribution-chain > div::after { display: none; }
+        .evidence-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (max-width: 760px) {
+        .decision-banner,
+        .mode-grid,
+        .evidence-grid { grid-template-columns: 1fr; }
+        .attribution-chain { grid-template-columns: 1fr; }
+        .rule-priority article {
+          grid-template-columns: 38px minmax(0, 1fr);
+        }
+        .rule-priority code {
+          grid-column: 2;
+          justify-self: start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#document">跳到产品文档正文</a>
+
+    <header class="doc-header">
+      <a class="doc-brand" href="./order-attribution-product-document.html" aria-label="返回订单归属与统计模式文档顶部">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 4v5a3 3 0 0 0 3 3h8a3 3 0 0 1 3 3v5" />
+            <path d="m16 17 3 3 3-3M5 8l3-3M5 8 2 5" />
+          </svg>
+        </span>
+        <span><strong>归属与统计模型</strong><small>PRODUCT DOCUMENT</small></span>
+      </a>
+      <nav class="doc-nav" aria-label="文档导航">
+        <a href="#conclusion">核心结论</a>
+        <a href="#problem">问题定义</a>
+        <a href="#model">业务模型</a>
+        <a href="#rules">判定规则</a>
+        <a href="#flow">核心流程</a>
+        <a href="#acceptance">验收</a>
+      </nav>
+      <div class="header-status">
+        <span>G2 评审中</span>
+        <a class="button button-primary" href="./order-attribution-product-document.md">查看原文</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="doc-hero">
+        <div class="doc-hero-main">
+          <div class="doc-meta-line">
+            <span>REQ-20261114-001-DOC-ATTRIBUTION</span><i></i><span>产品文档 v1.0</span><i></i><span>更新于 2026-11-20</span>
+          </div>
+          <h1>订单归属与<br />四类统计模式</h1>
+          <p>订单成交时保留不可变成交归属，正式事件更新当前货物归属；系统比较二者识别自营与生态双向扭转，再无扭转时区分买家中标与非买家中标。</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#conclusion">阅读产品结论</a>
+            <a class="button button-secondary" href="./prototype.html#attribution">打开归属统计原型</a>
+          </div>
+        </div>
+        <aside class="doc-hero-side">
+          <div class="hero-side-head"><span>文档状态</span><strong>G2 评审稿</strong></div>
+          <dl>
+            <div><dt>需求方</dt><dd>hz</dd></div>
+            <div><dt>原标签范围</dt><dd class="is-success">G1 已通过</dd></div>
+            <div><dt>统计补充范围</dt><dd>待确认</dd></div>
+            <div><dt>优化方向</dt><dd>事实与派生分层</dd></div>
+          </dl>
+          <p>本文是方案评审草案。Q-007 统计优先级与 Q-008 归属生效事件关闭前，不作为研发执行依据。</p>
+        </aside>
+      </section>
+
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录">
+          <span>目录</span>
+          <a class="is-active" href="#conclusion">01 核心结论</a>
+          <a href="#problem">02 问题定义</a>
+          <a href="#model">03 业务模型</a>
+          <a href="#modes">04 四类模式</a>
+          <a href="#rules">05 判定规则</a>
+          <a href="#flow">06 核心流程</a>
+          <a href="#pages">07 页面要求</a>
+          <a href="#events">08 事件与数据</a>
+          <a href="#exceptions">09 异常权限</a>
+          <a href="#acceptance">10 验收标准</a>
+          <a href="#rollout">11 指标发布</a>
+          <a href="#gate">12 评审与 Gate</a>
+        </aside>
+
+        <article class="doc-content" id="document">
+          <section id="conclusion" class="doc-section">
+            <div class="section-kicker">01 / DECISION SUMMARY</div>
+            <div class="section-heading">
+              <h2>先保存订单归属事实，再生成统计模式</h2>
+              <span class="status-tag is-orange">主方案 · 待 G2 确认</span>
+            </div>
+            <p class="lead">新旧方案的关键差异不在统计名称，而在数据模型。单一、可修改的“所属部门”无法同时证明最初成交归属、当前货物归属和中间扭转过程。新模型将不可变事实、可变化事实、受控派生和最终标签分开。</p>
+
+            <div class="decision-banner">
+              <article>
+                <span>推荐模型</span>
+                <h3>双层归属 + 四类互斥模式</h3>
+                <p>成交归属不可变，当前货物归属随正式事件更新。先比较两者判断单向扭转；未扭转时再按买家 / 非买家中标方分类。</p>
+              </article>
+              <article>
+                <span>仍需确认</span>
+                <h3>优先级与事件来源</h3>
+                <p>Q-007 确认扭转是否优先且四类互斥；Q-008 确认当前货物归属以哪个正式事件为最终依据。</p>
+              </article>
+            </div>
+
+            <div class="principle-grid">
+              <article><span>01</span><h3>扭转双向并存</h3><p>自营转生态和生态转自营没有优劣，是同一条归属变化规则的两个方向。</p></article>
+              <article><span>02</span><h3>统计唯一</h3><p>同一订单同一时点只生成一个统计模式，四类统计桶不重复。</p></article>
+              <article><span>03</span><h3>标签唯一</h3><p>统计模式不替代当前业务标签；一个订单仍只有一个当前业务标签。</p></article>
+              <article><span>04</span><h3>原始标签不变</h3><p>归属扭转结束后，原始成交标签仍永久保留。</p></article>
+            </div>
+          </section>
+
+          <section id="problem" class="doc-section">
+            <div class="section-kicker">02 / PROBLEM DEFINITION</div>
+            <h2>实际要回答的四个事实问题</h2>
+            <p class="lead">当业务询问“这个订单应该算谁”时，不能从最终标签反推。系统需要直接回答成交时归谁、现在归谁、是否跨部门、无扭转时谁中标。</p>
+
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>子问题</th><th>对应事实</th><th>不能回答时的后果</th></tr></thead>
+                <tbody>
+                  <tr><td>成交时归谁</td><td>成交归属</td><td>无法证明原始来源，也无法判断是否扭转</td></tr>
+                  <tr><td>现在货物归谁</td><td>当前货物归属</td><td>报表无法反映真实物权和当前部门</td></tr>
+                  <tr><td>是否跨部门扭转</td><td>扭转方向</td><td>扭转订单可能被重复计入买卖家中标</td></tr>
+                  <tr><td>无扭转时谁中标</td><td>中标方</td><td>买家中标与非买家中标无法互斥</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="callout is-orange">
+              <span>根因判断</span>
+              <p>订单标签混乱的根因不是标签名称不够多，而是成交来源、货物当前归属、统计口径和业务标签共用了相似的“部门”概念，却没有独立的数据边界。</p>
+            </div>
+          </section>
+
+          <section id="model" class="doc-section">
+            <div class="section-kicker">03 / BUSINESS MODEL</div>
+            <h2>事实层、派生层与结果层分离</h2>
+            <div class="attribution-chain" aria-label="订单归属业务链路">
+              <div><span>FACT 01</span><strong>成交归属</strong><small>成交时写入，不可变</small></div>
+              <div><span>FACT 02</span><strong>当前货物归属</strong><small>由正式业务事件更新</small></div>
+              <div><span>FACT 03</span><strong>中标方</strong><small>买家 / 非买家</small></div>
+              <div><span>DERIVED</span><strong>统计模式</strong><small>四类互斥结果</small></div>
+              <div><span>RESULT</span><strong>当前业务标签</strong><small>仍只允许一个值</small></div>
+            </div>
+
+            <div class="table-wrap" style="margin-top: 16px">
+              <table>
+                <thead><tr><th>对象</th><th>职责</th><th>可变性</th><th>是否可直接维护</th></tr></thead>
+                <tbody>
+                  <tr><td>成交归属</td><td>证明订单由哪个部门成交并生成原始标签</td><td>不可变</td><td>否</td></tr>
+                  <tr><td>当前货物归属</td><td>证明货物现在归自营还是生态</td><td>随正式事件变化</td><td>否</td></tr>
+                  <tr><td>中标方</td><td>无扭转时区分买家和买家之外的中标方</td><td>可由事实修正事件更新</td><td>否</td></tr>
+                  <tr><td>扭转方向</td><td>比较成交归属和当前归属</td><td>受控派生</td><td>否</td></tr>
+                  <tr><td>统计模式</td><td>统一报表与规则条件</td><td>受控派生</td><td>否</td></tr>
+                  <tr><td>原始业务标签</td><td>固化成交来源</td><td>永久不可变</td><td>否</td></tr>
+                  <tr><td>当前业务标签</td><td>表达订单当前业务分类</td><td>规则或审批修复更新</td><td>否</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="modes" class="doc-section">
+            <div class="section-kicker">04 / FOUR MODES</div>
+            <h2>四个模式是一组互斥枚举</h2>
+            <p class="lead">两个扭转方向必须同时存在。它们描述的是成交归属与当前归属的净变化，不是需要二选一的产品方案。</p>
+
+            <div class="mode-grid">
+              <article class="mode-card is-twist">
+                <div><span>MODE 01 · 扭转优先</span><b>不限中标方</b></div>
+                <h3>自营扭转为生态</h3>
+                <p>成交归属为自营，当前货物归属为生态，货物在两个部门之间发生净扭转。</p>
+                <small>原始标签保持“闪回-闪回成交”</small>
+              </article>
+              <article class="mode-card is-twist">
+                <div><span>MODE 02 · 扭转优先</span><b>不限中标方</b></div>
+                <h3>生态扭转为自营</h3>
+                <p>成交归属为生态，当前货物归属为自营，货物从生态流向自营。</p>
+                <small>原始标签保持“买家-买家成交”</small>
+              </article>
+              <article class="mode-card is-base">
+                <div><span>MODE 03 · 无扭转</span><b>中标方：买家</b></div>
+                <h3>买家中标订单</h3>
+                <p>成交归属等于当前货物归属，且正式事实中的中标方为买家。</p>
+                <small>保持成交时原始标签</small>
+              </article>
+              <article class="mode-card is-base">
+                <div><span>MODE 04 · 无扭转</span><b>中标方：非买家</b></div>
+                <h3>非买家中标订单</h3>
+                <p>成交归属等于当前货物归属，且中标方为买家之外的其他受控主体。</p>
+                <small>保持成交时原始标签</small>
+              </article>
+            </div>
+          </section>
+
+          <section id="rules" class="doc-section">
+            <div class="section-kicker">05 / DECISION RULES</div>
+            <h2>先判扭转，再判中标方</h2>
+            <p class="lead">这是本稿的主推规则。扭转订单已经拥有独立统计桶，必须停止后续买卖家中标判定，才能保证互斥。</p>
+
+            <div class="rule-priority">
+              <article><span>01</span><div><b>自营 → 生态</b><p>成交归属自营，当前货物归属生态</p></div><code>自营扭转为生态</code></article>
+              <article><span>02</span><div><b>生态 → 自营</b><p>成交归属生态，当前货物归属自营</p></div><code>生态扭转为自营</code></article>
+              <article><span>03</span><div><b>归属一致 + 买家</b><p>未发生净扭转，中标方为买家</p></div><code>买家中标订单</code></article>
+              <article><span>04</span><div><b>归属一致 + 非买家</b><p>未发生净扭转，中标方不是买家</p></div><code>非买家中标订单</code></article>
+              <article><span>?</span><div><b>事实不足</b><p>不猜测、不默认，保留原快照</p></div><code>待归因</code></article>
+            </div>
+
+            <div class="formula">IF 成交归属 = 自营 AND 当前货物归属 = 生态
+  → 自营扭转为生态
+
+ELSE IF 成交归属 = 生态 AND 当前货物归属 = 自营
+  → 生态扭转为自营
+
+ELSE IF 成交归属 = 当前货物归属 AND 中标方 = 买家
+  → 买家中标订单
+
+ELSE IF 成交归属 = 当前货物归属 AND 中标方 = 非买家
+  → 非买家中标订单
+
+ELSE
+  → 待归因</div>
+
+            <div class="callout is-orange">
+              <span>待确认</span>
+              <p>Q-007：上述顺序是否正式成立；扭转订单是否不再进入买家中标或非买家中标统计。Q-008：当前货物归属以哪个正式事件为最终生效依据。</p>
+            </div>
+          </section>
+
+          <section id="flow" class="doc-section">
+            <div class="section-kicker">06 / CORE FLOW</div>
+            <h2>成交、归属变化与标签更新</h2>
+            <div class="flow-panel">
+              <div class="flow-head"><span>主处理链路</span><b>ORDER ATTRIBUTION PIPELINE</b></div>
+              <div class="flow-steps">
+                <div><span>01</span><strong>订单成交</strong><small>记录归属与中标方</small></div><i>→</i>
+                <div><span>02</span><strong>写入原始标签</strong><small>不可变成交来源</small></div><i>→</i>
+                <div><span>03</span><strong>生成统计模式</strong><small>扭转优先且互斥</small></div><i>→</i>
+                <div><span>04</span><strong>匹配标签规则</strong><small>按当前货物归属</small></div><i>→</i>
+                <div><span>05</span><strong>输出当前标签</strong><small>唯一业务结果</small></div>
+              </div>
+            </div>
+
+            <div class="state-columns">
+              <div>
+                <h3>当前货物归属变化</h3>
+                <div class="state-flow">
+                  <span>收到事件</span><i>→</i><span>幂等校验</span><i>→</i><span class="is-success">写入新快照</span><i>→</i><span>重算统计模式</span><i>→</i><span>重算标签</span>
+                </div>
+                <p>原始标签不变。只有当前标签可能因重算而更新。</p>
+              </div>
+              <div>
+                <h3>事实异常</h3>
+                <div class="state-flow">
+                  <span class="is-danger">缺失</span><i>→</i><span class="is-warning">待归因</span><i>→</i><span>补事件</span><i>→</i><span class="is-success">重新派生</span>
+                </div>
+                <p>系统不通过默认值、渠道名称或标签名称猜测真实归属。</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="pages" class="doc-section">
+            <div class="section-kicker">07 / PRODUCT EXPERIENCE</div>
+            <h2>页面让业务看懂“为什么是这个模式”</h2>
+            <div class="evidence-grid">
+              <article><span>VIEW 01</span><h3>归属与统计</h3><p>展示四类模式、归属链路、判定顺序和样例订单；不提供直接编辑入口。</p></article>
+              <article><span>VIEW 02</span><h3>订单归因详情</h3><p>同时展示成交归属、当前归属、中标方、统计模式、原始标签和当前标签。</p></article>
+              <article><span>VIEW 03</span><h3>规则试算</h3><p>先显示归属与统计模式，再显示候选规则、未命中原因和最高优先级结果。</p></article>
+              <article><span>VIEW 04</span><h3>订单追溯</h3><p>用事件时间线还原归属变化、统计模式变化和标签更新。</p></article>
+              <article><span>VIEW 05</span><h3>规则配置</h3><p>“订单统计模式”和“当前货物归属”作为受控条件，不允许自由输入。</p></article>
+              <article><span>VIEW 06</span><h3>异常队列</h3><p>展示待归因、事件冲突、晚到、重复和规则服务失败，并支持审批重算。</p></article>
+            </div>
+            <div class="hero-actions">
+              <a class="button button-primary" href="./prototype.html#attribution">查看归属统计页</a>
+              <a class="button button-secondary" href="./prototype.html#trace">查看订单追溯页</a>
+            </div>
+          </section>
+
+          <section id="events" class="doc-section">
+            <div class="section-kicker">08 / DATA & EVENTS</div>
+            <h2>事实必须来自可追溯事件</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>字段</th><th>业务含义</th><th>约束</th></tr></thead>
+                <tbody>
+                  <tr><td>成交归属</td><td>订单最初由自营或生态成交</td><td>成交事件写入，永久不可变</td></tr>
+                  <tr><td>当前货物归属</td><td>货物当前归自营或生态</td><td>仅正式归属事件更新</td></tr>
+                  <tr><td>中标方</td><td>买家 / 非买家</td><td>成交事实或中标修正事件</td></tr>
+                  <tr><td>统计模式</td><td>四类互斥统计结果</td><td>系统派生，不接受人工输入</td></tr>
+                  <tr><td>事件 ID</td><td>事实唯一标识</td><td>全局唯一，可追溯</td></tr>
+                  <tr><td>幂等键</td><td>防止重复消费</td><td>同一事实重复到达只处理一次</td></tr>
+                  <tr><td>业务生效时间</td><td>事件业务生效时点</td><td>与接收时间分开保存</td></tr>
+                  <tr><td>来源系统</td><td>事实责任来源</td><td>待 Q-008 确认</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="source-note"><b>存储原则：</b>归属事实快照和订单标签快照分开存储，通过脱敏订单标识关联。每次事实变化产生新快照，不覆盖历史。</div>
+            <div class="table-wrap" style="margin-top: 16px;">
+              <table>
+                <thead><tr><th>归属状态</th><th>进入条件</th><th>统计模式</th><th>标签处理</th><th>离开方式</th></tr></thead>
+                <tbody>
+                  <tr><td>待归因</td><td>当前归属或未扭转场景的中标方缺失</td><td>不生成</td><td>保留原始标签，不猜测更新</td><td>补正式事件后重新派生</td></tr>
+                  <tr><td>已归因</td><td>判定事实完整且无冲突</td><td>生成唯一结果</td><td>按已生效规则计算唯一当前标签</td><td>新事实到达后生成新快照</td></tr>
+                  <tr><td>冲突待处理</td><td>晚到、回退或来源事件冲突</td><td>保留最近有效结果并阻断覆盖</td><td>不静默改写</td><td>人工核查或审批修复</td></tr>
+                  <tr><td>已重算</td><td>经审批执行修复或受控重算</td><td>按指定规则版本重新生成</td><td>保留前后值与审计记录</td><td>重算结束</td></tr>
+                  <tr><td>历史未归因</td><td>历史订单缺少新模型字段</td><td>不生成</td><td>保持历史标签，不批量回写</td><td>审批后按影响范围重算</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="source-note" style="margin-top: 10px;"><b>状态边界：</b>“待归因”表示事实不足，不表示当前业务标签为空。页面需分别展示归属状态和标签计算状态。</div>
+          </section>
+
+          <section id="exceptions" class="doc-section">
+            <div class="section-kicker">09 / EXCEPTION & GOVERNANCE</div>
+            <h2>异常不猜测，变更全留痕</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>场景</th><th>系统处理</th><th>用户反馈</th><th>审计</th></tr></thead>
+                <tbody>
+                  <tr><td>当前归属缺失</td><td>不生成统计模式，进入待归因</td><td>显示“当前归属待补”</td><td>保存缺失字段与来源</td></tr>
+                  <tr><td>中标方缺失且未扭转</td><td>不生成买卖家中标模式</td><td>显示“中标方待补”</td><td>保存事件 ID</td></tr>
+                  <tr><td>重复事件</td><td>按幂等键去重</td><td>显示重复事件已忽略</td><td>保存重复次数</td></tr>
+                  <tr><td>晚到或回退</td><td>不静默覆盖较新快照</td><td>展示冲突原因</td><td>保存前后快照</td></tr>
+                  <tr><td>规则服务失败</td><td>成交成功，标签任务重试</td><td>显示待处理或失败</td><td>保存任务与失败原因</td></tr>
+                  <tr><td>规则冲突</td><td>发布阻断或保留原当前标签</td><td>展示冲突规则</td><td>告警并记录</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="audit-band">
+              <div><span>R</span><p><b>业务只读</b>查询归属、统计模式和追溯，不可写。</p></div>
+              <div><span>C</span><p><b>配置人员</b>配置规则条件，不能修改订单事实。</p></div>
+              <div><span>A</span><p><b>平台管理员</b>处理冲突与受控重算，不能替代部门审核。</p></div>
+            </div>
+          </section>
+
+          <section id="acceptance" class="doc-section">
+            <div class="section-kicker">10 / ACCEPTANCE</div>
+            <h2>可验证的产品结果</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>编号</th><th>场景</th><th>预期结果</th><th>优先级</th></tr></thead>
+                <tbody>
+                  <tr><td>AC-S-01</td><td>自营无扭转且买家中标</td><td>统计模式为买家中标订单</td><td>P0</td></tr>
+                  <tr><td>AC-S-02</td><td>生态无扭转且非买家中标</td><td>统计模式为非买家中标订单</td><td>P0</td></tr>
+                  <tr><td>AC-S-03</td><td>自营扭转为生态</td><td>只生成扭转模式，原始标签保持不变</td><td>P0</td></tr>
+                  <tr><td>AC-S-04</td><td>生态扭转为自营</td><td>只生成扭转模式，原始标签保持不变</td><td>P0</td></tr>
+                  <tr><td>AC-S-05</td><td>扭转订单同时存在中标方</td><td>不再重复进入买卖家中标模式</td><td>P0</td></tr>
+                  <tr><td>AC-S-06</td><td>当前归属发生有效变化</td><td>统计模式、候选规则与当前标签重算</td><td>P0</td></tr>
+                  <tr><td>AC-S-07</td><td>任意归属变化</td><td>原始业务标签值不变</td><td>P0</td></tr>
+                  <tr><td>AC-S-08</td><td>多条标签规则同时命中</td><td>只输出一个最高优先级结果</td><td>P0</td></tr>
+                  <tr><td>AC-S-09</td><td>当前货物归属为空</td><td>不猜测，不生成统计模式，进入待归因</td><td>P0</td></tr>
+                  <tr><td>AC-S-10</td><td>重复事件</td><td>只处理一次，不产生重复快照</td><td>P0</td></tr>
+                  <tr><td>AC-S-11</td><td>晚到事件</td><td>不静默覆盖，展示冲突或按确认顺序处理</td><td>P0</td></tr>
+                  <tr><td>AC-S-12</td><td>统计模式作为规则条件</td><td>试算与运行使用同一受控值和版本</td><td>P0</td></tr>
+                  <tr><td>AC-S-13</td><td>历史订单无归属字段</td><td>标记未归因，不自动改写历史结果</td><td>P1</td></tr>
+                  <tr><td>AC-S-14</td><td>多次流转回到原归属</td><td>当前净结果为无扭转，完整路径仍可追溯</td><td>P1</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="rollout" class="doc-section">
+            <div class="section-kicker">11 / METRICS & ROLLOUT</div>
+            <h2>先影子计算，再切换报表口径</h2>
+            <div class="principle-grid">
+              <article><span>STEP 01</span><h3>影子计算</h3><p>生产事件只读取和计算，不改写现有报表，与旧口径并行比对。</p></article>
+              <article><span>STEP 02</span><h3>治理待归因</h3><p>补齐归属事件、中标方枚举、幂等键和责任系统。</p></article>
+              <article><span>STEP 03</span><h3>灰度启用</h3><p>选择新订单或指定范围使用新口径，保留旧报表与回滚能力。</p></article>
+              <article><span>STEP 04</span><h3>正式切换</h3><p>业务、数据和研发确认后启用四类模式，并记录口径版本。</p></article>
+            </div>
+            <div class="callout is-orange">
+              <span>量化边界</span>
+              <p>当前没有可核验基线，本稿不编造自动命中率、归因完整率或处理时延目标。基线由数据负责人补充后再形成量化验收。</p>
+            </div>
+          </section>
+
+          <section id="gate" class="doc-section">
+            <div class="section-kicker">12 / REVIEW & GATE</div>
+            <h2>本轮评审需要关闭的问题</h2>
+            <ul class="question-list">
+              <li><span>Q-007</span><div><b>四类统计模式是否按扭转优先、彼此互斥？</b><p>本稿按“先判自营 / 生态双向扭转，再判买家 / 非买家中标”成稿，等待业务确认。</p></div></li>
+              <li><span>Q-008</span><div><b>当前货物归属以哪个正式事件为最终生效依据？</b><p>需明确来源系统、业务生效时间、幂等键、晚到和回退处理。</p></div></li>
+              <li><span>NEW-01</span><div><b>多次流转是否按当前净结果判定？</b><p>建议四类模式只看当前净状态，中间流转保留在时间线，不新增第五类。</p></div></li>
+              <li><span>NEW-02</span><div><b>中标方枚举如何映射非买家？</b><p>需确认渠道、平台、审单等主体归入“非买家”的统一映射。</p></div></li>
+            </ul>
+
+            <div class="gate-card">
+              <div>
+                <span>CURRENT GATE</span>
+                <h3>G1 原范围已通过，本文件仍处于 G2 方案评审</h3>
+                <p>订单当前货物归属与四类统计模式属于新增补充范围，尚未取得业务确认；本文件不能作为研发放行证据。</p>
+              </div>
+              <a class="button button-primary" href="./index.html#approval-review">查看原 PRD 评审状态</a>
+            </div>
+
+            <div class="table-wrap" style="margin-top: 18px">
+              <table>
+                <thead><tr><th>自检项</th><th>结果</th><th>说明</th></tr></thead>
+                <tbody>
+                  <tr><td>背景</td><td>通过</td><td>已说明标签口径、货物归属和统计互斥问题</td></tr>
+                  <tr><td>目标</td><td>部分通过</td><td>能力目标清晰，量化基线待补</td></tr>
+                  <tr><td>用户流程</td><td>通过</td><td>覆盖成交、归属变化、中标修正、规则匹配与审计</td></tr>
+                  <tr><td>业务规则</td><td>评审中</td><td>主方案明确，Q-007 待确认</td></tr>
+                  <tr><td>异常</td><td>通过</td><td>覆盖缺失、重复、晚到、回退、冲突和服务失败</td></tr>
+                  <tr><td>验收</td><td>通过</td><td>形成 14 项可观察验收结果</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="doc-footer">
+              <span>REQ-20261114-001 · 订单归属与统计模式产品文档 v1.0</span>
+              <span>脱敏方案稿 · G2 待确认 · 不连接真实业务系统</span>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>

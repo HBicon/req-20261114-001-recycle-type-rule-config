@@ -23,7 +23,9 @@ python3 -m http.server 4188 --bind 127.0.0.1
 ## 评审材料
 
 - [G2 评审 PRD](./index.html)：文档正文、业务规则、状态、权限、验收结论和待确认项。
+- [订单归属与统计模式产品文档](./order-attribution-product-document.html)：围绕成交归属、当前货物归属、双向扭转、四类互斥统计模式和标签消费规则形成的新版专题方案稿。
 - [Markdown PRD](./prd.md)：供研发和评审归档使用的文本版本。
+- [新模式产品文档原文](./order-attribution-product-document.md)：可纳入文档系统或继续批注的 Markdown 版本。
 - [交互原型](./prototype.html)：包含治理总览、业务标签、标签分类、归属与统计、标签规则、运行与权限、审核发布、规则试算和订单追溯 9 个场景。
 - [评审记录](./review-record.md)：本轮修改说明、专项验证结果、PRD 自检与待确认项。
 
