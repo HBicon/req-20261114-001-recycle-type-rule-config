@@ -263,6 +263,7 @@ main { overflow: hidden; }
   white-space: nowrap;
 }
 .status-tag.is-green { color: var(--green); background: var(--green-soft); border-color: #b8ddcf; }
+.status-tag.is-orange { color: #9b690f; background: #fff8e9; border-color: #ead2aa; }
 
 .principle-grid {
   display: grid;
@@ -294,6 +295,7 @@ main { overflow: hidden; }
   border-radius: 5px;
 }
 .callout.is-green { color: var(--green); background: var(--green-soft); border-color: #b8ddcf; }
+.callout.is-orange { color: #9b690f; background: #fff8e9; border-color: #ead2aa; }
 .callout > span { font-size: 11px; font-weight: 650; }
 .callout p { margin: 0; color: var(--ink-2); font-size: 12px; }
 

@@ -2,10 +2,10 @@
   'use strict';
 
   window.BUSINESS_LABEL_DEFAULT_STATE = {
-    version: 11,
+    version: 12,
     currentUser: '林澜',
     currentRoleId: 'self_author',
-    ruleVersion: 'v1.4',
+    ruleVersion: 'v1.5',
     roles: [
       {
         id: 'self_author',
@@ -61,7 +61,7 @@
       { id: 'ORDER_WON', name: '订单成交', scope: '新订单', description: '写入原始标签并将当前标签初始化为原始标签。' },
       { id: 'CHANNEL_CORRECTED', name: '渠道事实修正', scope: '后续事件', description: '渠道字段发生变化后，按事件发生时间匹配当时的生效规则版本。' },
       { id: 'AFTER_SALE_APPLIED', name: '售后申请', scope: '信息事件', description: '仅记录事件，不直接修改当前标签。' },
-      { id: 'OWNERSHIP_EFFECTIVE', name: '售后物权生效', scope: '后续事件', description: '物权实际生效后重新计算当前标签。' },
+      { id: 'OWNERSHIP_EFFECTIVE', name: '货物归属变更生效', scope: '后续事件', description: '货物当前归属实际变化后，重新计算统计模式和当前标签。' },
       { id: 'MANUAL_REPLAY', name: '审批后重算', scope: '人工触发', description: '仅批准后的异常修复或规则重算任务可调用。' }
     ],
     governancePolicies: [
@@ -71,7 +71,9 @@
       { id: 'P-004', title: '同优先级冲突阻断', level: '强制', detail: '同部门、同优先级、条件可重叠且目标不同时禁止发布。' },
       { id: 'P-005', title: '历史订单默认不追溯', level: '强制', detail: '新版本配置仅影响新订单及后续事件，不自动回算历史订单。' },
       { id: 'P-006', title: '人工变更必须审批', level: '强制', detail: '运营不能直接改写订单标签，修复与重算均通过独立审批事项执行。' },
-      { id: 'P-007', title: '标签配置满足唯一性', level: '强制', detail: '非录入分类同部门仅允许一个有效配置；同一渠道、手机号或机器人不能同时绑定多个生效标签。' }
+      { id: 'P-007', title: '标签配置满足唯一性', level: '强制', detail: '非录入分类同部门仅允许一个有效配置；同一渠道、手机号或机器人不能同时绑定多个生效标签。' },
+      { id: 'P-008', title: '成交归属不可变', level: '强制', detail: '原始标签记录订单成交时的部门归属，后续扭转和统计不改写原始标签。' },
+      { id: 'P-009', title: '归属与统计可追溯', level: '强制', detail: '订单快照同时记录当前货物归属、中标方、扭转方向、统计模式和变更事件。' }
     ],
     audits: [
       { id: 'AU-1048', time: '11-19 11:08', actor: '系统参数管理员', action: '同步标签编码', object: 'REC_ORD_TYP', result: '参数唯一性校验通过' },
@@ -88,7 +90,7 @@
         name: '闪回-闪回成交',
         department: 'self',
         category: 'base',
-        description: '自营部门订单成交时写入的默认原始业务标签。',
+        description: '订单成交归属为自营时写入的默认原始业务标签。',
         protected: true,
         status: 'enabled'
       },
@@ -99,7 +101,7 @@
         name: '买家-买家成交',
         department: 'buyer',
         category: 'base',
-        description: '生态部门订单成交时写入的默认原始业务标签。',
+        description: '订单成交归属为生态时写入的默认原始业务标签。',
         protected: true,
         status: 'enabled'
       }
@@ -280,9 +282,9 @@
         code: 'BUYER_TO_SELF',
         systemCode: '31',
         name: '买家-转自营',
-        department: 'buyer',
+        department: 'self',
         categoryId: 'cat_service',
-        description: '买家成交后未发起售后，物权转闪回。',
+        description: '生态或买家持有后，货物实际转为自营时输出。',
         owner: '买家运营',
         status: 'enabled',
         version: 'v1.0',
@@ -449,6 +451,28 @@
         conditions: [{ field: 'ownershipEvent', value: 'after_sale_effective' }]
       },
       {
+        id: 'R-014',
+        name: '自营扭转为生态',
+        department: 'eco',
+        targetLabelId: 'tag_eco_return',
+        priority: 420,
+        status: 'enabled',
+        version: 'v1.0',
+        updatedAt: '11-20 10:20',
+        conditions: [{ field: 'statisticsMode', value: 'self_to_eco' }]
+      },
+      {
+        id: 'R-015',
+        name: '生态扭转为自营',
+        department: 'self',
+        targetLabelId: 'tag_buyer_to_self',
+        priority: 420,
+        status: 'enabled',
+        version: 'v1.0',
+        updatedAt: '11-20 10:20',
+        conditions: [{ field: 'statisticsMode', value: 'eco_to_self' }]
+      },
+      {
         id: 'R-DRAFT-01',
         name: '生态平台兜底报价补充规则',
         department: 'eco',
@@ -472,6 +496,21 @@
         status: 'pending',
         summary: '新增“平台兜底业务类型 + 机器人成交”条件，优先级 270。',
         impact: '预计影响生态新成交订单，不追溯历史订单。',
+        conflicts: 0,
+        requiredApprovals: ['生态审核人'],
+        approvals: []
+      },
+      {
+        id: 'AP-002',
+        type: 'rule',
+        title: '买家中标统计条件规则',
+        subjectId: 'R-DRAFT-02',
+        department: 'eco',
+        submitter: '生态标签配置人',
+        submittedAt: '11-20 10:26',
+        status: 'pending',
+        summary: '新增“统计模式 = 买家中标订单”的标签规则，优先级 260。',
+        impact: '仅影响新订单和后续归属事件，不追溯历史订单。',
         conflicts: 0,
         requiredApprovals: ['生态审核人'],
         approvals: []
@@ -512,6 +551,10 @@
         orderNo: 'TC202611190108',
         department: 'self',
         departmentName: '自营',
+        currentOwner: 'self',
+        bidderParty: 'self',
+        ownershipChange: 'none',
+        statisticsMode: 'non_buyer_won',
         originalLabel: '闪回-闪回成交',
         currentLabel: '多个机器人',
         matchedRule: 'R-001 · 自营多机器人成交',
@@ -533,6 +576,10 @@
         orderNo: 'TC202611190096',
         department: 'buyer',
         departmentName: '生态',
+        currentOwner: 'eco',
+        bidderParty: 'buyer',
+        ownershipChange: 'none',
+        statisticsMode: 'buyer_won',
         originalLabel: '买家-买家成交',
         currentLabel: '买家-企业购',
         matchedRule: 'R-009 · 买家企业购',
@@ -553,6 +600,10 @@
         orderNo: 'TC202611180032',
         department: 'self',
         departmentName: '自营',
+        currentOwner: 'self',
+        bidderParty: 'self',
+        ownershipChange: 'none',
+        statisticsMode: 'non_buyer_won',
         originalLabel: '闪回-闪回成交',
         currentLabel: '闪回-闪回成交',
         matchedRule: '未命中',
@@ -573,6 +624,10 @@
         orderNo: 'TC202611170067',
         department: 'buyer',
         departmentName: '生态',
+        currentOwner: 'eco',
+        bidderParty: 'buyer',
+        ownershipChange: 'none',
+        statisticsMode: 'buyer_won',
         originalLabel: '买家-买家成交',
         currentLabel: '生态-售后退货',
         matchedRule: 'R-013 · 买家售后转生态退货',
@@ -584,7 +639,51 @@
           { time: '11-17 15:02', title: '订单成交', description: '写入原始业务标签。', before: '尚未生成', after: '买家-买家成交', source: '订单成交事件' },
           { time: '11-17 15:02', title: '初始化当前标签', description: '当前标签与原始标签一致。', before: '尚未生成', after: '买家-买家成交', source: '标签初始化' },
           { time: '11-18 11:20', title: '售后申请', description: '申请阶段不修改当前标签。', before: '买家-买家成交', after: '买家-买家成交', source: '售后事件' },
-          { time: '11-19 08:56', title: '物权生效', description: '售后物权生效事件触发重新计算。', before: '买家-买家成交', after: '生态-售后退货', source: 'R-013 · v1.0' }
+          { time: '11-19 08:56', title: '货物归属变更生效', description: '当前货物归属与统计模式同步刷新。', before: '买家-买家成交', after: '生态-售后退货', source: 'R-013 · v1.0' }
+        ],
+        unmatched: []
+      },
+      {
+        orderNo: 'TC202611200112',
+        department: 'self',
+        departmentName: '自营',
+        currentOwner: 'eco',
+        bidderParty: 'self',
+        ownershipChange: 'self_to_eco',
+        statisticsMode: 'self_to_eco',
+        originalLabel: '闪回-闪回成交',
+        currentLabel: '生态-售后退货',
+        matchedRule: 'R-014 · 自营扭转为生态',
+        ruleVersion: 'v1.0',
+        status: '归属变更生效',
+        updatedAt: '11-20 10:18',
+        facts: ['成交归属：自营', '当前货物归属：生态', '中标方：非买家', '扭转方向：自营 → 生态'],
+        entries: [
+          { time: '11-20 09:40', title: '订单成交', description: '成交归属为自营，写入不可变原始标签。', before: '尚未生成', after: '闪回-闪回成交', source: 'ORDER_WON' },
+          { time: '11-20 09:40', title: '初始化统计归因', description: '成交时当前货物归属暂为自营。', before: '未归类', after: '非买家中标订单', source: '统计模式计算' },
+          { time: '11-20 10:18', title: '货物归属变更', description: '货物实际转为生态，统计模式和当前标签同步更新。', before: '自营 → 非买家中标订单', after: '生态 → 自营扭转为生态', source: 'OWNERSHIP_EFFECTIVE · EVT-112' }
+        ],
+        unmatched: []
+      },
+      {
+        orderNo: 'TC202611200113',
+        department: 'buyer',
+        departmentName: '生态',
+        currentOwner: 'self',
+        bidderParty: 'buyer',
+        ownershipChange: 'eco_to_self',
+        statisticsMode: 'eco_to_self',
+        originalLabel: '买家-买家成交',
+        currentLabel: '买家-转自营',
+        matchedRule: 'R-015 · 生态扭转为自营',
+        ruleVersion: 'v1.0',
+        status: '归属变更生效',
+        updatedAt: '11-20 10:22',
+        facts: ['成交归属：生态', '当前货物归属：自营', '中标方：买家', '扭转方向：生态 → 自营'],
+        entries: [
+          { time: '11-20 09:52', title: '订单成交', description: '成交归属为生态，写入不可变原始标签。', before: '尚未生成', after: '买家-买家成交', source: 'ORDER_WON' },
+          { time: '11-20 09:52', title: '初始化统计归因', description: '成交时当前货物归属暂为生态。', before: '未归类', after: '买家中标订单', source: '统计模式计算' },
+          { time: '11-20 10:22', title: '货物归属变更', description: '货物实际转为自营，按扭转方向刷新统计模式。', before: '生态 → 买家中标订单', after: '自营 → 生态扭转为自营', source: 'OWNERSHIP_EFFECTIVE · EVT-113' }
         ],
         unmatched: []
       }

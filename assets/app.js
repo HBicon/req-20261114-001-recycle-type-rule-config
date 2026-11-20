@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'business-label-governance-v11';
+  const STORAGE_KEY = 'business-label-governance-v12';
 
   const DEPARTMENTS = [
     { id: 'self', name: '自营', originalLabel: '闪回-闪回成交', color: 'green' },
@@ -16,7 +16,40 @@
     { id: 'businessType', name: '业务类型' },
     { id: 'channel', name: '渠道' },
     { id: 'phoneGroup', name: '手机号群组' },
-    { id: 'ownershipEvent', name: '物权 / 售后事件' }
+    { id: 'ownershipEvent', name: '物权 / 售后事件' },
+    { id: 'statisticsMode', name: '订单统计模式' },
+    { id: 'currentOwner', name: '当前货物归属' }
+  ];
+
+  const STATISTICS_MODES = [
+    {
+      id: 'buyer_won',
+      name: '买家中标订单',
+      description: '成交归属与当前货物归属一致，且中标方为买家。',
+      tone: 'blue',
+      priority: '基础归因'
+    },
+    {
+      id: 'non_buyer_won',
+      name: '非买家中标订单',
+      description: '成交归属与当前货物归属一致，且中标方不是买家。',
+      tone: 'green',
+      priority: '基础归因'
+    },
+    {
+      id: 'self_to_eco',
+      name: '自营扭转为生态',
+      description: '成交归属或初始货物归属为自营，当前货物归属已变为生态。',
+      tone: 'amber',
+      priority: '扭转优先'
+    },
+    {
+      id: 'eco_to_self',
+      name: '生态扭转为自营',
+      description: '成交归属或初始货物归属为生态，当前货物归属已变为自营。',
+      tone: 'green',
+      priority: '扭转优先'
+    }
   ];
 
   const CONDITION_VALUES = {
@@ -50,7 +83,13 @@
     ownershipEvent: [
       { id: 'deal_only', name: '仅成交，无后续物权事件' },
       { id: 'none_after_sale', name: '成交后未发起售后' },
-      { id: 'after_sale_effective', name: '售后物权已生效' }
+      { id: 'after_sale_effective', name: '售后物权已生效' },
+      { id: 'active_transfer', name: '货物归属主动转移生效' }
+    ],
+    statisticsMode: STATISTICS_MODES.map((mode) => ({ id: mode.id, name: mode.name })),
+    currentOwner: [
+      { id: 'self', name: '自营' },
+      { id: 'eco', name: '生态' }
     ]
   };
 
@@ -155,6 +194,7 @@
     overview: { label: '治理总览', group: '工作台', code: 'OVERVIEW' },
     labels: { label: '业务标签', group: '配置', code: 'LABELS' },
     categories: { label: '标签分类', group: '配置', code: 'TAXONOMY' },
+    attribution: { label: '归属与统计', group: '配置', code: 'ATTRIBUTION' },
     rules: { label: '标签规则', group: '规则与事件', code: 'RULES' },
     runtime: { label: '运行与权限', group: '规则与事件', code: 'RUNTIME' },
     approvals: { label: '审核与发布', group: '规则与事件', code: 'APPROVALS' },
@@ -187,7 +227,7 @@
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) return createDefaultState();
       const parsed = JSON.parse(saved);
-      if (!parsed || parsed.version !== 11 || !Array.isArray(parsed.labels)) return createDefaultState();
+      if (!parsed || parsed.version !== 12 || !Array.isArray(parsed.labels)) return createDefaultState();
       return parsed;
     } catch (error) {
       return createDefaultState();
@@ -245,6 +285,35 @@
 
   function departmentName(value) {
     return departmentMeta(value).name;
+  }
+
+  function statisticsModeMeta(id) {
+    return STATISTICS_MODES.find((mode) => mode.id === id) || {
+      id: id || 'unset',
+      name: '待归因',
+      description: '订单归属事实不足，暂不能生成统计模式。',
+      tone: 'gray',
+      priority: '待确认'
+    };
+  }
+
+  function statisticsModeFor(facts = {}) {
+    const source = normalizeDepartment(facts.department);
+    const currentOwner = normalizeDepartment(facts.currentOwner || facts.department);
+    if (source === 'self' && currentOwner === 'eco') return 'self_to_eco';
+    if (source === 'eco' && currentOwner === 'self') return 'eco_to_self';
+    return facts.bidderParty === 'buyer' ? 'buyer_won' : 'non_buyer_won';
+  }
+
+  function statisticsModeChip(id) {
+    const mode = statisticsModeMeta(id);
+    return `<span class="statistics-mode-chip is-${escapeHtml(mode.tone)}">${escapeHtml(mode.name)}</span>`;
+  }
+
+  function ownershipTransitionText(sourceDepartment, currentOwner) {
+    const source = normalizeDepartment(sourceDepartment);
+    const owner = normalizeDepartment(currentOwner || sourceDepartment);
+    return source === owner ? `${departmentName(owner)}内持有` : `${departmentName(source)} → ${departmentName(owner)}`;
   }
 
   function currentRole() {
@@ -885,15 +954,18 @@
   }
 
   function simulate(facts, eventType = 'ORDER_WON') {
-    const department = normalizeDepartment(facts.department);
-    const baseLabel = state.baseLabels.find((label) => normalizeDepartment(label.department) === department);
+    const sourceDepartment = normalizeDepartment(facts.department);
+    const currentOwner = normalizeDepartment(facts.currentOwner || facts.department);
+    const statisticsMode = statisticsModeFor({ ...facts, currentOwner });
+    const normalizedFacts = { ...facts, department: currentOwner, currentOwner, statisticsMode };
+    const baseLabel = state.baseLabels.find((label) => normalizeDepartment(label.department) === sourceDepartment);
     const candidates = state.rules
-      .filter((rule) => normalizeDepartment(rule.department) === department)
+      .filter((rule) => normalizeDepartment(rule.department) === currentOwner)
       .map((rule) => ({
         rule,
-        matches: ruleMatches(rule, { ...facts, department }),
+        matches: ruleMatches(rule, normalizedFacts),
         reasons: rule.conditions
-          .filter((condition) => String(facts[condition.field] || '') !== String(condition.value))
+          .filter((condition) => String(normalizedFacts[condition.field] || '') !== String(condition.value))
           .map((condition) => `${conditionFieldName(condition.field)}不匹配`)
       }))
       .sort((first, second) => Number(second.rule.priority) - Number(first.rule.priority));
@@ -904,7 +976,12 @@
     const winner = conflict ? null : topRules[0]?.rule || null;
     const targetLabel = winner ? findLabel(winner.targetLabelId) : baseLabel;
     return {
-      department,
+      department: currentOwner,
+      sourceDepartment,
+      currentOwner,
+      statisticsMode,
+      bidderParty: facts.bidderParty || 'other',
+      ownershipChange: sourceDepartment === currentOwner ? 'none' : `${sourceDepartment}_to_${currentOwner}`,
       eventType,
       eventId: `EVT-${Date.now().toString().slice(-8)}`,
       matchedAt: nowLabel(),
@@ -1006,6 +1083,7 @@
       overview: renderOverview,
       labels: renderLabels,
       categories: renderCategories,
+      attribution: renderAttribution,
       rules: renderRules,
       runtime: renderRuntime,
       approvals: renderApprovals,
@@ -1099,18 +1177,19 @@
 
         <section class="content-panel">
           <div class="panel-heading">
-            <div><h2>最近订单标签事件</h2><p>展示原始标签、当前标签与实际命中依据。</p></div>
+            <div><h2>最近订单标签事件</h2><p>展示成交归属、当前货物归属、统计模式与标签命中依据。</p></div>
             <button class="text-button" data-action="go-view" data-view="trace">进入订单追溯</button>
           </div>
           <div class="table-scroll">
             <div class="data-table overview-trace-table">
               <div class="data-table-head">
-                <span>订单</span><span>部门</span><span>原始标签</span><span>当前标签</span><span>命中依据</span><span>处理结果</span><span></span>
+                <span>订单</span><span>货物归属</span><span>统计模式</span><span>原始标签</span><span>当前标签</span><span>命中依据</span><span>结果</span><span></span>
               </div>
               ${recentEvents.map((trace) => `
                 <button class="data-table-row trace-preview-row" type="button" data-action="select-trace" data-order="${escapeHtml(trace.orderNo)}">
                   <span class="mono-cell">${escapeHtml(trace.orderNo)}</span>
-                  <span>${departmentChip(trace.department)}</span>
+                  <span class="ownership-cell">${departmentChip(trace.currentOwner)}<small>成交 ${escapeHtml(departmentName(trace.department))}</small></span>
+                  <span>${statisticsModeChip(trace.statisticsMode)}</span>
                   <span>${labelChip({ name: trace.originalLabel }, true)}</span>
                   <span>${labelChip({ name: trace.currentLabel })}</span>
                   <span class="cell-secondary">${escapeHtml(trace.matchedRule)} · ${escapeHtml(trace.ruleVersion)}</span>
@@ -1138,7 +1217,7 @@
       review: reviewPanel('总览：先判断治理是否闭环', '本页用于确认系统是否覆盖“定义、发布、执行、追溯”四个环节，以及待处理事项是否按风险呈现。', [
         { title: '数据来源', items: ['生效标签和规则来自当前发布版本。', '待审核数量来自标签、规则与人工修复统一队列。', '失败订单来自标签处理任务，不影响订单成交结果。'] },
         { title: '交互检查', items: ['点击待审核事项直接打开审核详情。', '点击表内订单进入订单追溯场景。', '所有演示操作只写入浏览器本地状态。'] },
-        { title: '本页待确认', items: ['首页统计指标是否为首期必需。', '待审核默认按提交时间还是风险等级排序。'] }
+        { title: '本页待确认', items: ['首页统计指标是否为首期必需。', '待审核默认按提交时间还是风险等级排序。', 'Q-007：扭转模式是否优先于买卖家中标模式。'] }
       ])
     };
   }
@@ -1336,6 +1415,121 @@
     };
   }
 
+  function renderAttribution() {
+    const transitionTraces = state.traces.filter((trace) => normalizeDepartment(trace.currentOwner) !== normalizeDepartment(trace.department));
+    const buyerWon = state.traces.filter((trace) => trace.statisticsMode === 'buyer_won').length;
+    const nonBuyerWon = state.traces.filter((trace) => trace.statisticsMode === 'non_buyer_won').length;
+    const body = `
+      <div class="view">
+        ${pageHeader(
+          'ATTRIBUTION / 01',
+          '订单归属与统计模式',
+          '成交归属决定不可变原始标签，当前货物归属决定统计模式；两个部门之间的实际扭转优先归入“自营扭转为生态”或“生态扭转为自营”。'
+        )}
+
+        <section class="statistics-mode-grid" aria-label="四个统计模式">
+          ${STATISTICS_MODES.map((mode, index) => `
+            <article class="statistics-mode-card is-${escapeHtml(mode.tone)}">
+              <div><span>0${index + 1}</span><b>${escapeHtml(mode.priority)}</b></div>
+              <h2>${escapeHtml(mode.name)}</h2>
+              <p>${escapeHtml(mode.description)}</p>
+              <small>${
+                mode.id === 'buyer_won' ? `${buyerWon} 个演示订单`
+                  : mode.id === 'non_buyer_won' ? `${nonBuyerWon} 个演示订单`
+                    : mode.id === 'self_to_eco' ? `${transitionTraces.filter((trace) => trace.statisticsMode === mode.id).length} 个扭转订单`
+                      : `${transitionTraces.filter((trace) => trace.statisticsMode === mode.id).length} 个扭转订单`
+              }</small>
+            </article>
+          `).join('')}
+        </section>
+
+        <section class="attribution-model-panel">
+          <div class="panel-heading">
+            <div><h2>订单归属事实与标签口径</h2><p>一个订单同时保留不可变成交归属和可变化的当前货物归属，订单标签仍然只输出一个当前值。</p></div>
+            <span class="parameter-source-badge">统计模型 · 受控派生</span>
+          </div>
+          <div class="attribution-flow">
+            <div><span>成交归属</span><strong>自营 / 生态</strong><small>写入不可变原始标签</small></div>
+            <i>+</i>
+            <div><span>当前货物归属</span><strong>自营 / 生态</strong><small>由实际归属事件更新</small></div>
+            <i>+</i>
+            <div><span>中标方</span><strong>买家 / 非买家</strong><small>仅用于无扭转时区分</small></div>
+            <i>→</i>
+            <div class="is-result"><span>统计模式</span><strong>四选一</strong><small>扭转方向优先判定</small></div>
+            <i>→</i>
+            <div class="is-result"><span>当前业务标签</span><strong>唯一值</strong><small>规则按当前归属匹配</small></div>
+          </div>
+        </section>
+
+        <section class="content-panel">
+          <div class="panel-heading"><div><h2>统计模式判定规则</h2><p>建议按“先判扭转、再判中标方”的顺序生成互斥统计模式，避免同一订单被重复统计。</p></div></div>
+          <div class="table-scroll">
+            <table class="attribution-rule-table">
+              <thead><tr><th>优先级</th><th>成交归属</th><th>当前货物归属</th><th>中标方</th><th>统计模式</th><th>原始标签处理</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td data-label="优先级"><b>01</b></td>
+                  <td data-label="成交归属">自营</td>
+                  <td data-label="当前货物归属">生态</td>
+                  <td data-label="中标方">不限</td>
+                  <td data-label="统计模式">${statisticsModeChip('self_to_eco')}</td>
+                  <td data-label="原始标签处理">保持“闪回-闪回成交”</td>
+                </tr>
+                <tr>
+                  <td data-label="优先级"><b>02</b></td>
+                  <td data-label="成交归属">生态</td>
+                  <td data-label="当前货物归属">自营</td>
+                  <td data-label="中标方">不限</td>
+                  <td data-label="统计模式">${statisticsModeChip('eco_to_self')}</td>
+                  <td data-label="原始标签处理">保持“买家-买家成交”</td>
+                </tr>
+                <tr>
+                  <td data-label="优先级"><b>03</b></td>
+                  <td data-label="成交归属">与当前归属一致</td>
+                  <td data-label="当前货物归属">自营或生态</td>
+                  <td data-label="中标方">买家</td>
+                  <td data-label="统计模式">${statisticsModeChip('buyer_won')}</td>
+                  <td data-label="原始标签处理">保持成交时原始标签</td>
+                </tr>
+                <tr>
+                  <td data-label="优先级"><b>04</b></td>
+                  <td data-label="成交归属">与当前归属一致</td>
+                  <td data-label="当前货物归属">自营或生态</td>
+                  <td data-label="中标方">非买家</td>
+                  <td data-label="统计模式">${statisticsModeChip('non_buyer_won')}</td>
+                  <td data-label="原始标签处理">保持成交时原始标签</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="notice is-warning"><span>!</span><b>待业务确认 · Q-007</b><p>扭转订单是否必须先归入两种扭转模式、不再计入买卖家中标订单；以及“中标方”枚举中渠道、平台、审单等事实如何归为非买家。</p></div>
+        </section>
+
+        <section class="content-panel">
+          <div class="panel-heading"><div><h2>订单归因样例</h2><p>标签与统计模式分开追溯；发生部门扭转时，原始标签保持不变。</p></div><button class="text-button" data-action="go-view" data-view="trace">进入订单追溯</button></div>
+          <div class="attribution-order-list">
+            ${state.traces.slice(0, 6).map((trace) => `
+              <button class="attribution-order-card" type="button" data-action="select-trace" data-order="${escapeHtml(trace.orderNo)}">
+                <div><code>${escapeHtml(trace.orderNo)}</code>${statisticsModeChip(trace.statisticsMode)}</div>
+                <strong>${escapeHtml(trace.currentLabel)}</strong>
+                <p>${escapeHtml(ownershipTransitionText(trace.department, trace.currentOwner))} · 中标方：${escapeHtml(trace.bidderParty === 'buyer' ? '买家' : '非买家')}</p>
+                <small>原始标签：${escapeHtml(trace.originalLabel)}</small>
+              </button>
+            `).join('')}
+          </div>
+        </section>
+      </div>
+    `;
+    return {
+      body,
+      review: reviewPanel('归属与统计：先确认货物归谁，再解释标签', '本页新增统计模式评审场景。统计归因不回写原始标签；规则按事件发生时的当前货物归属匹配。', [
+        { title: '核心变化', items: ['订单同时保存成交归属和当前货物归属。', '自营与生态双向扭转成为独立统计模式。', '无扭转时按买家 / 非买家中标方分类。'] },
+        { title: '标签边界', items: ['成交归属用于生成不可变原始标签。', '当前业务标签仍只允许一个值。', '统计模式变化不等于人工修改标签。'] },
+        { title: '待确认', items: ['Q-007：扭转模式是否优先于买卖家中标模式。', 'Q-008：货物归属以哪个事件和数据源为生效依据。'] }
+      ])
+    };
+  }
+
   function renderRules() {
     const visible = state.rules.filter((rule) => {
       const departmentVisible = canViewDepartment(rule.department);
@@ -1391,7 +1585,7 @@
         <section class="data-panel">
           <div class="data-table rule-data-table">
             <div class="data-table-head">
-              <span>优先级</span><span>规则名称</span><span>适用部门</span><span>命中条件</span><span>输出标签</span><span>状态 / 版本</span><span>操作</span>
+              <span>优先级</span><span>规则名称</span><span>当前货物归属</span><span>命中条件</span><span>输出标签</span><span>状态 / 版本</span><span>操作</span>
             </div>
             ${visible.sort((first, second) => Number(second.priority) - Number(first.priority)).map((rule) => {
               const conflicting = conflicts.some(([first, second]) => first.id === rule.id || second.id === rule.id);
@@ -1511,7 +1705,9 @@
       <form id="simulation-form" class="simulation-form">
         <div class="form-section-head"><div><h2>构造订单事实</h2><p>试算只读取当前已生效规则，不写入订单。</p></div><span class="environment-tag">DEMO</span></div>
         <div class="form-grid form-grid-2">
-          <label class="field"><span>业务部门</span><select class="select" name="department"><option value="self" ${ui.simulatorDepartment === 'self' ? 'selected' : ''}>自营</option><option value="eco" ${ui.simulatorDepartment === 'eco' ? 'selected' : ''}>生态</option></select></label>
+          <label class="field"><span>成交归属（写入原始标签）</span><select class="select" name="department"><option value="self" ${ui.simulatorDepartment === 'self' ? 'selected' : ''}>自营</option><option value="eco" ${ui.simulatorDepartment === 'eco' ? 'selected' : ''}>生态</option></select></label>
+          <label class="field"><span>当前货物归属</span><select class="select" name="currentOwner"><option value="self">自营</option><option value="eco">生态</option></select><small class="field-help">与成交归属不一致时进入双向扭转模式。</small></label>
+          <label class="field"><span>中标方</span><select class="select" name="bidderParty"><option value="buyer">买家</option><option value="self" selected>自营 / 平台</option><option value="other">其他非买家</option></select><small class="field-help">仅在未发生部门扭转时区分买家中标和非买家中标。</small></label>
           <label class="field"><span>触发事件</span><select class="select" name="eventType">${state.eventCatalog.map((event) => `<option value="${escapeHtml(event.id)}">${escapeHtml(event.name)}</option>`).join('')}</select></label>
           <label class="field"><span>成交方式</span><select class="select" name="dealMethod">${CONDITION_VALUES.dealMethod.map((value) => `<option value="${escapeHtml(value.id)}">${escapeHtml(value.name)}</option>`).join('')}</select></label>
           <label class="field"><span>机器人来源</span><select class="select" name="robotSource"><option value="none">不涉及机器人</option>${CONDITION_VALUES.robotSource.map((value) => `<option value="${escapeHtml(value.id)}">${escapeHtml(value.name)}</option>`).join('')}</select></label>
@@ -1524,7 +1720,10 @@
           <span>快速场景</span>
           <button type="button" data-action="preset" data-preset="self-robot">自营多机器人</button>
           <button type="button" data-action="preset" data-preset="eco-enterprise">生态企业购</button>
-          <button type="button" data-action="preset" data-preset="eco-after-sale">生态售后退货</button>
+          <button type="button" data-action="preset" data-preset="buyer-won">买家中标</button>
+          <button type="button" data-action="preset" data-preset="non-buyer-won">非买家中标</button>
+          <button type="button" data-action="preset" data-preset="self-to-eco">自营转生态</button>
+          <button type="button" data-action="preset" data-preset="eco-to-self">生态转自营</button>
           <button type="button" data-action="preset" data-preset="no-hit">无规则命中</button>
         </div>
         <button class="button button-primary button-block" type="submit">运行规则试算</button>
@@ -1536,7 +1735,7 @@
       <div class="simulation-empty">
         <div class="simulation-empty-graphic"><span>原始标签</span><i>→</i><span>规则匹配</span><i>→</i><span>当前标签</span></div>
         <h2>选择一组订单事实开始试算</h2>
-        <p>结果将说明原始标签、全部命中候选、胜出规则、冲突状态与最终当前标签。</p>
+        <p>结果将说明成交归属、当前货物归属、统计模式、全部命中候选、胜出规则与最终当前标签。</p>
       </div>
     `;
 
@@ -1545,7 +1744,7 @@
         ${pageHeader(
           'VALIDATION / 05',
           '规则试算与结果解释',
-          '试算模拟一次订单事件，展示全部候选规则和唯一输出。它不追溯历史订单，也不修改订单当前标签。'
+          '试算模拟一次订单事件，先展示货物归属与统计模式，再展示全部候选规则和唯一标签输出。它不追溯历史订单，也不修改订单当前标签。'
         )}
         <div class="simulator-layout">
           ${forms}
@@ -1553,7 +1752,7 @@
         </div>
 
         <section class="coverage-grid">
-          <article><span>已覆盖场景</span><strong>8 / 10</strong><p>覆盖机器人、企业购、渠道、手机号与售后物权事件。</p></article>
+          <article><span>已覆盖场景</span><strong>12 / 14</strong><p>覆盖买家中标、非买家中标、双向部门扭转、机器人、企业购与渠道。</p></article>
           <article><span>待补场景</span><strong>2</strong><p>存量未归类标签和生产 REC_ORD_TYP 参数仍需业务确认。</p></article>
           <article><span>执行边界</span><strong>只读</strong><p>试算不产生标签版本、事件流水或订单写入。</p></article>
         </section>
@@ -1563,8 +1762,8 @@
       body,
       review: reviewPanel('规则试算：解释为什么命中', '本场景用于确认业务人员能理解“命中哪条、为什么胜出、为什么没命中”。', [
         { title: '结果结构', items: ['原始标签来自订单部门，不参与规则竞争。', '候选规则同时展示命中与未命中原因。', '最高优先级唯一规则胜出；冲突时不输出新标签。'] },
-        { title: '关键验证', items: ['推荐依次运行“自营多机器人”“生态企业购”“生态售后退货”“无规则命中”四个预设。', '无命中时必须保留原始标签。', '试算记录只保存在浏览器中。'] },
-        { title: '待确认', items: ['Q-002：除成交、渠道修正和物权生效外，哪些事件允许重新计算标签。', '规则冲突时的告警接收人尚未确定。'] }
+        { title: '关键验证', items: ['依次运行买家中标、非买家中标、自营转生态和生态转自营四个预设。', '扭转模式优先于买卖家中标模式；原始标签始终不变。', '无命中时必须保留原始标签，试算记录只保存在浏览器中。'] },
+        { title: '待确认', items: ['Q-002：除成交、渠道修正和归属变更外，哪些事件允许重新计算标签。', 'Q-007：四个统计模式是否必须互斥。'] }
       ])
     };
   }
@@ -1576,6 +1775,12 @@
         <div><span>SIMULATION RESULT</span><h2>${result.conflict ? '检测到同优先级冲突' : winner ? '规则命中' : '未命中规则'}</h2></div>
         ${statusChip(result.conflict ? 'failed' : 'enabled', result.conflict ? '冲突阻断' : winner ? '可更新' : '保留原始')}
       </div>
+      <div class="simulation-attribution">
+        <div><span>统计模式</span>${statisticsModeChip(result.statisticsMode)}</div>
+        <div><span>成交归属</span><strong>${escapeHtml(departmentName(result.sourceDepartment))}</strong></div>
+        <div><span>当前货物归属</span><strong>${escapeHtml(departmentName(result.currentOwner))}</strong></div>
+        <div><span>归属路径</span><strong>${escapeHtml(ownershipTransitionText(result.sourceDepartment, result.currentOwner))}</strong></div>
+      </div>
       <div class="result-label-path">
         <div><span>原始业务标签</span><strong>${escapeHtml(result.originalLabel)}</strong><small>不可变</small></div>
         <i aria-hidden="true">→</i>
@@ -1583,7 +1788,8 @@
       </div>
       <div class="result-facts">
         <span><b>事件</b>${escapeHtml(state.eventCatalog.find((event) => event.id === result.eventType)?.name || result.eventType)}</span>
-        <span><b>部门</b>${escapeHtml(departmentName(result.department))}</span>
+        <span><b>规则归属</b>${escapeHtml(departmentName(result.department))}</span>
+        <span><b>中标方</b>${escapeHtml(result.bidderParty === 'buyer' ? '买家' : '非买家')}</span>
         <span><b>事件 ID</b>${escapeHtml(result.eventId)}</span>
         <span><b>试算时间</b>${escapeHtml(result.matchedAt)}</span>
       </div>
@@ -1622,7 +1828,7 @@
               <button class="trace-order ${trace.orderNo === active?.orderNo ? 'is-active' : ''}" data-action="select-trace-detail" data-order="${escapeHtml(trace.orderNo)}">
                 <span class="mono-cell">${escapeHtml(trace.orderNo)}</span>
                 <strong>${escapeHtml(trace.currentLabel)}</strong>
-                <small>${escapeHtml(trace.departmentName)} · ${escapeHtml(trace.status)} · ${escapeHtml(trace.updatedAt)}</small>
+                <small>${escapeHtml(statisticsModeMeta(trace.statisticsMode).name)} · ${escapeHtml(trace.status)} · ${escapeHtml(trace.updatedAt)}</small>
               </button>
             `).join('')}
           </aside>
@@ -1637,6 +1843,13 @@
                 ${active.status === '待人工修复' && !pendingRepair
                   ? `<button class="button button-primary" data-action="open-repair" data-order="${escapeHtml(active.orderNo)}" ${hasCapability('manual:submit') ? '' : 'disabled title="当前角色无异常修复权限"'}>发起异常修复</button>`
                   : pendingRepair ? `<span class="pending-repair-note">修复审批中 · ${escapeHtml(pendingRepair.id)}</span>` : ''}
+              </div>
+              <div class="trace-attribution-panel">
+                <div><span>成交归属</span><strong>${escapeHtml(departmentName(active.department))}</strong><small>决定原始标签</small></div>
+                <i>→</i>
+                <div><span>当前货物归属</span><strong>${escapeHtml(departmentName(active.currentOwner))}</strong><small>${escapeHtml(ownershipTransitionText(active.department, active.currentOwner))}</small></div>
+                <i>→</i>
+                <div class="is-statistics"><span>统计模式</span>${statisticsModeChip(active.statisticsMode)}<small>中标方：${escapeHtml(active.bidderParty === 'buyer' ? '买家' : '非买家')}</small></div>
               </div>
               <div class="trace-label-compare">
                 <div><span>原始业务标签</span><strong>${escapeHtml(active.originalLabel)}</strong><small>成交时写入 · 不可变</small></div>
@@ -1687,9 +1900,9 @@
     return {
       body,
       review: reviewPanel('订单追溯：证明结果从何而来', '本场景验证业务人员能否解释当前标签，并确认人工修复没有绕过审批。', [
-        { title: '数据来源', items: ['原始标签来自部门成交事件。', '当前标签来自唯一胜出规则或经审批的人工修复。', '时间线保存事件 ID、规则 ID、版本与前后值。'] },
+        { title: '数据来源', items: ['原始标签来自成交归属事件。', '当前货物归属来自已生效的物权或归属变更事件。', '统计模式由成交归属、当前货物归属和中标方派生。', '当前标签来自唯一胜出规则或经审批的人工修复。'] },
         { title: '操作边界', items: [`当前角色为「${currentRole().title}」。`, hasCapability('manual:submit') ? '可发起异常修复审批，但不会直接修改订单。' : '异常修复入口被禁用。', '已有待审批修复时不可重复提交。'] },
-        { title: '待确认', items: ['Q-004：报表如何标识新旧口径切换时间。', 'Q-005：异常修复由谁发起、审核和执行。'] }
+        { title: '待确认', items: ['Q-004：报表如何标识新旧口径切换时间。', 'Q-007：扭转模式是否优先于买卖家中标模式。', 'Q-008：货物当前归属以哪个业务事件为最终依据。'] }
       ])
     };
   }
@@ -2044,7 +2257,7 @@
       <form id="rule-form" class="dialog-form">
         <div class="form-grid form-grid-2">
           <label class="field field-full"><span>规则名称 <b>*</b></span><input class="input" name="name" required maxlength="40" placeholder="例如：生态平台兜底成交" /></label>
-          <label class="field"><span>适用部门 <b>*</b></span><select class="select" name="department">${departmentOptions.map((department) => `<option value="${department}" ${department === initialDepartment ? 'selected' : ''}>${escapeHtml(departmentName(department))}</option>`).join('')}</select></label>
+          <label class="field"><span>适用当前货物归属 <b>*</b></span><select class="select" name="department">${departmentOptions.map((department) => `<option value="${department}" ${department === initialDepartment ? 'selected' : ''}>${escapeHtml(departmentName(department))}</option>`).join('')}</select><small class="field-help">按事件发生时的当前货物归属匹配规则。</small></label>
           <label class="field"><span>目标业务标签 <b>*</b></span><select class="select" name="targetLabelId">${targetLabelOptions(initialDepartment)}</select></label>
         </div>
         <section class="priority-config">
@@ -2070,7 +2283,7 @@
           <div class="priority-ranking" id="priority-ranking" aria-live="polite"></div>
         </section>
         <section class="condition-builder">
-          <div class="condition-builder-head"><div><h3>命中条件</h3><p>条件之间为“且”。首期每条规则最多 3 个受控条件。</p></div><span>ALL CONDITIONS</span></div>
+          <div class="condition-builder-head"><div><h3>命中条件</h3><p>条件之间为“且”。可直接按统计模式、当前货物归属或成交工具配置。</p></div><span>ALL CONDITIONS</span></div>
           <div class="condition-row">
             <select class="select" name="condition1Field">${CONDITION_FIELDS.map((field) => `<option value="${field.id}">${escapeHtml(field.name)}</option>`).join('')}</select>
             <select class="select" name="condition1Value" data-condition-value="condition1Field">${fieldOptions('dealMethod', 'robot')}</select>
@@ -2268,7 +2481,7 @@
         <p>${escapeHtml(conditionsText(rule.conditions))}</p>
       </div>
       <div class="rule-detail-flow">
-        <div><span>适用部门</span><strong>${escapeHtml(departmentName(rule.department))}</strong></div>
+        <div><span>当前货物归属</span><strong>${escapeHtml(departmentName(rule.department))}</strong></div>
         <i>→</i>
         <div><span>优先级</span><strong>${rule.priority}</strong></div>
         <i>→</i>
@@ -2534,10 +2747,13 @@
     const form = document.getElementById('simulation-form');
     if (!form) return;
     const presets = {
-      'self-robot': { department: 'self', eventType: 'ORDER_WON', dealMethod: 'robot', robotSource: 'self_multi', businessType: 'normal', channel: 'normal', phoneGroup: 'none', ownershipEvent: 'deal_only' },
-      'eco-enterprise': { department: 'eco', eventType: 'ORDER_WON', dealMethod: 'manual', robotSource: 'none', businessType: 'enterprise_purchase', channel: 'normal', phoneGroup: 'none', ownershipEvent: 'deal_only' },
-      'eco-after-sale': { department: 'eco', eventType: 'OWNERSHIP_EFFECTIVE', dealMethod: 'manual', robotSource: 'none', businessType: 'normal', channel: 'normal', phoneGroup: 'none', ownershipEvent: 'after_sale_effective' },
-      'no-hit': { department: 'self', eventType: 'ORDER_WON', dealMethod: 'manual', robotSource: 'none', businessType: 'normal', channel: 'normal', phoneGroup: 'none', ownershipEvent: 'deal_only' }
+      'self-robot': { department: 'self', currentOwner: 'self', bidderParty: 'self', eventType: 'ORDER_WON', dealMethod: 'robot', robotSource: 'self_multi', businessType: 'normal', channel: 'normal', phoneGroup: 'none', ownershipEvent: 'deal_only' },
+      'eco-enterprise': { department: 'eco', currentOwner: 'eco', bidderParty: 'buyer', eventType: 'ORDER_WON', dealMethod: 'manual', robotSource: 'none', businessType: 'enterprise_purchase', channel: 'normal', phoneGroup: 'none', ownershipEvent: 'deal_only' },
+      'buyer-won': { department: 'eco', currentOwner: 'eco', bidderParty: 'buyer', eventType: 'ORDER_WON', dealMethod: 'manual', robotSource: 'none', businessType: 'normal', channel: 'normal', phoneGroup: 'none', ownershipEvent: 'deal_only' },
+      'non-buyer-won': { department: 'self', currentOwner: 'self', bidderParty: 'self', eventType: 'ORDER_WON', dealMethod: 'manual', robotSource: 'none', businessType: 'normal', channel: 'normal', phoneGroup: 'none', ownershipEvent: 'deal_only' },
+      'self-to-eco': { department: 'self', currentOwner: 'eco', bidderParty: 'self', eventType: 'OWNERSHIP_EFFECTIVE', dealMethod: 'manual', robotSource: 'none', businessType: 'normal', channel: 'normal', phoneGroup: 'none', ownershipEvent: 'after_sale_effective' },
+      'eco-to-self': { department: 'eco', currentOwner: 'self', bidderParty: 'buyer', eventType: 'OWNERSHIP_EFFECTIVE', dealMethod: 'manual', robotSource: 'none', businessType: 'normal', channel: 'normal', phoneGroup: 'none', ownershipEvent: 'active_transfer' },
+      'no-hit': { department: 'self', currentOwner: 'self', bidderParty: 'other', eventType: 'ORDER_WON', dealMethod: 'manual', robotSource: 'none', businessType: 'normal', channel: 'normal', phoneGroup: 'none', ownershipEvent: 'deal_only' }
     };
     const values = presets[preset];
     Object.entries(values).forEach(([name, value]) => {
