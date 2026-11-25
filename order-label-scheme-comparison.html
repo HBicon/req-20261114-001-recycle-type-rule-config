@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Axure 最终业务方案与已确认规则收敛方案的逐项对比和合并建议。" />
+    <title>订单标签两套产品方案对比｜G2 评审</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2314785b'/%3E%3Cpath d='M14 18h15v8H14zm21 0h15v8H35zM14 38h15v8H14zm21 0h15v8H35zM31 24h2v18h-2z' fill='%23fff'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./assets/docs.css?v=20261125-3" />
+    <style>
+      .doc-section { scroll-margin-top: 82px; }
+      .doc-content h3 { margin: 28px 0 10px; font-size: 18px; }
+      .doc-content > .doc-section:first-child { padding-top: 36px; }
+      .doc-content p { color: var(--ink-2); }
+      .doc-content ul, .doc-content ol { margin: 14px 0 20px; padding-left: 23px; color: var(--ink-2); }
+      .doc-content li + li { margin-top: 6px; }
+      .doc-content blockquote {
+        margin: 18px 0;
+        padding: 14px 17px;
+        color: var(--ink-2);
+        background: var(--green-soft);
+        border-left: 3px solid var(--green);
+      }
+      .doc-content pre {
+        overflow: auto;
+        margin: 18px 0;
+        padding: 17px;
+        color: #dcefe8;
+        background: #172a25;
+        border-radius: 6px;
+        font: 12px/1.75 var(--mono);
+      }
+      .doc-content code {
+        padding: 1px 4px;
+        color: var(--green-dark);
+        background: var(--green-soft);
+        border-radius: 3px;
+        font: 0.9em var(--mono);
+      }
+      .doc-content pre code { padding: 0; color: inherit; background: none; font: inherit; }
+      .doc-content a { color: var(--green); text-decoration: underline; text-underline-offset: 3px; }
+      .doc-content table { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 12px; }
+      .doc-content th, .doc-content td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+      .doc-content th { color: var(--ink); background: var(--paper-soft); font-weight: 650; }
+      @media (max-width: 760px) {
+        .doc-nav { display: none; }
+        .doc-hero { grid-template-columns: 1fr; gap: 28px; }
+        .doc-layout { grid-template-columns: 1fr; gap: 0; }
+        .doc-toc { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 20px; }
+        .doc-toc > span { grid-column: 1 / -1; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#document">跳到对比正文</a>
+    <header class="doc-header">
+      <a class="doc-brand" href="./index.html" aria-label="返回评审首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16M4 11h9M4 17h16"/><path d="M15 9h5v5h-5z"/></svg>
+        </span>
+        <span><strong>双方案对比</strong><small>SOLUTION REVIEW</small></span>
+      </a>
+      <nav class="doc-nav" aria-label="文档导航">
+        <a href="#1-对比结论">对比结论</a>
+        <a href="#3-核心差异总表">差异总表</a>
+        <a href="#5-关键冲突">关键冲突</a>
+        <a href="#7-推荐合并方案">合并方案</a>
+        <a href="#9-G2-需要拍板的三项">待拍板</a>
+      </nav>
+      <div class="header-status"><span>G2 评审中</span><a class="button button-primary" href="./order-label-prototype-product-proposal.html">查看收敛方案</a></div>
+    </header>
+    <main>
+      <section class="doc-hero">
+        <div class="doc-hero-main">
+          <div class="doc-meta-line"><span>REQ-20261114-001</span><i></i><span>SCHEME COMPARISON</span><i></i><span>2026-11-25</span></div>
+          <h1>Axure 最终业务方案<br />与已确认规则收敛方案</h1>
+          <p>两套方案共同采用“成交初始化、最多一次跨部门扭转、扭转后冻结”的主模型。分歧集中在七类还是五类触发，以及固定数值优先级是否适用于机器人和手机号。</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#7-推荐合并方案">查看合并建议</a>
+            <a class="button button-secondary" href="./order-label-prototype-product-proposal.html">阅读收敛方案</a>
+            <a class="button button-secondary" href="./order-attribution-product-document.html">阅读 Axure 派生 PRD</a>
+          </div>
+        </div>
+        <aside class="doc-hero-side">
+          <div class="hero-side-head"><span>当前建议</span><strong>合并采用</strong></div>
+          <dl>
+            <div><dt>页面骨架</dt><dd class="is-success">Axure</dd></div>
+            <div><dt>执行规则</dt><dd class="is-success">收敛方案</dd></div>
+            <div><dt>本期触发</dt><dd>已确认 5 类</dd></div>
+            <div><dt>扩展条件</dt><dd>待确认</dd></div>
+          </dl>
+          <p>本次比对是 G2 决策材料，不构成研发执行结论。</p>
+        </aside>
+      </section>
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录"><span>目录</span><a href="#1-对比结论">1. 对比结论</a><a href="#2-两套方案定义">2. 两套方案定义</a><a href="#3-核心差异总表">3. 核心差异总表</a><a href="#4-共同点">4. 共同点</a><a href="#5-关键冲突">5. 关键冲突</a><a href="#6-各自优势">6. 各自优势</a><a href="#7-推荐合并方案">7. 推荐合并方案</a><a href="#8-如果必须二选一">8. 如果必须二选一</a><a href="#9-G2-需要拍板的三项">9. G2 需要拍板的三项</a><a href="#10-结论">10. 结论</a></aside>
+        <article class="doc-content" id="document"><blockquote>对比对象：Axure 最终业务方案 vs 已确认规则收敛方案</blockquote>
+<blockquote>当前状态：G2 评审草案，不可作为研发执行依据</blockquote>
+<blockquote>更新时间：2026-11-25</blockquote>
+<section id="1-对比结论" class="doc-section"><div class="section-kicker">01 / SECTION</div><h2>1. 对比结论</h2>
+
+<p>两套方案在订单归属主模型上一致：成交时按中标方生成初始标签，跨部门最多更新一次，更新后冻结。真正需要决策的是“开放哪几类触发条件”以及“多规则同时命中时如何判断”。</p>
+<div class="table-wrap"><table><thead><tr><th>判断</th><th>结论</th></tr></thead><tbody><tr><td>哪套适合作为当前规则基线</td><td>已确认规则收敛方案，即本期只开放五类已确认触发，渠道最高，机器人和手机号按中标方匹配</td></tr><tr><td>哪套适合作为页面与业务全景参考</td><td>Axure 最终业务方案，页面、配置字段、列表和双向扭转表达更完整</td></tr><tr><td>能否直接采用 Axure 的七类条件与固定优先级</td><td>当前不能，保值换新、企业购和“手机号高于机器人”等规则尚未确认，且与已确认决策存在冲突</td></tr><tr><td>推荐交付方式</td><td>用 Axure 的页面骨架承载收敛后的规则；两个扩展条件先隐藏或标记待确认，确认后再通过配置开放</td></tr></tbody></table></div>
+<p>推荐不是二选一。当前应以收敛方案锁定规则边界，再借用 Axure 的页面表达补齐产品设计。</p>
+</section><section id="2-两套方案定义" class="doc-section"><div class="section-kicker">02 / SECTION</div><h2>2. 两套方案定义</h2>
+
+<div class="table-wrap"><table><thead><tr><th>方案</th><th>定义</th><th>主要依据</th></tr></thead><tbody><tr><td>A. Axure 最终业务方案</td><td>初始标签、双向扭转、七类触发和固定优先级一体化方案</td><td>需求方提供的 Axure 业务流程与“回收单归属部门及指标”画布；现有 v1.1 专题稿</td></tr><tr><td>B. 已确认规则收敛方案</td><td>只开放已确认的五类触发，按实际成交方处理机器人/手机号，异常冲突进入队列</td><td>会话中已确认的五类条件、渠道最高、机器人和手机号不互相设优先级、系统不处理报表</td></tr></tbody></table></div>
+</section><section id="3-核心差异总表" class="doc-section"><div class="section-kicker">03 / SECTION</div><h2>3. 核心差异总表</h2>
+
+<div class="table-wrap"><table><thead><tr><th>对比维度</th><th>A. Axure 最终业务方案</th><th>B. 已确认规则收敛方案</th><th>当前建议</th></tr></thead><tbody><tr><td>初始标签</td><td>买家归生态，非买家归自营</td><td>买家归生态，非买家归自营</td><td>一致，直接保留</td></tr><tr><td>中标方缺失</td><td>不猜测，待归因</td><td>不猜测，待归因</td><td>一致，直接保留</td></tr><tr><td>触发条件数量</td><td>七类：渠道、机器人、手机号、售后退货、售前取消、保值换新、企业购</td><td>五类：渠道、机器人、手机号、售后退货、售前取消</td><td>本期按 B；A 的两类扩展条件待确认</td></tr><tr><td>渠道规则</td><td>最高优先级，不区分中标方</td><td>最高优先级，不区分中标方</td><td>一致</td></tr><tr><td>机器人规则</td><td>归入“其他”固定优先级层</td><td>仅在实际机器人中标时匹配</td><td>采用 B，避免把机器人名称当成中标事实</td></tr><tr><td>手机号规则</td><td>固定高于机器人及售后条件</td><td>仅在指定手机号实际中标时匹配，与机器人不互设优先级</td><td>采用 B；异常同时命中时进冲突队列</td></tr><tr><td>保值换新</td><td>作为独立触发，固定优先级高于企业购和手机号</td><td>本期不开放自动触发，列入待确认</td><td>未确认前不纳入执行</td></tr><tr><td>企业购</td><td>作为独立触发，固定优先级高于手机号</td><td>本期不开放自动触发，列入待确认</td><td>未确认前不纳入执行</td></tr><tr><td>售后退货</td><td>参与触发和优先级竞争</td><td>标签保护事件，完成后应保持生态；非生态则异常核查</td><td>采用 B，保护事件不覆盖渠道/手机号结果</td></tr><tr><td>售前取消</td><td>参与触发和优先级竞争</td><td>已付款并取消转闪回成交后保持生态；非生态则异常核查</td><td>采用 B</td></tr><tr><td>多规则冲突</td><td>按固定数值层级选出高优先级</td><td>渠道最高；机器人/手机号按成交方，异常冲突不自动兜底</td><td>采用 B，异常场景必须可解释</td></tr><tr><td>扭转次数</td><td>最多一次跨部门扭转</td><td>最多一次跨部门扭转</td><td>一致</td></tr><tr><td>冻结时机</td><td>发生跨部门扭转后冻结</td><td>目标不同并实际更新后冻结；目标相同只留痕</td><td>B 对冻结触发条件定义更清楚</td></tr><tr><td>目标标签</td><td>配置最终归属部门和关联回收类型</td><td>每条触发配置关联目标标签；目标与当前不同才更新</td><td>一致，需要补充部门与回收类型一致性校验</td></tr><tr><td>配置页面</td><td>列表、查询、导出、配置弹窗较完整</td><td>增加状态、冲突、冻结、失败、权限和审计要求</td><td>页面骨架用 A，交互约束用 B</td></tr><tr><td>报表边界</td><td>原型文字提到为报表配置取值</td><td>系统只输出统一标签，不建设报表</td><td>采用 B；修订 A 的报表表述</td></tr><tr><td>研发可执行性</td><td>业务覆盖广，但仍有条件、优先级和事件契约未确认</td><td>更贴近已确认事实，但正式事件契约仍未补齐</td><td>两套都只能到 G2，不能直接研发</td></tr></tbody></table></div>
+</section><section id="4-共同点" class="doc-section"><div class="section-kicker">04 / SECTION</div><h2>4. 共同点</h2>
+
+<p>以下规则在两套方案中一致，可以作为合并后的稳定底座：</p>
+<ol><li>初始标签只有“自营、生态”两个值。</li><li>非买家中标生成自营，买家中标生成生态。</li><li>中标方缺失时不猜测归属，订单主流程不受影响，标签进入待归因。</li><li>部门扭转不是货物实物流转。</li><li>自营可以转生态，生态也可以转自营。</li><li>每个订单最多发生一次跨部门标签更新。</li><li>完成跨部门更新后冻结，后续事件只留痕。</li><li>每条触发配置需要关联目标标签。</li><li>系统只输出订单标签，不建设部门报表。</li></ol>
+<p>这些共同规则说明两套方案不是方向相反。当前分歧集中在触发范围、条件语义和冲突判断。</p>
+</section><section id="5-关键冲突" class="doc-section"><div class="section-kicker">05 / SECTION</div><h2>5. 关键冲突</h2>
+
+<h3>5.1 触发范围不同</h3>
+<p>Axure 最终方案把“保值换新、企业购”与五类已确认条件并列。当前确认口径只包含渠道、机器人、手机号、买家售后退货和买家售前取消。</p>
+<p>如果直接把两个扩展条件放进执行范围，会产生四项未定义内容：</p>
+<ul><li>它们分别关联自营还是生态，还是允许配置任意目标标签；</li><li>它们与其他条件同时命中时是否真的应优先；</li><li>它们对应哪个正式业务事件和事件 ID；</li><li>原型出现“企业够”拼写错误和“已废弃？”标记，是否仍属于有效业务。</li></ul>
+<p>因此，当前应保留为待确认能力，不能仅凭原型画布上线。</p>
+<h3>5.2 优先级模型不同</h3>
+<p>Axure 使用的是全局固定层级：</p>
+<pre><code>渠道 &gt; 保值换新 &gt; 企业购 &gt; 手机号 &gt; 机器人/售后/售前</code></pre>
+<p>已确认口径则区分“事实匹配”和“多规则竞争”：</p>
+<pre><code>渠道规则最高
+→ 机器人规则只在该机器人实际中标时成立
+→ 手机号规则只在该手机号实际中标时成立
+→ 正常订单只有一个成交方，机器人/手机号不设优先级
+→ 数据异常同时命中不同目标时进入冲突队列</code></pre>
+<p>后者更符合“中标方决定命中事实”的业务语义。否则系统可能按手机号优先级覆盖实际机器人中标事实，产生无法解释的扭转。</p>
+<h3>5.3 售后与售前条件的处理不同</h3>
+<p>Axure 把买家售后退货、买家售前取消作为普通触发条件放入优先级竞争。已确认口径认为二者是标签保护型事件：</p>
+<ul><li>买家售后退货审核通过并完成退货后，订单应保持生态；</li><li>买家已付款、取消并转闪回成交后，订单应保持生态；</li><li>若当前标签不是生态，不自动修正为生态，而是记录异常待核查。</li></ul>
+<p>这样处理可以避免一个售后事件把已按渠道或中标规则确认的订单再次扭转。</p>
+</section><section id="6-各自优势" class="doc-section"><div class="section-kicker">06 / SECTION</div><h2>6. 各自优势</h2>
+
+<div class="table-wrap"><table><thead><tr><th>方案</th><th>优势</th><th>主要风险</th></tr></thead><tbody><tr><td>A. Axure 最终业务方案</td><td>业务全景完整；页面和字段可直接评审；把扩展业务纳入统一配置视野；便于讨论后续能力</td><td>将未确认条件写成执行规则；固定优先级与实际成交方语义冲突；售后节点与报表边界表述不严谨</td></tr><tr><td>B. 已确认规则收敛方案</td><td>更贴近已确认事实；异常边界明确；配置、冻结、追溯和权限更完整；研发歧义更少</td><td>页面完整度不如 Axure；五类条件的正式事件契约仍未补齐；扩展业务暂时不可配置</td></tr></tbody></table></div>
+</section><section id="7-推荐合并方案" class="doc-section"><div class="section-kicker">07 / SECTION</div><h2>7. 推荐合并方案</h2>
+
+<p>建议采用“Axure 做界面、收敛方案做规则”的组合：</p>
+<div class="table-wrap"><table><thead><tr><th>模块</th><th>采用方式</th></tr></thead><tbody><tr><td>页面结构</td><td>采用 Axure：业务流程图、归属配置列表、查询、导出、配置入口、目标部门和关联回收类型</td></tr><tr><td>初始归属</td><td>两套一致：买家归生态，非买家归自营，缺失待归因</td></tr><tr><td>本期触发范围</td><td>只开放五类已确认条件；保值换新、企业购隐藏或标记“待确认”</td></tr><tr><td>渠道规则</td><td>最高优先级，命中后不区分中标方，目标标签由配置决定</td></tr><tr><td>机器人/手机号</td><td>按实际中标方匹配，不建立二者优先级；异常同时命中不同目标时进冲突队列</td></tr><tr><td>售后/售前</td><td>作为保护事件，完成后保持生态；不参与与渠道规则的目标标签竞争</td></tr><tr><td>冻结</td><td>只有首次实际跨部门更新后冻结；目标相同只记录事件</td></tr><tr><td>页面字段</td><td>在 Axure 列表上补充优先级、状态、规则版本、命中结果、冻结时间和审计入口</td></tr><tr><td>异常交互</td><td>补充中标方缺失、规则冲突、标签服务失败、晚到事件、无权限和并发编辑</td></tr><tr><td>数据输出</td><td>只统一输出初始标签、当前标签、状态、方向和规则版本；不建设部门报表</td></tr><tr><td>扩展能力</td><td>保值换新、企业购通过受控开关预留，完成目标标签、事件和优先级确认后再开放</td></tr></tbody></table></div>
+</section><section id="8-如果必须二选一" class="doc-section"><div class="section-kicker">08 / SECTION</div><h2>8. 如果必须二选一</h2>
+
+<p>当前 G2 应优先选择 B. 已确认规则收敛方案作为规则与验收基线，原因有三点：</p>
+<ol><li>它没有把尚未确认的保值换新、企业购写成上线规则。</li><li>它尊重“机器人/手机号按实际中标方匹配”的已确认事实。</li><li>它把售后、售前和异常命中转成可解释状态，减少重复扭转和错误覆盖。</li></ol>
+<p>Axure 方案仍有不可替代的价值：它更完整地回答了“业务长什么样、配置页面长什么样”。因此产品交付应合并两者，而不是废弃 Axure。</p>
+</section><section id="9-G2-需要拍板的三项" class="doc-section"><div class="section-kicker">09 / SECTION</div><h2>9. G2 需要拍板的三项</h2>
+
+<div class="table-wrap"><table><thead><tr><th>决策项</th><th>选项</th><th>推荐</th></tr></thead><tbody><tr><td>本期触发范围</td><td>五类 / 七类</td><td>五类上线，七类保留配置位；扩展条件确认后开放</td></tr><tr><td>多规则优先级</td><td>全部固定数值 / 渠道最高且其余按事实匹配</td><td>渠道最高；机器人/手机号按中标方；异常冲突进队列</td></tr><tr><td>售后/售前作用</td><td>普通扭转条件 / 标签保护事件</td><td>标签保护事件，完成后保持生态，不覆盖首次有效扭转</td></tr></tbody></table></div>
+</section><section id="10-结论" class="doc-section"><div class="section-kicker">10 / SECTION</div><h2>10. 结论</h2>
+
+<p>Axure 最终业务方案适合做业务蓝图和后台页面母版，已确认规则收敛方案适合做首期执行规则和验收基线。两者合并后的目标方案是：</p>
+<blockquote>使用 Axure 的完整页面与配置体验，只开放已确认的五类触发；渠道规则最高，机器人和手机号按实际中标方匹配，售后与售前作为生态标签保护事件；首次实际跨部门更新后冻结，后续只留痕；扩展业务与报表需求不进入本期自动执行范围。</blockquote>
+<p>当前仍是 G2 评审草案。正式事件名、事件来源、幂等字段、售后完成条件、审核岗位和扩展业务范围确认后，才能进入规格与研发阶段。</p></section></article>
+      </div>
+    </main>
+  </body>
+</html>
