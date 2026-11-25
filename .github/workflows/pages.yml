@@ -48,6 +48,10 @@ jobs:
         with:
           path: _site
 
+      - name: 等待 Pages 制品就绪
+        shell: bash
+        run: sleep 10
+
       - name: 发布到 Pages
         id: deployment
         uses: actions/deploy-pages@v4
