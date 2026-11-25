@@ -72,6 +72,8 @@
 | 新模式公网部署 | 工作流 [44689300259](https://github.com/HBicon/req-20261114-001-recycle-type-rule-config/actions/runs/44689300259) 部署成功；提交 `140396c`；首页、新版 HTML、新版 Markdown、交互原型与原 PRD 均返回 HTTP 200 |
 | 新模式公网验证 | 公网新版专题检查 `19/19` 通过；原有原型回归 `85/85` 通过；两轮均无控制台告警和页面脚本错误 |
 | Axure 原型产品方案 | 已生成独立 HTML 评审页和 Markdown 原文，纳入 Pages 显式发布白名单；状态为 G2 评审草案 |
+| 原型产品方案公网部署 | 工作流 [45578574262](https://github.com/HBicon/req-20261114-001-recycle-type-rule-config/actions/runs/45578574262) 部署成功；HTML 与 Markdown 公网地址均返回 HTTP 200 |
+| 原型产品方案公网验证 | 1440 / 760 / 390 / 320 四档宽度通过；13 个正文分节完整、首页入口正常、无页面级横向溢出、无控制台告警 |
 
 ## PRD 六项自检
 
