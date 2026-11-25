@@ -4,63 +4,55 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#ffffff" />
-    <meta
-      name="description"
-      content="订单业务标签统一配置、审核与自动更新机制 G2 评审 PRD，包含可交互产品原型。"
-    />
-    <title>订单业务标签 PRD｜G2 评审</title>
+    <meta name="description" content="订单业务标签统一配置、审核与订单归属自动扭转 v1.1 G2 评审 PRD。" />
+    <title>订单业务标签与归属 PRD｜v1.1</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2314785b'/%3E%3Cpath d='M17 18h30v8H17zm0 11h18v8H17zm21 0h9v8h-9zM17 40h30v8H17z' fill='%23fff'/%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="./assets/docs.css?v=20261120-1" />
+    <link rel="stylesheet" href="./assets/docs.css?v=20261125-1" />
   </head>
   <body>
     <a class="skip-link" href="#document">跳到 PRD 正文</a>
-
     <header class="doc-header">
       <a class="doc-brand" href="./index.html" aria-label="返回 PRD 顶部">
         <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 5h16M4 11h9M4 17h16" />
-            <path d="M15 9h5v5h-5z" />
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16M4 11h9M4 17h16"/><path d="M15 9h5v5h-5z"/></svg>
         </span>
-        <span><strong>业务标签治理</strong><small>PRODUCT REQUIREMENTS</small></span>
+        <span><strong>订单标签与归属</strong><small>PRODUCT REQUIREMENTS</small></span>
       </a>
       <nav class="doc-nav" aria-label="文档导航">
         <a href="#overview">方案摘要</a>
         <a href="#scope">本期范围</a>
-        <a href="#attribution">归属统计</a>
-        <a href="#rules">业务规则</a>
-        <a href="./order-attribution-product-document.html">新模式文档</a>
-        <a href="#prototype">交互原型</a>
-        <a href="#approval-review">评审结论</a>
+        <a href="#model">归属模型</a>
+        <a href="#priority">触发与优先级</a>
+        <a href="#interaction">交互原型</a>
+        <a href="#review">评审结论</a>
+        <a href="./order-label-prototype-product-proposal.html">原型产品方案</a>
+        <a href="./order-attribution-product-document.html">专题 PRD</a>
       </nav>
-      <div class="header-status">
-        <span>G2 评审中</span>
-        <a class="button button-primary" href="./prototype.html">打开完整原型</a>
-      </div>
+      <div class="header-status"><span>G2 评审中</span><a class="button button-primary" href="./prototype.html">打开原型</a></div>
     </header>
 
     <main>
       <section class="doc-hero">
         <div class="doc-hero-main">
-          <div class="doc-meta-line"><span>REQ-20261114-001</span><i></i><span>PRD v0.9</span><i></i><span>更新于 2026-11-20</span></div>
-          <h1>订单业务标签<br />统一配置、审核与自动更新</h1>
-          <p>一套标签定义服务自营与生态两个部门。订单成交时固定写入原始标签，并同时记录货物当前归属、中标方和部门扭转；命中已审核规则后只更新唯一当前标签。</p>
+          <div class="doc-meta-line"><span>REQ-20261114-001</span><i></i><span>PRD v1.1</span><i></i><span>更新于 2026-11-25</span></div>
+          <h1>订单业务标签统一配置<br />与订单归属自动扭转</h1>
+          <p>买家中标默认归生态，非买家中标默认归自营。订单成交后，7 类已审核配置按固定优先级判断；跨部门最多扭转一次，完成后冻结。</p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#prototype">评审交互原型</a>
-            <a class="button button-secondary" href="./order-attribution-product-document.html">阅读归属统计产品文档</a>
+            <a class="button button-primary" href="./prototype.html#attribution">评审订单归属配置</a>
+            <a class="button button-secondary" href="./order-label-prototype-product-proposal.html">阅读原型产品方案</a>
+            <a class="button button-secondary" href="./order-attribution-product-document.html">阅读 v1.1 专题 PRD</a>
             <a class="button button-secondary" href="./prd.md">查看 PRD 原文</a>
           </div>
         </div>
         <aside class="doc-hero-side">
-          <div class="hero-side-head"><span>评审状态</span><strong>G2 待确认</strong></div>
+          <div class="hero-side-head"><span>当前评审状态</span><strong>G2 待确认</strong></div>
           <dl>
-            <div><dt>需求方</dt><dd>hz</dd></div>
-            <div><dt>Scope Gate</dt><dd class="is-success">G1 已通过</dd></div>
-            <div><dt>当前阶段</dt><dd>方案与原型评审</dd></div>
-            <div><dt>未决问题</dt><dd>7 项，其中统计口径 2 项需业务确认</dd></div>
+            <div><dt>原标签范围</dt><dd class="is-success">G1 已通过</dd></div>
+            <div><dt>订单归属范围</dt><dd>补充确认中</dd></div>
+            <div><dt>研发执行</dt><dd>未放行</dd></div>
+            <div><dt>原型版本</dt><dd>v1.1</dd></div>
           </dl>
-          <p>统一标签原范围已过 G1；新增货物归属与统计模式属于补充范围，确认后才进入 G2 定稿。</p>
+          <p>本页用于业务、产品、研发和测试共同评审，不构成研发可执行结论。</p>
         </aside>
       </section>
 
@@ -69,384 +61,236 @@
           <span>目录</span>
           <a class="is-active" href="#overview">01 方案摘要</a>
           <a href="#scope">02 本期范围</a>
-          <a href="#model">03 标签模型</a>
-          <a href="#attribution">04 归属与统计</a>
-          <a href="#rules">05 业务规则</a>
-          <a href="#interaction">06 页面交互</a>
-          <a href="#prototype">07 可交互原型</a>
-          <a href="#states">08 状态与异常</a>
-          <a href="#permission">09 权限与审计</a>
-          <a href="#acceptance">10 验收结论</a>
-          <a href="#approval-review">11 待确认项</a>
+          <a href="#model">03 归属模型</a>
+          <a href="#priority">04 触发与优先级</a>
+          <a href="#interaction">05 页面交互</a>
+          <a href="#prototype">06 可交互原型</a>
+          <a href="#exception">07 异常与权限</a>
+          <a href="#review">08 评审结论</a>
         </aside>
 
         <article class="doc-content" id="document">
           <section id="overview" class="doc-section">
             <div class="section-kicker">01 / SOLUTION SUMMARY</div>
             <div class="section-heading">
-              <h2>先把“原始归属”和“业务归类”拆开</h2>
-              <span class="status-tag is-green">已确认方向</span>
+              <h2>先固定成交事实，再允许一次受控扭转</h2>
+              <span class="status-tag is-green">推荐模型</span>
             </div>
-            <p class="lead">当前混乱的根因不是标签名称不够多，而是成交归属、后续业务分类和人工修正共用了一个可修改字段。统一方案需要把三类信息拆开，并让配置与订单执行解耦。</p>
+            <p class="lead">上一版用“当前货物归属的净结果”描述多次流转，与最新 Axure 方案冲突。v1.1 改为：成交时确定初始部门，跨部门最多扭转一次，扭转后冻结；原始标签、当前部门和当前业务标签分别保存。</p>
 
             <div class="principle-grid">
-              <article>
-                <span>01</span>
-                <h3>原始标签不可变</h3>
-                <p>自营固定写入“闪回-闪回成交”，生态固定写入“买家-买家成交”，用于证明成交归属。</p>
-              </article>
-              <article>
-                <span>02</span>
-                <h3>当前标签唯一</h3>
-                <p>页面、报表和业务查询读取唯一当前标签；命中规则时只替换当前标签。</p>
-              </article>
-              <article>
-                <span>03</span>
-                <h3>高优先级胜出</h3>
-                <p>多条规则可命中，但只能有一条最高优先级规则输出标签；冲突必须在发布前阻断。</p>
-              </article>
-              <article>
-                <span>04</span>
-                <h3>变更全程留痕</h3>
-                <p>每个版本保留提交、审核、发布、运行时命中和人工修复证据。</p>
-              </article>
+              <article><span>01</span><h3>成交默认明确</h3><p>买家中标归生态，非买家中标归自营；中标方缺失进入待归因，不猜测。</p></article>
+              <article><span>02</span><h3>原始标签不可变</h3><p>自营固定“闪回-闪回成交”，生态固定“买家-买家成交”。</p></article>
+              <article><span>03</span><h3>最多扭转一次</h3><p>第一次目标部门不同的有效命中产生扭转，完成后立即冻结。</p></article>
+              <article><span>04</span><h3>当前标签唯一</h3><p>一个订单任一时刻只输出一个当前业务标签，所有部门读取同一字段。</p></article>
             </div>
 
             <div class="callout is-green">
-              <span>核心结论</span>
-              <p>系统统一的是标签定义、规则与治理流程，两个部门仍可维护各自业务口径；同一订单不会因两个部门工具差异生成多个当前标签。</p>
+              <span>核心判断</span>
+              <p>部门归属与业务标签必须拆开。部门回答“归自营还是生态”，业务标签回答“这笔订单属于哪类回收业务”；否则每次增加标签都会再次破坏归属口径。</p>
             </div>
           </section>
 
           <section id="scope" class="doc-section">
             <div class="section-kicker">02 / SCOPE</div>
-            <h2>本期范围与不做事项</h2>
+            <h2>统一配置、审核和自动更新闭环</h2>
             <div class="scope-grid">
               <div class="scope-list is-included">
                 <h3><span>✓</span>本期包含</h3>
                 <ul>
-                  <li>自营、生态标签的新增、编辑、停用与审核，每个标签只归属一个部门。</li>
-                  <li>受控字段规则、优先级、冲突检查与只读试算。</li>
-                  <li>原始标签保护、唯一当前标签和订单事件自动更新。</li>
-                  <li>成交归属、当前货物归属、中标方、双向部门扭转和四类统计模式。</li>
-                  <li>提交人与审核人分离，标签和规则按归属部门独立审核。</li>
-                  <li>经审批的异常修复或重算，以及完整审计追溯。</li>
+                  <li>自营、生态业务标签的新增、编辑、停用与审核。</li>
+                  <li>7 类订单归属触发条件及其受控输入项。</li>
+                  <li>买家中标归生态、非买家中标归自营的成交默认判断。</li>
+                  <li>自营与生态双向扭转，但每个订单最多一次并冻结。</li>
+                  <li>固定业务优先级、配置唯一性和发布前复查。</li>
+                  <li>提交人与审核人分离，按归属部门独立审核。</li>
+                  <li>规则试算、订单追溯、异常修复与审计。</li>
                 </ul>
               </div>
               <div class="scope-list is-excluded">
                 <h3><span>−</span>明确不做</h3>
                 <ul>
-                  <li>一个订单并存多个当前业务标签。</li>
-                  <li>运营直接编辑订单标签值。</li>
-                  <li>任意表达式、SQL、脚本或 AI 自动推断标签。</li>
-                  <li>新规则默认回算全部历史订单。</li>
-                  <li>首期跨部门分成、结算拆分或自由 BI 配置。</li>
+                  <li>订单多次来回流转。</li>
+                  <li>一个订单多个当前业务标签。</li>
+                  <li>运营直接修改订单标签或当前部门。</li>
+                  <li>系统生成部门报表或历史月报重分类。</li>
+                  <li>自动退款、扣款、结算或资金拆分。</li>
+                  <li>无审批的批量修复和历史回算。</li>
                 </ul>
               </div>
             </div>
           </section>
 
           <section id="model" class="doc-section">
-            <div class="section-kicker">03 / LABEL MODEL</div>
-            <h2>三个标签字段，职责必须清楚</h2>
-            <div class="label-model">
-              <article class="base-model">
-                <span>基础标签</span>
-                <strong>闪回-闪回成交</strong>
-                <small>自营订单 · 系统保护</small>
-              </article>
-              <i>+</i>
-              <article class="base-model">
-                <span>基础标签</span>
-                <strong>买家-买家成交</strong>
-                <small>生态订单 · 系统保护</small>
-              </article>
-              <i>→</i>
-              <article class="config-model">
-                <span>统一配置</span>
-                <strong>业务标签定义</strong>
-                <small>REC_ORD_TYP 编码、部门单选、分类明细、说明、责任人、版本</small>
-              </article>
-              <i>→</i>
-              <article class="result-model">
-                <span>订单结果</span>
-                <strong>唯一当前标签</strong>
-                <small>原始标签始终保留</small>
-              </article>
+            <div class="section-kicker">03 / ATTRIBUTION MODEL</div>
+            <h2>四个字段表达完整归属事实</h2>
+            <div class="flow-panel">
+              <div class="flow-head"><span>订单归属链路</span><b>原始事实 → 当前结果 → 唯一标签</b></div>
+              <div class="flow-steps">
+                <div><span>01</span><strong>中标方</strong><small>买家 / 非买家</small></div><i>→</i>
+                <div><span>02</span><strong>初始部门</strong><small>生态 / 自营</small></div><i>→</i>
+                <div><span>03</span><strong>当前部门</strong><small>最多扭转一次</small></div><i>→</i>
+                <div><span>04</span><strong>原始标签</strong><small>永久不可变</small></div><i>→</i>
+                <div><span>05</span><strong>当前标签</strong><small>始终唯一</small></div>
+              </div>
             </div>
 
             <div class="table-wrap">
               <table>
-                <thead><tr><th>对象</th><th>成交时</th><th>后续变化</th><th>业务用途</th></tr></thead>
+                <thead><tr><th>字段</th><th>成交时</th><th>后续变化</th><th>业务用途</th></tr></thead>
                 <tbody>
-                  <tr><td>原始业务标签</td><td>按成交归属写入</td><td>永远不可变</td><td>证明成交时归属</td></tr>
-                  <tr><td>订单归属快照</td><td>记录成交归属与中标方</td><td>当前货物归属随正式事件更新</td><td>解释货物当前归自营还是生态</td></tr>
-                  <tr><td>订单统计模式</td><td>按归属事实派生</td><td>随部门扭转或中标事实变化</td><td>统一买家中标、非买家中标和双向扭转口径</td></tr>
-                  <tr><td>业务标签定义</td><td>不直接写入</td><td>审核发布后形成新版本</td><td>定义规则目标与口径</td></tr>
-                  <tr><td>当前业务标签</td><td>初始化为原始标签</td><td>规则或审批后人工修复可更新</td><td>查询、展示与统计</td></tr>
+                  <tr><td>初始部门</td><td>按中标方写入</td><td>永不变</td><td>证明成交时默认归属</td></tr>
+                  <tr><td>原始业务标签</td><td>随初始部门写入</td><td>永不变</td><td>证明成交来源</td></tr>
+                  <tr><td>当前部门</td><td>等于初始部门</td><td>首次跨部门扭转时更新一次</td><td>表达当前订单归哪个部门</td></tr>
+                  <tr><td>当前业务标签</td><td>等于原始标签</td><td>随首次跨部门扭转更新一次</td><td>业务查询和部门取数</td></tr>
+                  <tr><td>冻结状态</td><td>未冻结</td><td>首次跨部门扭转后冻结</td><td>阻止后续事件再次更新</td></tr>
                 </tbody>
               </table>
             </div>
 
-            <div class="callout is-green">
-              <span>菜单职责</span>
-              <p><b>业务标签</b>管理“标签是什么”：系统编码、部门、分类绑定、状态与审核版本。<b>标签规则</b>管理“订单何时变成该标签”：条件、优先级、目标标签和事件范围。定义与执行分开，同一标签可被多条规则引用，编码不会重复定义。</p>
-            </div>
-          </section>
-
-          <section id="attribution" class="doc-section">
-            <div class="section-kicker">04 / ATTRIBUTION MODEL</div>
-            <div class="section-heading">
-              <h2>先判货物归属，再判部门扭转和标签</h2>
-              <span class="status-tag is-orange">补充范围待确认</span>
-            </div>
-            <p class="lead">成交归属用于生成不可变原始标签；当前货物归属、中标方与扭转方向用于统计归因。标签规则按事件发生时的当前货物归属匹配，并由唯一当前标签表达业务结果。</p>
-
-            <div class="principle-grid">
-              <article>
-                <span>01</span>
-                <h3>买家中标订单</h3>
-                <p>成交归属与当前货物归属一致，中标方为买家，且没有发生自营与生态之间的部门扭转。</p>
-              </article>
-              <article>
-                <span>02</span>
-                <h3>非买家中标订单</h3>
-                <p>成交归属与当前货物归属一致，中标方不是买家，也没有发生部门扭转。</p>
-              </article>
-              <article>
-                <span>03</span>
-                <h3>自营扭转为生态</h3>
-                <p>成交归属为自营，货物当前归属已变为生态；该模式优先于买卖家中标模式。</p>
-              </article>
-              <article>
-                <span>04</span>
-                <h3>生态扭转为自营</h3>
-                <p>成交归属为生态，货物当前归属已变为自营；原始“买家-买家成交”标签永久保留。</p>
-              </article>
-            </div>
-
-            <div class="flow-panel">
-              <div class="flow-head"><span>统计模式判定顺序</span><b>互斥判定 · 待 Q-007 确认</b></div>
-              <div class="flow-steps">
-                <div><span>01</span><strong>成交 / 当前归属</strong><small>先检查是否跨部门</small></div><i>→</i>
-                <div><span>02</span><strong>双向扭转</strong><small>不一致则输出扭转模式</small></div><i>→</i>
-                <div><span>03</span><strong>判断中标方</strong><small>一致时再区分买家</small></div><i>→</i>
-                <div><span>04</span><strong>生成统计模式</strong><small>相同订单仅一个模式</small></div><i>→</i>
-                <div><span>05</span><strong>匹配当前标签</strong><small>统计模式可变，原始标签不变</small></div>
-              </div>
-            </div>
-
             <div class="callout is-orange">
-              <span>关键边界</span>
-              <p>统计模式不能反写原始标签，也不能让同一订单同时进入互斥统计桶。<b>Q-007</b> 待确认扭转优先级；<b>Q-008</b> 待确认当前货物归属以哪个正式事件为最终依据。</p>
+              <span>同部门命中待确认</span>
+              <p><b>Q-012</b>：目标部门与当前部门相同时，是否允许只更新更细业务标签？本稿暂不更新、不冻结，后续仍可发生首次跨部门扭转。</p>
             </div>
           </section>
 
-          <section id="rules" class="doc-section">
-            <div class="section-kicker">05 / BUSINESS RULES</div>
-            <h2>七个决定订单结果的规则</h2>
-            <div class="rule-list">
-              <article><span>R1</span><div><h3>成交写入原始标签</h3><p>自营固定为“闪回-闪回成交”，生态固定为“买家-买家成交”；接口、页面和规则均不能覆盖。</p></div><b>P0</b></article>
-              <article><span>R2</span><div><h3>规则只输出一个当前标签</h3><p>全部生效规则参与计算，优先级数值越大越先执行，最高优先级唯一规则胜出；无命中时当前标签保持原始标签。</p></div><b>P0</b></article>
-              <article><span>R3</span><div><h3>冲突必须发布前处理</h3><p>同部门、同优先级、条件可重叠且目标标签不同时禁止发布；运行时发现冲突则保留原值并告警。</p></div><b>P0</b></article>
-              <article><span>R4</span><div><h3>默认仅影响未来</h3><p>新规则审核发布后，仅处理新订单及事件发生时间晚于生效时间的已登记事件，不回算历史订单。</p></div><b>P0</b></article>
-              <article><span>R5</span><div><h3>人工变更必须审批</h3><p>运营只能发起异常修复或重算申请；审批通过前订单不变，通过后也仅更新当前标签。</p></div><b>P0</b></article>
-              <article><span>R6</span><div><h3>分类单选且配置唯一</h3><p>新标签只能选择一个部门；保值换新、企业购在同部门唯一；同一渠道、手机号或机器人不能绑定多个生效配置。</p></div><b>P0</b></article>
-              <article><span>R7</span><div><h3>归属与统计受控派生</h3><p>成交归属、当前货物归属、中标方和扭转方向共同决定唯一统计模式；规则可按统计模式或当前货物归属命中，原始标签不变。</p></div><b>P0</b></article>
+          <section id="priority" class="doc-section">
+            <div class="section-kicker">04 / TRIGGERS &amp; PRIORITY</div>
+            <h2>7 类触发条件，固定优先级可见</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>优先级</th><th>触发条件</th><th>触发值</th><th>唯一性</th></tr></thead>
+                <tbody>
+                  <tr><td><b>700</b></td><td>按渠道</td><td>选择一个渠道</td><td>同一渠道仅一个生效配置</td></tr>
+                  <tr><td><b>600</b></td><td>保值换新</td><td>无录入项</td><td>同一部门仅一个配置</td></tr>
+                  <tr><td><b>500</b></td><td>企业购</td><td>无录入项</td><td>同一部门仅一个配置</td></tr>
+                  <tr><td><b>400</b></td><td>按买家手机号</td><td>录入手机号</td><td>同一手机号仅一个生效配置</td></tr>
+                  <tr><td><b>300</b></td><td>按机器人类型</td><td>选择机器人</td><td>同一机器人仅一个生效配置</td></tr>
+                  <tr><td><b>300</b></td><td>买家售后退款</td><td>正式退款事件</td><td>同部门同节点仅一个配置</td></tr>
+                  <tr><td><b>300</b></td><td>买家售前取消</td><td>正式取消转闪回事件</td><td>同部门同节点仅一个配置</td></tr>
+                </tbody>
+              </table>
             </div>
 
-            <div class="flow-panel">
-              <div class="flow-head"><span>订单标签执行链路</span><b>事件驱动 · 版本可复现</b></div>
-              <div class="flow-steps">
-                <div><span>01</span><strong>订单成交</strong><small>写入原始标签</small></div><i>→</i>
-                <div><span>02</span><strong>加载生效版本</strong><small>按事件时间匹配</small></div><i>→</i>
-                <div><span>03</span><strong>计算全部候选</strong><small>记录匹配与未命中</small></div><i>→</i>
-                <div><span>04</span><strong>最高优先级胜出</strong><small>输出唯一标签</small></div><i>→</i>
-                <div><span>05</span><strong>保存快照</strong><small>规则、版本、事件 ID</small></div>
-              </div>
+            <div class="rule-list">
+              <article><span>R1</span><div><h3>高优先级胜出</h3><p>渠道 > 保值换新 > 企业购 > 手机号 > 其他；配置人不能任意修改业务优先级。</p></div><b>P0</b></article>
+              <article><span>R2</span><div><h3>提交与发布双校验</h3><p>同一渠道、手机号、机器人或同部门非录入项重复时阻断，发布前再次复查。</p></div><b>P0</b></article>
+              <article><span>R3</span><div><h3>部门与标签一致</h3><p>关联回收类型的适用部门必须等于配置的最终归属部门。</p></div><b>P0</b></article>
+              <article><span>R4</span><div><h3>一次扭转后冻结</h3><p>后续命中只追加事件流水，不改变订单字段；晚到事件不覆盖已冻结结果。</p></div><b>P0</b></article>
             </div>
           </section>
 
           <section id="interaction" class="doc-section">
-            <div class="section-kicker">06 / INTERACTION DESIGN</div>
-            <h2>页面不是功能拼盘，每个入口对应一个治理动作</h2>
+            <div class="section-kicker">05 / INTERACTION DESIGN</div>
+            <h2>每个菜单回答一个独立问题</h2>
             <div class="interaction-grid">
-              <article><span>01</span><h3>治理总览</h3><p>判断生效版本、待审风险、处理失败和最近订单变化。</p><a href="./prototype.html#overview">查看页面 →</a></article>
-              <article><span>02</span><h3>业务标签</h3><p>维护标签定义、编码、部门和规则引用，并提交审核。</p><a href="./prototype.html#labels">查看页面 →</a></article>
-              <article><span>03</span><h3>归属与统计</h3><p>解释货物当前归自营还是生态，以及两类部门扭转和四类统计模式。</p><a href="./prototype.html#attribution">查看页面 →</a></article>
-              <article><span>04</span><h3>标签规则</h3><p>构建受控条件、设置优先级、检查冲突并提交发布。</p><a href="./prototype.html#rules">查看页面 →</a></article>
-              <article><span>05</span><h3>审核与发布</h3><p>确认配置差异、部门审核进度和发布边界。</p><a href="./prototype.html#approvals">查看页面 →</a></article>
-              <article><span>06</span><h3>规则试算</h3><p>先展示归属与统计模式，再解释命中、未命中和冲突。</p><a href="./prototype.html#simulator">查看页面 →</a></article>
-              <article><span>07</span><h3>订单追溯</h3><p>还原成交归属、当前货物归属、原始标签、当前标签和规则版本。</p><a href="./prototype.html#trace">查看页面 →</a></article>
-              <article><span>08</span><h3>运行与权限</h3><p>集中评审事件契约、失败兜底、角色权限和审计流水。</p><a href="./prototype.html#runtime">查看页面 →</a></article>
+              <article><span>01</span><h3>业务标签</h3><p>标签是什么：编码、名称、部门、分类和责任版本。</p><a href="./prototype.html#labels">查看页面 →</a></article>
+              <article><span>02</span><h3>订单归属</h3><p>成交归谁、发生了什么扭转、关联哪个回收类型。</p><a href="./prototype.html#attribution">查看页面 →</a></article>
+              <article><span>03</span><h3>标签规则</h3><p>普通业务标签在什么条件下被命中，优先级如何冲突。</p><a href="./prototype.html#rules">查看页面 →</a></article>
+              <article><span>04</span><h3>审核与发布</h3><p>提交人、部门审核人、平台复核和发布差异。</p><a href="./prototype.html#approvals">查看页面 →</a></article>
+              <article><span>05</span><h3>规则试算</h3><p>解释候选配置、优先级、扭转和最终标签。</p><a href="./prototype.html#simulator">查看页面 →</a></article>
+              <article><span>06</span><h3>订单追溯</h3><p>还原原始标签、当前部门、当前标签和冻结事件。</p><a href="./prototype.html#trace">查看页面 →</a></article>
             </div>
 
-            <div class="flow-panel">
-              <div class="flow-head"><span>执行优先级配置</span><b>数值越大 · 越先执行</b></div>
-              <div class="flow-steps">
-                <div><span>01</span><strong>打开规则构建器</strong><small>进入新建规则</small></div><i>→</i>
-                <div><span>02</span><strong>设置 1～999</strong><small>输入、±10 或滑块</small></div><i>→</i>
-                <div><span>03</span><strong>查看排序预览</strong><small>定位本部门执行顺序</small></div><i>→</i>
-                <div><span>04</span><strong>检查同优先级</strong><small>冲突则阻断提交</small></div><i>→</i>
-                <div><span>05</span><strong>提交审核</strong><small>审核详情同步展示</small></div>
-              </div>
-            </div>
-
-            <div class="flow-panel">
-              <div class="flow-head"><span>配置唯一性控制</span><b>提交检查 · 发布复查</b></div>
-              <div class="flow-steps">
-                <div><span>01</span><strong>选择分类</strong><small>受控分类字典</small></div><i>→</i>
-                <div><span>02</span><strong>识别约束</strong><small>分类唯一或绑定唯一</small></div><i>→</i>
-                <div><span>03</span><strong>实时检查</strong><small>展示占用配置</small></div><i>→</i>
-                <div><span>04</span><strong>阻断重复</strong><small>禁止提交冲突值</small></div><i>→</i>
-                <div><span>05</span><strong>发布复查</strong><small>再次校验生效配置</small></div>
-              </div>
-            </div>
-
-            <h3 class="subhead">关键交互说明</h3>
             <div class="table-wrap">
               <table>
-                <thead><tr><th>场景</th><th>关键操作</th><th>系统反馈</th><th>权限边界</th></tr></thead>
+                <thead><tr><th>场景</th><th>关键操作</th><th>系统反馈</th></tr></thead>
                 <tbody>
-                  <tr><td>新增业务标签</td><td>从 REC_ORD_TYP 选择未占用编码，在自营、生态中选择一个部门，并选择受控分类</td><td>编码只读系统参数；编码、非录入分类或绑定值重复时阻止提交</td><td>配置人或平台管理员可提交</td></tr>
-                  <tr><td>标签编码选择</td><td>打开系统参数选择器，按 code、值或值2搜索</td><td>展示上级 code、值2 和占用标签；已占用参数禁用；编辑时编码锁定</td><td>不允许手工输入编码</td></tr>
-                  <tr><td>渠道成交</td><td>打开渠道字典大弹窗，按名称或渠道 ID 搜索</td><td>支持分组列表、添加、清空和保存；当前标签只能选择一个渠道</td><td>批量入口保留但禁用多选提交</td></tr>
-                  <tr><td>分类唯一性</td><td>查看机器人、渠道、手机号、企业购或保值换新配置</td><td>已占用绑定项禁用；非录入分类同部门只保留一个配置</td><td>规则由服务端再次校验</td></tr>
-                  <tr><td>标签分类字典</td><td>选择标签分类</td><td>不提供“自定义业务”，仅展示六个受控分类</td><td>分类编码保持稳定</td></tr>
-                  <tr><td>编辑已生效标签</td><td>生成新版本并提交审核</td><td>原版本继续运行，新版未发布前不参与计算</td><td>提交人不能审核本人事项</td></tr>
-                  <tr><td>规则冲突</td><td>同部门、同优先级且条件重叠</td><td>实时标红并禁止提交审核</td><td>试算与检查对所有配置角色可见</td></tr>
-                  <tr><td>执行优先级</td><td>在规则构建器输入 1～999</td><td>输入框、±10、滑块和部门排序预览同步更新</td><td>数值越大越先执行</td></tr>
-                  <tr><td>标签与规则</td><td>先定义并审核业务标签，再从已审核目录创建规则</td><td>规则不复制标签编码；两页独立版本与审核记录可追溯</td><td>平台不能替代归属部门审核</td></tr>
-                  <tr><td>统计模式归因</td><td>录入成交归属、当前货物归属和中标方</td><td>先识别双向扭转，再区分买家中标与非买家中标；规则按当前归属匹配</td><td>统计模式不可反写原始标签</td></tr>
-                  <tr><td>人工修复</td><td>选择目标标签并填写证据原因</td><td>只生成审批事项，订单值在审批前不变</td><td>仅异常运营或平台管理员可发起</td></tr>
-                  <tr><td>无权限访问</td><td>只读角色查看后台</td><td>写操作隐藏或禁用，接口仍需二次校验</td><td>按角色与部门数据范围控制</td></tr>
+                  <tr><td>新增订单归属配置</td><td>选择最终部门、触发条件、触发值、关联回收类型</td><td>固定优先级只读；保存后进入审核</td></tr>
+                  <tr><td>切换触发条件</td><td>从 7 类条件中选择</td><td>只展示渠道、手机号、机器人或业务事实说明</td></tr>
+                  <tr><td>重复触发值</td><td>保存已被占用的配置</td><td>展示占用配置并阻断提交</td></tr>
+                  <tr><td>标签部门不一致</td><td>选择错误部门的回收类型</td><td>选项不可用或提交被阻断</td></tr>
+                  <tr><td>订单已冻结</td><td>后续再次触发</td><td>只记录事件，不更新订单</td></tr>
+                  <tr><td>无权限</td><td>只读角色访问</td><td>写操作隐藏或禁用，接口二次校验</td></tr>
                 </tbody>
               </table>
             </div>
           </section>
 
           <section id="prototype" class="doc-section prototype-section">
-            <div class="section-kicker">07 / INTERACTIVE PROTOTYPE</div>
+            <div class="section-kicker">06 / INTERACTIVE PROTOTYPE</div>
             <div class="section-heading">
               <div>
-                <h2>在评审文档内直接体验关键流程</h2>
-                <p>左侧场景导航、中间业务界面、下方评审旁注。可在原型顶部切换配置人、审核人、平台管理员和只读角色。</p>
+                <h2>直接评审订单归属配置台</h2>
+                <p>支持查询、配置、条件联动、固定优先级、唯一性检查、提交审核和日志查看。</p>
               </div>
-              <a class="button button-primary" href="./prototype.html" target="_blank" rel="noopener">全屏打开</a>
+              <a class="button button-primary" href="./prototype.html#attribution" target="_blank" rel="noopener">全屏打开</a>
             </div>
             <div class="prototype-frame">
-              <div class="prototype-toolbar">
-                <span><i></i>交互原型</span>
-                <span>脱敏演示 · 本地状态 · 不连接真实系统</span>
-                <a href="./prototype.html" target="_blank" rel="noopener">新窗口打开 ↗</a>
-              </div>
-              <iframe src="./prototype.html#overview" title="订单业务标签治理可交互原型" loading="lazy"></iframe>
+              <div class="prototype-toolbar"><span><i></i>交互原型</span><span>脱敏演示 · 本地状态 · 不连接真实系统</span><a href="./prototype.html#attribution" target="_blank" rel="noopener">新窗口打开 ↗</a></div>
+              <iframe src="./prototype.html#attribution" title="订单归属与业务标签治理交互原型" loading="lazy"></iframe>
             </div>
             <div class="prototype-guide">
-              <div><b>建议 1</b><p>先进入“归属与统计”，核对四类统计模式和两类部门扭转判定。</p></div>
-              <div><b>建议 2</b><p>在“规则试算”依次运行买家中标、非买家中标、自营转生态和生态转自营。</p></div>
-              <div><b>建议 3</b><p>进入订单追溯，确认原始标签不变、当前货物归属和统计模式可解释。</p></div>
+              <div><b>建议 1</b><p>点击“配置订单归属”，依次切换渠道、手机号、机器人、保值换新和企业购，检查输入项联动。</p></div>
+              <div><b>建议 2</b><p>查看列表中的 700 / 600 / 500 / 400 / 300 优先级，并验证重复渠道和非录入项被阻断。</p></div>
+              <div><b>建议 3</b><p>进入订单追溯，确认原始标签不可变、当前部门只扭转一次且冻结后不再更新。</p></div>
             </div>
           </section>
 
-          <section id="states" class="doc-section">
-            <div class="section-kicker">08 / STATE &amp; FAILURE</div>
-            <h2>业务人员与研发必须看到同一组状态</h2>
+          <section id="exception" class="doc-section">
+            <div class="section-kicker">07 / EXCEPTIONS &amp; PERMISSIONS</div>
+            <h2>异常必须落到明确状态</h2>
             <div class="state-columns">
               <div>
                 <h3>配置状态</h3>
-                <div class="state-flow">
-                  <span>草稿</span><i>→</i><span>待审核</span><i>→</i><span class="is-success">已通过</span><i>→</i><span class="is-success">生效中</span><i>→</i><span>已停用</span>
-                </div>
-                <p>驳回退回草稿；已生效版本在修改审核期间继续运行，不允许被直接覆盖。</p>
+                <div class="state-flow"><span>草稿</span><i>→</i><span>待审核</span><i>→</i><span class="is-success">已通过</span><i>→</i><span class="is-success">生效中</span><i>→</i><span>已停用</span></div>
+                <p>驳回退回草稿；已生效版本继续运行，不能被待审版本覆盖。</p>
               </div>
               <div>
-                <h3>订单标签任务</h3>
-                <div class="state-flow">
-                  <span>待处理</span><i>→</i><span>计算中</span><i>→</i><span class="is-success">已更新</span><i>或</i><span class="is-danger">处理失败</span><i>→</i><span class="is-warning">待修复</span>
-                </div>
-                <p>标签服务失败不得阻断订单成交；失败任务可重试，人工修复必须审批。</p>
+                <h3>订单归属状态</h3>
+                <div class="state-flow"><span>待初始归因</span><i>→</i><span>未扭转</span><i>→</i><span class="is-success">已扭转冻结</span><i>或</i><span class="is-warning">冲突待处理</span></div>
+                <p>缺值不猜测；重复事件幂等；晚到事件不覆盖冻结结果。</p>
               </div>
             </div>
 
             <div class="table-wrap">
               <table>
-                <thead><tr><th>异常场景</th><th>系统处理</th><th>订单结果</th><th>人工处理</th></tr></thead>
+                <thead><tr><th>角色</th><th>允许操作</th><th>明确限制</th></tr></thead>
                 <tbody>
-                  <tr><td>缺少部门</td><td>不改写当前标签，进入异常队列</td><td>成交正常</td><td>补齐事实或提交审批修复</td></tr>
-                  <tr><td>同优先级冲突</td><td>阻断发布；运行时保持原标签并告警</td><td>成交正常</td><td>调整优先级或条件后重新提交</td></tr>
-                  <tr><td>标签服务超时</td><td>订单成功，标签任务重试</td><td>成交正常</td><td>重试失败后按异常队列处理</td></tr>
-                  <tr><td>重复事件投递</td><td>按订单号、事件类型和事件 ID 幂等</td><td>仅执行一次</td><td>无需人工处理</td></tr>
-                  <tr><td>发布与事件并发</td><td>按事件发生时间选择当时生效版本</td><td>结果可复现</td><td>通过版本快照核对</td></tr>
-                  <tr><td>历史存量标签</td><td>导入待确认，不自动上线</td><td>历史值保持</td><td>业务逐项确认映射</td></tr>
+                  <tr><td>自营 / 生态配置人</td><td>提交本部门草稿</td><td>不能审核本人事项</td></tr>
+                  <tr><td>自营 / 生态审核人</td><td>确认或驳回本部门配置</td><td>不能替代另一部门审核</td></tr>
+                  <tr><td>平台管理员</td><td>复核全局冲突和执行授权重算</td><td>不能替代部门审核</td></tr>
+                  <tr><td>运营异常处理人</td><td>发起修复或重算申请</td><td>不能直接改订单标签</td></tr>
+                  <tr><td>业务只读</td><td>查询、导出授权范围</td><td>所有写操作禁用</td></tr>
                 </tbody>
               </table>
             </div>
-          </section>
 
-          <section id="permission" class="doc-section">
-            <div class="section-kicker">09 / PERMISSION &amp; AUDIT</div>
-            <h2>提交、审核、执行职责分离</h2>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>角色</th><th>可见范围</th><th>允许操作</th><th>明确限制</th></tr></thead>
-                <tbody>
-                  <tr><td>自营 / 生态配置人</td><td>全局标签定义、本部门规则与追溯</td><td>提交自营或生态标签，创建规则草稿</td><td>不能审核本人事项</td></tr>
-                  <tr><td>自营 / 生态审核人</td><td>本部门待审事项</td><td>确认或驳回</td><td>不能审核本人提交内容</td></tr>
-                  <tr><td>平台管理员</td><td>全局配置、系统编码和规则</td><td>复核系统参数与全局冲突</td><td>不能替代部门审核</td></tr>
-                  <tr><td>异常运营</td><td>异常订单与修复事项</td><td>发起修复或重算申请</td><td>不能直接改订单标签</td></tr>
-                  <tr><td>业务只读</td><td>标签、规则与订单追溯</td><td>查询和筛选</td><td>所有写操作禁用</td></tr>
-                </tbody>
-              </table>
-            </div>
             <div class="audit-band">
-              <div><span>AU</span><p><b>标签与规则</b>保存操作者、角色、差异、版本和审批依据。</p></div>
-              <div><span>EV</span><p><b>订单事件</b>保存事件 ID、规则 ID、规则版本、命中前后值。</p></div>
-              <div><span>FD</span><p><b>失败任务</b>保存失败原因、重试次数和人工修复审批编号。</p></div>
+              <div><span>CFG</span><p><b>配置审计</b>保存前后值、版本、提交人、审核人和影响范围。</p></div>
+              <div><span>ORD</span><p><b>订单审计</b>保存中标方、初始部门、触发事件、扭转结果和冻结时间。</p></div>
+              <div><span>FIX</span><p><b>修复审计</b>保存申请、审核、执行、前后值和审批编号。</p></div>
             </div>
           </section>
 
-          <section id="acceptance" class="doc-section">
-            <div class="section-kicker">10 / ACCEPTANCE</div>
-            <h2>G2 阶段的核心验收结论</h2>
-            <div class="acceptance-list">
-              <label><input type="checkbox" checked disabled /><span><b>原始标签</b>自营与生态成交时分别写入固定原始标签。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>唯一当前标签</b>所有规则竞争后仅输出一个当前标签。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>默认不追溯</b>新规则发布不回算历史订单。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>冲突阻断</b>同优先级条件重叠时禁止发布。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>编码受控</b>标签编码只从 REC_ORD_TYP 选择，且全局唯一。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>职责分离</b>业务标签定义“是什么”，标签规则定义“何时命中”。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>归属可解释</b>订单同时展示成交归属、当前货物归属、中标方与双向扭转。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>统计互斥</b>扭转模式优先，未扭转时再区分买家中标与非买家中标。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>原始标签保护</b>统计模式或后续标签变化均不改写原始标签。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>权限分离</b>提交人不能自审，标签和规则按归属部门审核。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>人工修复</b>先审批后执行，原始标签保持不变。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>失败兜底</b>标签服务异常不阻断订单成交。</span></label>
-              <label><input type="checkbox" checked disabled /><span><b>追溯证据</b>可从订单还原规则版本、事件和前后值。</span></label>
-            </div>
-          </section>
-
-          <section id="approval-review" class="doc-section">
-            <div class="section-kicker">11 / OPEN DECISIONS</div>
-            <h2>G2 评审需要确认的 7 个问题</h2>
+          <section id="review" class="doc-section">
+            <div class="section-kicker">08 / REVIEW &amp; GATE</div>
+            <h2>G2 需要先确认的三个问题</h2>
             <ol class="question-list">
-              <li><span>Q-001</span><div><b>存量标签如何导入</b><p>白板标签的部门、编码、数据来源与历史映射，由两个部门业务负责人确认。</p></div></li>
-              <li><span>Q-002</span><div><b>哪些后续事件允许重算</b><p>候选包括渠道修正、业务类型变化、售后状态变化和物权生效，需形成正式事件契约。</p></div></li>
-              <li><span>Q-004</span><div><b>历史报表如何切换口径</b><p>默认不追溯，但需明确报表从何时开始标识新口径及切换时间。</p></div></li>
-              <li><span>Q-005</span><div><b>异常修复由谁执行</b><p>明确发起、审核、执行责任人，以及首期批量重算的审批方式。</p></div></li>
-              <li><span>Q-006</span><div><b>审核岗位如何配置</b><p>确认自营、生态部门审核人岗位和平台复核职责。</p></div></li>
-              <li><span>Q-007</span><div><b>四类统计模式是否互斥</b><p>确认“先判两部门扭转、再判买家 / 非买家中标”的优先级。</p></div></li>
-              <li><span>Q-008</span><div><b>货物当前归属何时生效</b><p>确认以哪个正式业务事件作为自营或生态当前归属的最终依据。</p></div></li>
+              <li><span>Q-014</span><div><b>固定业务优先级</b><p>是否正式采用“渠道 > 保值换新 > 企业购 > 手机号 > 其他”？</p></div></li>
+              <li><span>Q-013</span><div><b>售后与售前目标</b><p>买家售后退款、买家售前取消最终归哪个部门并关联哪个回收类型？</p></div></li>
+              <li><span>Q-012</span><div><b>同部门命中</b><p>是否允许只更新更细业务标签，但不发生跨部门扭转、不冻结？</p></div></li>
             </ol>
 
+            <div class="acceptance-list">
+              <label><input type="checkbox" checked disabled /><span><b>默认归属</b>买家中标归生态，非买家中标归自营。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>原始标签</b>成交时写入，永久不可修改。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>一次扭转</b>跨部门仅更新一次，之后冻结。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>当前标签唯一</b>所有部门读取同一字段。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>优先级可见</b>列表、编辑、审核、追溯一致展示。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>配置唯一</b>渠道、手机号、机器人和非录入项重复时阻断。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>部门一致</b>关联回收类型必须属于最终归属部门。</span></label>
+              <label><input type="checkbox" checked disabled /><span><b>职责分离</b>提交、审核和执行分离。</span></label>
+            </div>
+
             <div class="gate-card">
-              <div><span>G2</span><h3>方案与交互评审</h3><p>确认业务规则、页面流程、异常与权限后，才进入研发规格和正式测试用例。</p></div>
-              <a class="button button-primary" href="./prototype.html">进入交互原型</a>
+              <div><span>CURRENT GATE</span><h3>G1 原范围已通过，补充范围与 G2 待确认</h3><p>本 PRD、专题文档和 v1.1 原型用于评审业务规则与交互，不可作为研发执行依据。</p></div>
+              <a class="button button-primary" href="./order-attribution-product-document.html">阅读完整专题 PRD</a>
             </div>
           </section>
 
           <footer class="doc-footer">
-            <span>REQ-20261114-001 · PRD v0.9 G2 评审版</span>
+            <span>REQ-20261114-001 · PRD v1.1 G2 评审版</span>
             <span>文档状态：评审中 · 非研发执行依据</span>
           </footer>
         </article>

@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="基于 Axure 原型输出的订单标签与部门扭转产品方案 v0.4，G2 评审草案。" />
+    <title>基于 Axure 原型的订单标签与部门扭转产品方案｜v0.4</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2314785b'/%3E%3Cpath d='M17 18h30v8H17zm0 11h18v8H17zm21 0h9v8h-9zM17 40h30v8H17z' fill='%23fff'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./assets/docs.css?v=20261125-2" />
+    <style>
+      .doc-section { scroll-margin-top: 82px; }
+      .doc-content h3 { margin: 28px 0 10px; font-size: 18px; }
+      .doc-content > .doc-section:first-child { padding-top: 36px; }
+      .doc-content p { color: var(--ink-2); }
+      .doc-content ul, .doc-content ol { margin: 14px 0 20px; padding-left: 23px; color: var(--ink-2); }
+      .doc-content li + li { margin-top: 6px; }
+      .doc-content blockquote {
+        margin: 18px 0;
+        padding: 14px 17px;
+        color: var(--ink-2);
+        background: var(--green-soft);
+        border-left: 3px solid var(--green);
+      }
+      .doc-content pre {
+        overflow: auto;
+        margin: 18px 0;
+        padding: 17px;
+        color: #dcefe8;
+        background: #172a25;
+        border-radius: 6px;
+        font: 12px/1.75 var(--mono);
+      }
+      .doc-content code {
+        padding: 1px 4px;
+        color: var(--green-dark);
+        background: var(--green-soft);
+        border-radius: 3px;
+        font: 0.9em var(--mono);
+      }
+      .doc-content pre code { padding: 0; color: inherit; background: none; font: inherit; }
+      .doc-content a { color: var(--green); text-decoration: underline; text-underline-offset: 3px; }
+      .doc-content table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 12px; }
+      .doc-content th, .doc-content td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+      .doc-content th { color: var(--ink); background: var(--paper-soft); font-weight: 650; }
+      @media (max-width: 760px) {
+        .doc-nav { display: none; }
+        .doc-hero { grid-template-columns: 1fr; gap: 28px; }
+        .doc-layout { grid-template-columns: 1fr; gap: 0; }
+        .doc-toc { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 20px; }
+        .doc-toc > span { grid-column: 1 / -1; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#document">跳到方案正文</a>
+    <header class="doc-header">
+      <a class="doc-brand" href="./index.html" aria-label="返回评审首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16M4 11h9M4 17h16"/><path d="M15 9h5v5h-5z"/></svg>
+        </span>
+        <span><strong>原型产品方案</strong><small>PRODUCT PROPOSAL</small></span>
+      </a>
+      <nav class="doc-nav" aria-label="文档导航">
+        <a href="#1-背景与问题">背景</a>
+        <a href="#4-本期范围与明确不做">范围</a>
+        <a href="#5-核心业务规则">核心规则</a>
+        <a href="#6-产品信息架构与页面方案">页面方案</a>
+        <a href="#10-原型差异与待确认">待确认</a>
+        <a href="#11-产品验收场景">验收</a>
+      </nav>
+      <div class="header-status"><span>G2 评审中</span><a class="button button-primary" href="./index.html">返回 PRD 首页</a></div>
+    </header>
+    <main>
+      <section class="doc-hero">
+        <div class="doc-hero-main">
+          <div class="doc-meta-line"><span>REQ-20261114-001</span><i></i><span>PROPOSAL v0.4</span><i></i><span>2026-11-25</span></div>
+          <h1>基于 Axure 原型的订单标签与部门扭转产品方案</h1>
+          <p>成交时按中标方生成自营或生态初始标签；命中五类受控触发条件后，允许完成一次跨部门更新并冻结。原型展示的扩展业务和优先级作为差异项单独评审。</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#5-核心业务规则">阅读核心规则</a>
+            <a class="button button-secondary" href="./order-label-prototype-product-proposal.md">查看 Markdown 原文</a>
+            <a class="button button-secondary" href="./prototype.html#attribution">查看交互原型</a>
+          </div>
+        </div>
+        <aside class="doc-hero-side">
+          <div class="hero-side-head"><span>当前交付状态</span><strong>G2 待确认</strong></div>
+          <dl>
+            <div><dt>初始标签</dt><dd class="is-success">自营 / 生态</dd></div>
+            <div><dt>本期触发</dt><dd>5 类</dd></div>
+            <div><dt>更新次数</dt><dd>最多 1 次</dd></div>
+            <div><dt>研发放行</dt><dd>否</dd></div>
+          </dl>
+          <p>在线页面使用脱敏评审数据，不连接真实业务系统。</p>
+        </aside>
+      </section>
+      <div class="doc-layout">
+        <aside class="doc-toc" aria-label="目录"><span>目录</span><a href="#文档信息">文档信息</a><a href="#1-背景与问题">1. 背景与问题</a><a href="#2-目标-取舍与成功条件">2. 目标、取舍与成功条件</a><a href="#3-原型观察与业务流程复述">3. 原型观察与业务流程复述</a><a href="#4-本期范围与明确不做">4. 本期范围与明确不做</a><a href="#5-核心业务规则">5. 核心业务规则</a><a href="#6-产品信息架构与页面方案">6. 产品信息架构与页面方案</a><a href="#7-数据与事件建议">7. 数据与事件建议</a><a href="#8-权限-审计与个人信息">8. 权限、审计与个人信息</a><a href="#9-异常-恢复与发布边界">9. 异常、恢复与发布边界</a><a href="#10-原型差异与待确认">10. 原型差异与待确认</a><a href="#11-产品验收场景">11. 产品验收场景</a><a href="#12-Gate-状态-G2-评审判断与下一步">12. Gate 状态、G2 评审判断与下一步</a></aside>
+        <article class="doc-content" id="document"><blockquote>状态：G2 评审草案，不可作为研发执行依据</blockquote>
+<blockquote>版本：<code>v0.4</code></blockquote>
+<blockquote>更新时间：2026-11-25</blockquote>
+<blockquote>原型依据：<a href="https://goodjob.shanhs.com/ax-files/axure-pages%2F%E9%BB%84%E4%B8%AD%2F%E5%9B%9E%E6%94%B6%E7%B1%BB%E5%9E%8B/start.html#id=ckpaqm&amp;amp;p=%E4%B8%9A%E5%8A%A1%E6%B5%81%E7%A8%8B">业务流程</a>、<a href="https://goodjob.shanhs.com/ax-files/axure-pages%2F%E9%BB%84%E4%B8%AD%2F%E5%9B%9E%E6%94%B6%E7%B1%BB%E5%9E%8B/%E5%9B%9E%E6%94%B6%E5%8D%95%E5%BD%92%E5%B1%9E%E9%83%A8%E9%97%A8%E5%8F%8A%E6%8C%87%E6%A0%87.html?v=1795586562">回收单归属部门及指标</a></blockquote>
+<section id="文档信息" class="doc-section"><div class="section-kicker">01 / SECTION</div><h2>文档信息</h2>
+
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>内容</th></tr></thead><tbody><tr><td>需求 ID</td><td><code>REQ-20261114-001</code></td></tr><tr><td>项目台账</td><td><code>req-20261114-001-recycle-type-rule-config</code></td></tr><tr><td>关联事实</td><td><code>F-001</code>、<code>F-007</code>、<code>F-009</code>、<code>F-010</code>、<code>F-011</code>、<code>F-012</code>、<code>F-013</code>、<code>F-014</code></td></tr><tr><td>关联决策</td><td><code>D-006</code>、<code>D-007</code>、<code>D-008</code>、<code>D-009</code>、<code>D-010</code>、<code>D-011</code></td></tr><tr><td>关联假设</td><td><code>A-001</code>、<code>A-002</code></td></tr><tr><td>关联待确认</td><td><code>Q-012</code>、<code>Q-013</code>、<code>Q-014</code>、<code>Q-015</code>、<code>Q-016</code></td></tr><tr><td>原标签治理范围</td><td>G1 已通过</td></tr><tr><td>本方案当前状态</td><td>G2 待评审；尚未确认，G3 未通过</td></tr></tbody></table></div>
+<p>本方案以当前已确认业务规则为主，以 Axure 原型作为页面和流程设计输入。原型中与已确认规则不一致的内容不直接成为产品规则，统一列入第 10 节的“原型差异”。</p>
+</section><section id="1-背景与问题" class="doc-section"><div class="section-kicker">02 / SECTION</div><h2>1. 背景与问题</h2>
+
+<h3>1.1 已确认事实</h3>
+<ul><li>公司分为自营部门和生态部门。自营通过闪回成交，生态通过买家成交，目前两个部门各自生成订单标签，存在名称和口径混乱。</li><li>新订单初始标签只有“自营”和“生态”两个值。非买家中标订单初始为自营，买家中标订单初始为生态。</li><li>部门扭转与货物实物流转无关，由成交渠道、机器人、手机号、买家售后退货和买家售前取消等业务节点触发。</li><li>每条触发配置关联一个目标标签。订单成交时写入初始标签，首次命中跨部门触发后更新一次并冻结，后续不再更新。</li><li>指定渠道规则优先级最高，不区分中标方。机器人规则和手机号规则均按中标方匹配，业务上二者互斥，不设置两者之间的优先级。</li><li>系统只更新订单标签，不建设报表、看板、部门汇总或历史月报重分类；各部门按统一标签字段自行取数。</li></ul>
+<h3>1.2 需要解决的问题</h3>
+<blockquote>同一笔回收订单在成交后发生渠道、机器人、手机号、售后退货或买家取消时，自营与生态如何依据同一套可配置规则得到唯一、可追溯且最多变化一次的归属标签？</blockquote>
+<p>这个问题的核心是标签口径和更新边界。方案不回答货物当前由哪个部门实际持有，也不负责在系统中重算部门报表。</p>
+</section><section id="2-目标-取舍与成功条件" class="doc-section"><div class="section-kicker">03 / SECTION</div><h2>2. 目标、取舍与成功条件</h2>
+
+<h3>2.1 本期目标</h3>
+<ol><li>新成交订单能按统一依据生成唯一的自营或生态初始标签。</li><li>命中五类触发条件时，系统能依据配置的目标标签完成至多一次跨部门标签更新，并冻结结果。</li><li>每次标签变化都能追溯到中标事实、触发对象、规则版本、业务事件和生效时间。</li><li>系统输出一致的订单标签字段，供各部门自行取数。</li></ol>
+<h3>2.2 方案取舍</h3>
+<div class="table-wrap"><table><thead><tr><th>方案</th><th>收益</th><th>主要代价/风险</th><th>判断</th></tr></thead><tbody><tr><td>维持两个部门各自打标</td><td>改动小</td><td>口径继续分裂，无法形成统一取数字段</td><td>不推荐</td></tr><tr><td>全部线下人工改标</td><td>无需事件接入</td><td>无统一时点、难审计、易反复修改</td><td>不推荐</td></tr><tr><td>按已确认规则建设最小标签能力</td><td>标签唯一、最多更新一次、可追溯</td><td>依赖中标方和各业务事件稳定接入</td><td>推荐</td></tr><tr><td>同时建设报表、重算和资金拆分</td><td>看似完整</td><td>超出本期边界，放大口径和结算风险</td><td>本期不做</td></tr></tbody></table></div>
+<h3>2.3 成功判定</h3>
+<div class="table-wrap"><table><thead><tr><th>指标</th><th>判定口径</th><th>目标值</th></tr></thead><tbody><tr><td>初始标签覆盖率</td><td>有明确中标事实的新订单中成功生成初始标签的占比</td><td>试点后按真实基线确定</td></tr><tr><td>重复更新数</td><td>已冻结订单再次更新标签的数量</td><td>0</td></tr><tr><td>追溯完整率</td><td>已更新订单中事件、规则版本、前后标签和生效时间均完整的占比</td><td>目标值待业务确认</td></tr><tr><td>标签消费一致性</td><td>自营、生态按统一字段取数时获得相同订单标签的占比</td><td>试点后按真实基线确定</td></tr><tr><td>冲突未处理数</td><td>进入待归因或冲突队列后长期未处理的订单数量</td><td>设责任人并按周期清理</td></tr></tbody></table></div>
+<p>当前没有提供可引用的业务基线和目标值，本方案不编造比例。</p>
+</section><section id="3-原型观察与业务流程复述" class="doc-section"><div class="section-kicker">04 / SECTION</div><h2>3. 原型观察与业务流程复述</h2>
+
+<h3>3.1 原型页面范围</h3>
+<p>原型当前包含两张核心画布：</p>
+<div class="table-wrap"><table><thead><tr><th>页面</th><th>原型中可见内容</th></tr></thead><tbody><tr><td>业务流程</td><td>订单成交、自营部门、生态部门、买家成交、自营扭转，以及自营转生态、生态转自营的条件示意</td></tr><tr><td>回收单归属部门及指标</td><td>规则列表、查询、导出、配置入口、渠道/手机号/机器人配置示意、目标部门单选项和需求说明</td></tr></tbody></table></div>
+<h3>3.2 原型中的成交与扭转流程</h3>
+<pre><code>flowchart LR
+    A[订单成交] --&gt; B{中标方}
+    B -- 非买家 --&gt; C[自营]
+    B -- 买家 --&gt; D[生态]
+    C --&gt; E{是否命中有效扭转规则}
+    D --&gt; E
+    E -- 自营→生态 --&gt; F[更新为生态并冻结]
+    E -- 生态→自营 --&gt; G[更新为自营并冻结]
+    E -- 未命中/目标相同 --&gt; H[保持当前标签]</code></pre>
+<p>原型展示的主要成交来源包括：</p>
+<ul><li>自营侧：闪回-保值换新、多个机器人、指定渠道、买家手机号转自营成交等。</li><li>生态侧：买家成交、企业购、AI 报价、保值换新、无人报价、平台兜底报价、生态渠道等。</li><li>扭转侧：买家转自营、售后退货、指定买家手机号、生态兜底机器人、生态渠道等。</li></ul>
+<p>以上是原型中的业务场景线索，不直接等同于已确认的五类触发白名单。</p>
+<h3>3.3 原型配置页展示</h3>
+<div class="table-wrap"><table><thead><tr><th>区域</th><th>原型元素</th></tr></thead><tbody><tr><td>查询区</td><td>关联回收类型、查询</td></tr><tr><td>列表</td><td>最终归属部门、触发条件、触发值、关联回收类型、操作、操作人、操作时间</td></tr><tr><td>列表操作</td><td>编辑、日志、全部导出</td></tr><tr><td>编辑表单</td><td>触发条件、触发值、归属部门、关联回收类型、保存、取消</td></tr><tr><td>条件示意</td><td>按渠道、按买家手机号、按机器人类型、保值换新、企业购、买家售后退款、买家售前取消</td></tr></tbody></table></div>
+<p>原型中的“全部导出”是配置列表导出，不能解释为新系统建设了部门报表或订单统计。</p>
+</section><section id="4-本期范围与明确不做" class="doc-section"><div class="section-kicker">05 / SECTION</div><h2>4. 本期范围与明确不做</h2>
+
+<h3>4.1 P0 范围</h3>
+<ol><li><strong>成交生成初始标签</strong></li></ol>
+<ul><li>非买家中标写自营，买家中标写生态。</li><li>中标方缺失时不猜测，进入待归因。</li></ul>
+<ol><li><strong>五类触发规则配置</strong></li></ol>
+<ul><li>指定渠道成交。</li><li>指定机器人中标。</li><li>指定手机号中标。</li><li>买家售后退货完成。</li><li>买家售前取消并转闪回成交。</li><li>每类规则配置一个目标标签，以及稳定匹配对象、业务节点和生效状态。</li></ul>
+<ol><li><strong>首次跨部门更新与冻结</strong></li></ol>
+<ul><li>当前标签与目标标签不同时更新一次并冻结。</li><li>目标相同时只留痕，不冻结。</li><li>冻结后继续记录事件，但拒绝自动再次更新。</li></ul>
+<ol><li><strong>规则与订单标签追溯</strong></li></ol>
+<ul><li>规则列表可查询配置、操作人和操作时间。</li><li>订单标签详情可查看初始标签、当前标签、触发事件、规则版本、处理时间和冻结状态。</li></ul>
+<ol><li><strong>统一标签字段输出</strong></li></ol>
+<ul><li>自营、生态按同一字段取数。</li><li>系统不生成部门统计报表。</li></ul>
+<h3>4.2 本期不做</h3>
+<ul><li>不建设部门订单报表、统计看板、月报重分类或自动对账。</li><li>不处理分成、结算和资金拆分。</li><li>不把部门扭转解释为货物实物流转。</li><li>不允许一个订单同时存在多个当前归属标签。</li><li>不允许冻结后由后续业务事件自动反转。</li><li>不允许运营直接修改订单标签。</li><li>不自动回填或重算全部历史订单。</li><li>不按渠道名称、手机号或机器人名称猜测目标标签。</li><li>不在目标标签含义尚未确认时扩展出“企业购”等独立归属值。</li><li>首期不承诺原型之外的复杂规则发布、定时生效或批量剔除能力。</li></ul>
+</section><section id="5-核心业务规则" class="doc-section"><div class="section-kicker">06 / SECTION</div><h2>5. 核心业务规则</h2>
+
+<h3>5.1 初始标签</h3>
+<div class="table-wrap"><table><thead><tr><th>中标事实</th><th>初始标签</th><th>当前标签初始值</th><th>状态</th></tr></thead><tbody><tr><td>非买家中标</td><td>自营</td><td>自营</td><td>未扭转</td></tr><tr><td>买家中标</td><td>生态</td><td>生态</td><td>未扭转</td></tr><tr><td>中标方缺失</td><td>无</td><td>无</td><td>待初始归因</td></tr></tbody></table></div>
+<p>处理规则：</p>
+<ul><li>初始标签在订单成交时写入。</li><li>初始标签一经生成不可由业务事件修改。</li><li>标签写入失败不回滚成交主流程，进入标签处理重试队列。</li><li>中标方缺失时不默认归为任一部门。</li></ul>
+<h3>5.2 五类触发条件</h3>
+<div class="table-wrap"><table><thead><tr><th>触发类型</th><th>匹配依据</th><th>业务节点</th><th>标签处理</th></tr></thead><tbody><tr><td>指定渠道成交</td><td>渠道 ID</td><td>渠道成交订单生成后</td><td>不判断中标方，按规则目标标签处理；优先于机器人和手机号规则</td></tr><tr><td>指定机器人成交</td><td>机器人 ID，且该机器人中标</td><td>机器人中标时</td><td>按规则目标标签处理</td></tr><tr><td>指定手机号成交</td><td>手机号稳定标识，且该手机号中标</td><td>手机号中标时</td><td>按规则目标标签处理</td></tr><tr><td>买家售后退货</td><td>受控售后事件 ID、订单和退货完成结果</td><td>售后退货审核通过并完成退货</td><td>标签保持生态；若当前不是生态则记录异常待核查</td></tr><tr><td>买家售前取消</td><td>受控取消事件 ID、订单、付款状态和转闪回结果</td><td>已付款且买家取消转闪回成交后</td><td>标签保持生态；若当前不是生态则记录异常待核查</td></tr></tbody></table></div>
+<p>补充约束：</p>
+<ul><li>渠道、机器人和手机号规则可在同一配置中关联自营或生态目标标签，但方向由订单当前标签与目标标签共同决定。</li><li>机器人 ID 和手机号均基于订单实际中标方匹配，不能用成交渠道反推中标方。</li><li>手机号使用稳定标识和脱敏展示，不在列表、日志中展示完整号码。</li><li>售后退货与售前取消属于标签保护型事件，不应把已归生态的订单自动改成自营。</li></ul>
+<h3>5.3 扭转方向与冻结</h3>
+<div class="table-wrap"><table><thead><tr><th>当前标签</th><th>配置目标标签</th><th>结果</th><th>是否冻结</th></tr></thead><tbody><tr><td>自营</td><td>生态</td><td>更新为生态，方向为“自营转生态”</td><td>是</td></tr><tr><td>生态</td><td>自营</td><td>更新为自营，方向为“生态转自营”</td><td>是</td></tr><tr><td>自营</td><td>自营</td><td>命中但无需扭转</td><td>否</td></tr><tr><td>生态</td><td>生态</td><td>命中但无需扭转</td><td>否</td></tr></tbody></table></div>
+<p>冻结后的行为：</p>
+<ul><li>渠道、机器人、手机号和售后事件仍进入事件流水。</li><li>流水结果标记为“已冻结，不更新”。</li><li>不允许后续事件覆盖当前标签。</li><li>晚到事件不覆盖既有更新；若业务时间早于首次更新，进入核查。</li><li>异常修复必须走独立审批并形成新的修复记录。</li></ul>
+<h3>5.4 多规则命中与优先级</h3>
+<ol><li>渠道规则最高优先级，强制执行，不区分中标方。</li><li>渠道与机器人或手机号同时命中时，渠道规则胜出。</li><li>机器人和手机号之间不配置优先级。</li><li>正常情况下同一订单只有一个成交方，不会同时命中机器人规则和手机号规则。</li><li>数据异常导致机器人和手机号命中不同目标标签时，停止自动更新并进入冲突队列。</li><li>同一生效期内，同一个具体渠道、机器人或手机号只允许存在一个目标标签；重复配置在发布时阻断。</li><li>多个事件按业务生效时间判断先后，以首个导致跨部门更新的有效事件为准。</li></ol>
+<pre><code>flowchart TD
+    A[收到触发事件] --&gt; B{标签已冻结?}
+    B -- 是 --&gt; C[记录事件，不更新]
+    B -- 否 --&gt; D{渠道规则命中?}
+    D -- 是 --&gt; E[采用渠道目标标签]
+    D -- 否 --&gt; F{机器人或手机号命中?}
+    F -- 唯一 --&gt; G[采用命中目标标签]
+    F -- 冲突 --&gt; H[进入冲突队列]
+    G --&gt; I{当前标签等于目标标签?}
+    E --&gt; I
+    I -- 是 --&gt; J[记录无需扭转]
+    I -- 否 --&gt; K[更新一次并冻结]</code></pre>
+</section><section id="6-产品信息架构与页面方案" class="doc-section"><div class="section-kicker">07 / SECTION</div><h2>6. 产品信息架构与页面方案</h2>
+
+<h3>6.1 信息架构</h3>
+<div class="table-wrap"><table><thead><tr><th>一级菜单</th><th>页面</th><th>本期职责</th></tr></thead><tbody><tr><td>工作台</td><td>规则概览</td><td>最近修改、异常计数和待处理入口，不承担部门统计报表</td></tr><tr><td>配置</td><td>归属规则列表</td><td>查询、查看、编辑、日志、导出配置</td></tr><tr><td>配置</td><td>新建/编辑归属规则</td><td>配置触发条件、匹配对象、关联回收类型和目标标签</td></tr><tr><td>事件</td><td>订单标签详情</td><td>查看初始标签、当前标签、事件时间线和冻结结果</td></tr><tr><td>事件</td><td>待归因与冲突</td><td>处理中标方缺失、规则冲突和晚到事件</td></tr><tr><td>追溯</td><td>操作日志</td><td>查看规则配置和异常处理的审计记录</td></tr></tbody></table></div>
+<p>如果当前管理后台没有“工作台”模块，可以不新增，直接落在“配置 → 归属规则列表”。“订单标签详情”和“待归因与冲突”是否作为独立菜单，由现有后台的信息架构负责人确认。</p>
+<h3>6.2 归属规则列表</h3>
+<p>字段：</p>
+<ul><li>规则名称。</li><li>最终归属部门：自营/生态。</li><li>触发条件：渠道、机器人、手机号、买家售后退货、买家售前取消。</li><li>触发值摘要：渠道名称、机器人名称、脱敏手机号、事件条件。</li><li>关联回收类型。</li><li>状态：草稿、待审核、生效中、已停用。</li><li>操作人、操作时间、版本。</li></ul>
+<p>操作：</p>
+<ul><li>查询。</li><li>配置订单归属。</li><li>编辑草稿。</li><li>查看日志。</li><li>导出当前筛选结果。</li></ul>
+<p>交互约束：</p>
+<ul><li>仅“生效中”的规则参与事件匹配。</li><li>编辑生效中规则必须生成新版本，不能原地覆盖历史版本。</li><li>无权限用户只能查看或不能进入配置页。</li><li>导出只包含规则配置，不包含完整手机号。</li></ul>
+<h3>6.3 新建/编辑归属规则</h3>
+<p>通用字段：</p>
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>要求</th></tr></thead><tbody><tr><td>所属部门</td><td>草稿的提交方；不能替代目标标签</td></tr><tr><td>触发条件</td><td>五类受控枚举</td></tr><tr><td>触发值</td><td>根据条件展示渠道、机器人、手机号或业务事件配置</td></tr><tr><td>关联回收类型</td><td>可多选或按现有系统参数选择，最终是否必填待确认</td></tr><tr><td>归属部门/目标标签</td><td>自营或生态</td></tr><tr><td>生效时间</td><td>必填；是否支持定时生效待确认</td></tr><tr><td>备注</td><td>记录配置原因</td></tr></tbody></table></div>
+<p>动态字段：</p>
+<div class="table-wrap"><table><thead><tr><th>触发条件</th><th>动态字段</th></tr></thead><tbody><tr><td>按渠道</td><td>选择渠道，支持多选；显示渠道 ID</td></tr><tr><td>按机器人</td><td>选择机器人名称，支持多选；保存机器人 ID</td></tr><tr><td>按手机号</td><td>录入手机号，支持多个英文逗号分隔；保存稳定标识，页面脱敏</td></tr><tr><td>买家售后退货</td><td>受控业务节点和匹配范围；首期不要求运营录自由文本条件</td></tr><tr><td>买家售前取消</td><td>受控业务节点和匹配范围；首期不要求运营录自由文本条件</td></tr></tbody></table></div>
+<p>保存校验：</p>
+<ul><li>必须选择一个触发条件和一个目标标签。</li><li>根据条件至少填写一个有效匹配对象。</li><li>同一规则内不能配置多个目标标签。</li><li>同一对象在同一生效期内不能冲突。</li><li>手机号格式、数量和脱敏规则校验通过。</li><li>目标标签枚举与基础标签定义一致。</li><li>规则必须记录提交人、审核人和版本。</li></ul>
+<h3>6.4 订单标签详情</h3>
+<p>展示：</p>
+<ul><li>订单号。</li><li>中标方。</li><li>初始标签及生成时间。</li><li>当前标签。</li><li>标签状态：待初始归因、未扭转、已扭转冻结、冲突待处理、异常待修复。</li><li>首次跨部门更新事件。</li><li>规则 ID、规则版本和关联回收类型。</li><li>事件业务时间、系统处理时间和事件来源。</li><li>后续命中但因冻结未更新的记录。</li></ul>
+<p>页面只读，不允许直接编辑标签。</p>
+<h3>6.5 待归因与冲突</h3>
+<p>首期按原因分类：</p>
+<ul><li>中标方缺失。</li><li>渠道与对象规则数据异常冲突。</li><li>机器人与手机号异常冲突。</li><li>重复事件或晚到事件。</li><li>事件来源字段缺失。</li><li>标签写入失败。</li><li>售后保护事件与当前标签不一致。</li></ul>
+<p>每条记录应显示订单、原因、首次发生时间、最近发生时间、影响标签和责任人。首期不提供无审批批量改标签。</p>
+</section><section id="7-数据与事件建议" class="doc-section"><div class="section-kicker">08 / SECTION</div><h2>7. 数据与事件建议</h2>
+
+<h3>7.1 订单标签快照</h3>
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>说明</th></tr></thead><tbody><tr><td><code>order_id</code></td><td>订单唯一标识</td></tr><tr><td><code>bidder_type</code></td><td>买家/非买家</td></tr><tr><td><code>initial_label</code></td><td>自营/生态</td></tr><tr><td><code>current_label</code></td><td>自营/生态</td></tr><tr><td><code>label_status</code></td><td>待初始归因/未扭转/已扭转冻结/冲突/异常</td></tr><tr><td><code>twist_direction</code></td><td>无/自营转生态/生态转自营</td></tr><tr><td><code>initial_event_id</code></td><td>成交事件</td></tr><tr><td><code>twist_event_id</code></td><td>首次更新事件</td></tr><tr><td><code>matched_rule_id</code></td><td>规则 ID</td></tr><tr><td><code>matched_rule_version</code></td><td>规则版本</td></tr><tr><td><code>effective_at</code></td><td>更新事件生效时间</td></tr><tr><td><code>frozen_at</code></td><td>冻结时间</td></tr><tr><td><code>snapshot_version</code></td><td>标签快照版本</td></tr></tbody></table></div>
+<h3>7.2 触发事件流水</h3>
+<div class="table-wrap"><table><thead><tr><th>字段</th><th>说明</th></tr></thead><tbody><tr><td><code>trigger_id</code></td><td>触发记录 ID</td></tr><tr><td><code>order_id</code></td><td>关联订单</td></tr><tr><td><code>trigger_type</code></td><td>渠道/机器人/手机号/售后退货/售前取消</td></tr><tr><td><code>business_node</code></td><td>业务节点</td></tr><tr><td><code>match_object_id</code></td><td>渠道 ID、机器人 ID、手机号标识或事件类型</td></tr><tr><td><code>target_label</code></td><td>规则目标标签</td></tr><tr><td><code>rule_id</code> / <code>rule_version</code></td><td>命中的规则版本</td></tr><tr><td><code>event_id</code></td><td>业务事件 ID</td></tr><tr><td><code>idempotency_key</code></td><td>幂等键</td></tr><tr><td><code>occurred_at</code> / <code>handled_at</code></td><td>业务时间和处理时间</td></tr><tr><td><code>handled_result</code></td><td>更新成功/无需扭转/已冻结/冲突/失败</td></tr><tr><td><code>before_label</code> / <code>after_label</code></td><td>处理前后标签</td></tr></tbody></table></div>
+<h3>7.3 必要事件</h3>
+<p>系统至少需要接入以下事件或具备等价查询能力：</p>
+<ul><li>订单成交及中标方确认。</li><li>渠道成交订单生成。</li><li>机器人中标。</li><li>手机号中标。</li><li>买家售后退货审核通过并完成退货。</li><li>买家已付款后取消并转闪回成交。</li></ul>
+<p>事件来源、正式事件名、幂等字段和时间字段目前未提供，开发前必须补齐，不允许用页面名称代替事件契约。</p>
+</section><section id="8-权限-审计与个人信息" class="doc-section"><div class="section-kicker">09 / SECTION</div><h2>8. 权限、审计与个人信息</h2>
+
+<h3>8.1 角色权限</h3>
+<div class="table-wrap"><table><thead><tr><th>角色</th><th>查看规则</th><th>新建/编辑</th><th>审核发布</th><th>查看订单标签</th><th>发起异常处理</th><th>导出规则</th></tr></thead><tbody><tr><td>自营配置人</td><td>是</td><td>自营规则草稿</td><td>否</td><td>授权订单范围</td><td>否</td><td>授权范围</td></tr><tr><td>生态配置人</td><td>是</td><td>生态规则草稿</td><td>否</td><td>授权订单范围</td><td>否</td><td>授权范围</td></tr><tr><td>自营审核人</td><td>是</td><td>否</td><td>自营规则</td><td>授权订单范围</td><td>按权限</td><td>否</td></tr><tr><td>生态审核人</td><td>是</td><td>否</td><td>生态规则</td><td>授权订单范围</td><td>按权限</td><td>否</td></tr><tr><td>异常处理人</td><td>涉及订单</td><td>否</td><td>否</td><td>是</td><td>按权限</td><td>否</td></tr><tr><td>平台管理员</td><td>是</td><td>平台配置</td><td>不能替代部门审核</td><td>是</td><td>按权限</td><td>是</td></tr><tr><td>数据人员</td><td>按授权</td><td>否</td><td>否</td><td>按授权</td><td>否</td><td>按授权</td></tr></tbody></table></div>
+<p>提交人不得审核自己提交的规则。审核人与具体岗位清单仍待业务确认。</p>
+<h3>8.2 审计</h3>
+<p>以下动作必须记录操作人、时间、动作、对象、修改前后值、版本和结果：</p>
+<ul><li>规则新建、编辑、提交、审核、发布、停用。</li><li>订单标签初始化、首次更新、冻结和异常修复。</li><li>冲突确认、待归因补录和批量操作。</li><li>规则导出。</li></ul>
+<h3>8.3 个人信息</h3>
+<ul><li>手机号按最小必要原则存储。</li><li>页面默认脱敏。</li><li>日志和导出不得包含完整手机号。</li><li>匹配使用稳定标识，不以展示名称作为业务主键。</li></ul>
+</section><section id="9-异常-恢复与发布边界" class="doc-section"><div class="section-kicker">10 / SECTION</div><h2>9. 异常、恢复与发布边界</h2>
+
+<div class="table-wrap"><table><thead><tr><th>场景</th><th>处理</th><th>用户可见结果</th></tr></thead><tbody><tr><td>中标方缺失</td><td>不猜标签，进入待归因</td><td>显示待初始归因</td></tr><tr><td>标签服务失败</td><td>不回滚成交，异步重试</td><td>显示处理失败及重试状态</td></tr><tr><td>重复事件</td><td>按幂等键去重</td><td>只保留一条有效处理</td></tr><tr><td>命中但目标相同</td><td>记录事件</td><td>显示无需扭转</td></tr><tr><td>已冻结后再次触发</td><td>只记录事件</td><td>显示已冻结，不更新</td></tr><tr><td>渠道与对象规则冲突</td><td>以渠道为准</td><td>展示被覆盖的规则记录</td></tr><tr><td>机器人与手机号异常冲突</td><td>不自动更新</td><td>进入冲突队列</td></tr><tr><td>晚到事件早于首次更新</td><td>不覆盖当前标签</td><td>进入核查</td></tr><tr><td>售后事件对应订单不是生态</td><td>保持事件记录</td><td>进入异常待核查</td></tr><tr><td>规则对象不存在</td><td>不模糊匹配</td><td>提示配置对象无效</td></tr><tr><td>历史订单无新字段</td><td>不自动回填</td><td>标记历史未归因</td></tr></tbody></table></div>
+<p>发布建议：</p>
+<ol><li>先接入事件并影子计算标签，不改正式订单标签。</li><li>按自营、生态分别对账初始标签和扭转结果。</li><li>小范围启用首次更新和冻结。</li><li>确认无重复更新、取数一致和事件追溯完整后扩大范围。</li><li>出现冻结后被二次更新、大面积冲突或不一致取数时停止扩大并回退到影子模式。</li></ol>
+</section><section id="10-原型差异与待确认" class="doc-section"><div class="section-kicker">11 / SECTION</div><h2>10. 原型差异与待确认</h2>
+
+<h3>10.1 原型中已表达且与当前方案一致</h3>
+<ul><li>初始标签判断依据是买家中标/非买家中标。</li><li>未命中触发条件时保持成交时标签。</li><li>列表包含最终归属部门、触发条件、触发值、关联回收类型、操作人和操作时间。</li><li>编辑支持渠道、手机号、机器人、售后和取消等条件。</li><li>表单含目标部门单选和关联回收类型。</li><li>原型写明“一个订单最多扭转一次”。</li></ul>
+<h3>10.2 原型与已确认规则存在差异</h3>
+<div class="table-wrap"><table><thead><tr><th>原型内容</th><th>当前问题</th><th>本方案处理</th></tr></thead><tbody><tr><td>触发条件包含“保值换新”和“企业购”</td><td>当前已确认只有五类触发条件，且“企业购”在流程画布中出现“已废弃？”</td><td>不作为本期已确认触发条件；列入 <code>Q-012</code></td></tr><tr><td>原型写“按渠道 &gt; 保值换新 &gt; 企业购 &gt; 按买家手机号 &gt; 其他”</td><td>与已确认的“渠道最高，机器人和手机号按中标方匹配、互设冲突”不完全一致</td><td>以已确认优先级为准；原型文字需在 G2 修订</td></tr><tr><td>原型没有明确“机器人”与“手机号”互斥</td><td>当前只确认业务上只有一个成交方</td><td>增加异常冲突队列，不用页面顺序兜底</td></tr><tr><td>原型写“方便业务配置报表取值”</td><td>与当前“系统不处理报表”的边界不同</td><td>只输出统一标签字段，不建设报表</td></tr><tr><td>原型条件枚举出现“企业够”拼写错误</td><td>展示名称不统一</td><td>后续原型改为“企业购”或若本期不做则移除</td></tr><tr><td>配置页展示全部表单和交互示意，但未见实际页面跳转逻辑</td><td>无法证明原型已完成状态和异常交互</td><td>G2 需按状态、权限、冲突和失败场景补充评审</td></tr><tr><td>原型列表“最终归属部门”直接显示目标值</td><td>单看目标值无法表达“当前标签不同才扭转”和冻结</td><td>编辑页和订单详情需补充方向、状态及冻结字段</td></tr></tbody></table></div>
+<h3>10.3 当前待确认</h3>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>待确认项</th><th>默认处理</th></tr></thead><tbody><tr><td><code>A-001</code></td><td>规则关联标签是否只允许自营/生态</td><td>暂按二者设计；若含其他分类则新增独立字段</td></tr><tr><td><code>A-002</code></td><td>目标标签为当前部门时，不冻结，后续仍可被跨部门规则更新</td><td>暂按已确认的“目标不同才更新并冻结”执行</td></tr><tr><td><code>Q-012</code></td><td>保值换新、企业购是否纳入本期触发条件，若纳入其目标标签和优先级是什么</td><td>不纳入自动更新</td></tr><tr><td><code>Q-013</code></td><td>五类触发使用哪些正式业务事件、事件名、数据源、幂等键和生效时间</td><td>不开发事件执行逻辑</td></tr><tr><td><code>Q-014</code></td><td>售后与售前事件如何保证“审核通过并完成退货”“已付款且转闪回”可被稳定识别</td><td>无法识别时进入异常，不猜结果</td></tr><tr><td><code>Q-015</code></td><td>自营与生态具体审核岗位、查看范围、导出权限和冲突处理人</td><td>不开放线上执行</td></tr><tr><td><code>Q-016</code></td><td>规则发布是否支持预定生效、停用、版本回滚，以及编辑生效规则时是否必须停用后新建</td><td>首期只支持版本化保存和审计</td></tr></tbody></table></div>
+</section><section id="11-产品验收场景" class="doc-section"><div class="section-kicker">12 / SECTION</div><h2>11. 产品验收场景</h2>
+
+<div class="table-wrap"><table><thead><tr><th>编号</th><th>场景</th><th>预期结果</th></tr></thead><tbody><tr><td><code>AC-01</code></td><td>非买家中标成交</td><td>初始、当前标签均为自营</td></tr><tr><td><code>AC-02</code></td><td>买家中标成交</td><td>初始、当前标签均为生态</td></tr><tr><td><code>AC-03</code></td><td>中标方缺失</td><td>不生成标签，进入待初始归因</td></tr><tr><td><code>AC-04</code></td><td>买家订单命中目标为自营的渠道规则</td><td>渠道优先，更新为自营并冻结</td></tr><tr><td><code>AC-05</code></td><td>指定机器人中标</td><td>按机器人规则目标标签处理</td></tr><tr><td><code>AC-06</code></td><td>指定手机号中标</td><td>按手机号规则目标标签处理</td></tr><tr><td><code>AC-07</code></td><td>命中规则但目标标签与当前标签相同</td><td>记录命中，不更新、不冻结</td></tr><tr><td><code>AC-08</code></td><td>冻结后再次命中跨部门规则</td><td>只记录事件，不更新</td></tr><tr><td><code>AC-09</code></td><td>渠道和机器人同时命中不同目标</td><td>渠道目标生效</td></tr><tr><td><code>AC-10</code></td><td>机器人和手机号异常命中不同目标</td><td>不自动更新，进入冲突队列</td></tr><tr><td><code>AC-11</code></td><td>买家售后退货通过并完成</td><td>保持生态；非生态进入异常核查</td></tr><tr><td><code>AC-12</code></td><td>买家已付款、取消并转闪回成交</td><td>保持生态；非生态进入异常核查</td></tr><tr><td><code>AC-13</code></td><td>重复业务事件到达</td><td>幂等去重，不产生重复标签版本</td></tr><tr><td><code>AC-14</code></td><td>查看已扭转订单</td><td>可追溯初始标签、当前标签、方向、事件和规则版本</td></tr><tr><td><code>AC-15</code></td><td>规则列表导出</td><td>只导出配置字段，手机号脱敏</td></tr><tr><td><code>AC-16</code></td><td>两个部门按统一字段取数</td><td>同一订单拿到一致的初始和当前标签</td></tr></tbody></table></div>
+<p>本表是方案评审口径，不是已执行的正式测试结果。</p>
+</section><section id="12-Gate-状态-G2-评审判断与下一步" class="doc-section"><div class="section-kicker">13 / SECTION</div><h2>12. Gate 状态、G2 评审判断与下一步</h2>
+
+<h3>12.1 当前判断</h3>
+<p>建议保留“成交初始化 → 五类事件配置 → 首次跨部门更新 → 冻结 → 统一下游取数”的最小范围。原型已经覆盖主要业务来源和配置页雏形，可以进入 G2 逐项评审；原型中的扩展条件和优先级说明不能直接研发落地。</p>
+<h3>12.2 需要优先关闭的决定</h3>
+<ol><li><code>Q-012</code>：保值换新、企业购是否属于本期；若属于，它们与五类条件的位置如何调整。</li><li><code>Q-013</code>：五类触发对应哪些正式业务事件和生效字段。</li><li><code>Q-014</code>：售后退货和售前取消的完成条件如何由系统稳定判断。</li></ol>
+<h3>12.3 评审后动作</h3>
+<ul><li>以本文件为 G2 方案基线，业务评审确认主流程、状态、页面字段、优先级和异常处理。</li><li>修订 Axure：修正“企业够”、移除与本期不一致的优先级说明，补状态、冲突、冻结、无权限和失败交互。</li><li>业务评审通过后登记 G2，再进入规格与测试；当前不生成最终 spec、正式测试或研发执行结论。</li></ul></section></article>
+      </div>
+    </main>
+  </body>
+</html>
